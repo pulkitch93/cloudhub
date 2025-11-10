@@ -1,4 +1,4 @@
-import { Activity, Cloud, Leaf, DollarSign, Brain, GitBranch, Box, Shield, ShoppingCart, BarChart3 } from "lucide-react";
+import { Activity, Cloud, Leaf, DollarSign, Brain, GitBranch, Box, Shield, ShoppingCart, BarChart3, Radio } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 const Header = () => {
@@ -100,6 +100,15 @@ const Header = () => {
             >
               <BarChart3 className="w-4 h-4" />
               Analytics
+            </a>
+            <a 
+              href="/edge-management" 
+              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                isActive('/edge-management') ? 'text-primary' : 'text-foreground hover:text-primary'
+              }`}
+            >
+              <Radio className="w-4 h-4" />
+              Edge & 5G
             </a>
           </nav>
         </div>
