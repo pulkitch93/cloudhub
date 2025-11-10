@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -204,31 +204,65 @@ const PartnerAnalytics = () => {
     }
   };
 
-  // Email report handler
-  const handleScheduleReport = async () => {
+  // Schedule report reminders using localStorage
+  const handleScheduleReport = () => {
     if (!emailReportConfig.email) {
-      toast.error('Please enter an email address');
+      toast.error('Please provide recipient information');
       return;
     }
 
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(emailReportConfig.email)) {
-      toast.error('Please enter a valid email address');
-      return;
-    }
-
-    try {
-      // This would call the edge function to schedule reports
-      // For now, we'll just show success
-      toast.success(`${emailReportConfig.frequency} reports will be sent to ${emailReportConfig.email}`);
-      setShowEmailDialog(false);
-      setEmailReportConfig({ email: '', frequency: 'weekly', recipients: [] });
-    } catch (error) {
-      toast.error('Failed to schedule report');
-      console.error('Schedule report error:', error);
-    }
+    // Save schedule to localStorage
+    const schedule = {
+      recipients: emailReportConfig.email,
+      frequency: emailReportConfig.frequency,
+      lastNotified: new Date().toISOString(),
+      filters: {
+        timeRange,
+        vendor: selectedVendor,
+        category: selectedCategory
+      }
+    };
+    
+    localStorage.setItem('analyticsReportSchedule', JSON.stringify(schedule));
+    
+    toast.success('Report reminder scheduled', {
+      description: `You'll receive ${emailReportConfig.frequency} reminders to download and share reports`
+    });
+    
+    setShowEmailDialog(false);
+    setEmailReportConfig({ email: '', frequency: 'weekly', recipients: [] });
   };
+
+  // Check for scheduled report reminders on page load
+  useEffect(() => {
+    const scheduleStr = localStorage.getItem('analyticsReportSchedule');
+    if (!scheduleStr) return;
+
+    const schedule = JSON.parse(scheduleStr);
+    const now = new Date();
+    const lastNotified = new Date(schedule.lastNotified);
+    const hoursSince = (now.getTime() - lastNotified.getTime()) / (1000 * 60 * 60);
+
+    let shouldNotify = false;
+    if (schedule.frequency === 'daily' && hoursSince >= 24) shouldNotify = true;
+    if (schedule.frequency === 'weekly' && hoursSince >= 168) shouldNotify = true; // 7 days
+    if (schedule.frequency === 'monthly' && hoursSince >= 720) shouldNotify = true; // 30 days
+
+    if (shouldNotify) {
+      toast.info('📊 Analytics Report Reminder', {
+        description: `Time to download and share reports with ${schedule.recipients}`,
+        action: {
+          label: 'Download PDF',
+          onClick: () => handleExport('pdf')
+        },
+        duration: 10000
+      });
+
+      // Update last notified time
+      schedule.lastNotified = now.toISOString();
+      localStorage.setItem('analyticsReportSchedule', JSON.stringify(schedule));
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -252,18 +286,18 @@ const PartnerAnalytics = () => {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Schedule Automated Reports</DialogTitle>
+                    <DialogTitle>Schedule Report Reminders</DialogTitle>
                     <DialogDescription>
-                      Receive analytics summaries via email on a regular schedule
+                      Get browser reminders to download and share analytics reports with stakeholders
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 mt-4">
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email Address</Label>
+                      <Label htmlFor="email">Recipient Names (for reference)</Label>
                       <Input
                         id="email"
-                        type="email"
-                        placeholder="stakeholder@company.com"
+                        type="text"
+                        placeholder="e.g., Finance Team, CEO, Board Members"
                         value={emailReportConfig.email}
                         onChange={(e) => setEmailReportConfig({ ...emailReportConfig, email: e.target.value })}
                       />
@@ -306,7 +340,7 @@ const PartnerAnalytics = () => {
                       </div>
                     </div>
                     <Button onClick={handleScheduleReport} className="w-full">
-                      Schedule Reports
+                      Set Reminder Schedule
                     </Button>
                   </div>
                 </DialogContent>
