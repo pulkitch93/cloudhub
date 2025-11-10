@@ -8,8 +8,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Search, Star, TrendingUp, Zap, DollarSign, Shield, 
   Cpu, Database, Cloud, Network, CheckCircle2, ArrowRight,
-  Sparkles, Award, Filter
+  Sparkles, Award, Filter, X, GitCompare
 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from 'sonner';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 
@@ -34,6 +42,8 @@ const Marketplace = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [deployedSolutions, setDeployedSolutions] = useLocalStorage<string[]>('deployed-solutions', []);
   const [usageTelemetry, setUsageTelemetry] = useLocalStorage<any[]>('marketplace-telemetry', []);
+  const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
+  const [showComparisonDialog, setShowComparisonDialog] = useState(false);
 
   const solutions: Solution[] = [
     {
@@ -326,8 +336,23 @@ const Marketplace = () => {
 
   const recommendations = getRecommendations();
 
+  const toggleComparison = (solutionId: string) => {
+    setSelectedForComparison(prev => 
+      prev.includes(solutionId)
+        ? prev.filter(id => id !== solutionId)
+        : [...prev, solutionId]
+    );
+  };
+
+  const clearComparison = () => {
+    setSelectedForComparison([]);
+    setShowComparisonDialog(false);
+  };
+
+  const comparedSolutions = solutions.filter(s => selectedForComparison.includes(s.id));
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-24">
       <Header />
       
       <main className="container mx-auto px-6 py-8">
@@ -467,9 +492,16 @@ const Marketplace = () => {
           <TabsContent value="all" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredSolutions.map(solution => (
-                <Card key={solution.id} className="bg-card border-border hover:border-primary/50 transition-colors">
+                <Card key={solution.id} className="bg-card border-border hover:border-primary/50 transition-colors relative">
+                  <div className="absolute top-3 left-3 z-10">
+                    <Checkbox
+                      checked={selectedForComparison.includes(solution.id)}
+                      onCheckedChange={() => toggleComparison(solution.id)}
+                      className="bg-background border-2"
+                    />
+                  </div>
                   <CardHeader>
-                    <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-start justify-between mb-2 ml-8">
                       <Badge className={getVendorColor(solution.vendor)}>{solution.vendor}</Badge>
                       <div className="flex items-center gap-1">
                         <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
@@ -550,9 +582,16 @@ const Marketplace = () => {
                 {solutions
                   .filter(s => s.vendor.toLowerCase() === vendor)
                   .map(solution => (
-                    <Card key={solution.id} className="bg-card border-border hover:border-primary/50 transition-colors">
+                    <Card key={solution.id} className="bg-card border-border hover:border-primary/50 transition-colors relative">
+                      <div className="absolute top-3 left-3 z-10">
+                        <Checkbox
+                          checked={selectedForComparison.includes(solution.id)}
+                          onCheckedChange={() => toggleComparison(solution.id)}
+                          className="bg-background border-2"
+                        />
+                      </div>
                       <CardHeader>
-                        <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-start justify-between mb-2 ml-8">
                           <Badge className={getVendorColor(solution.vendor)}>{solution.vendor}</Badge>
                           <div className="flex items-center gap-1">
                             <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
@@ -629,6 +668,176 @@ const Marketplace = () => {
           ))}
         </Tabs>
       </main>
+
+      {/* Comparison Bar */}
+      {selectedForComparison.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border shadow-lg z-50">
+          <div className="container mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <GitCompare className="h-5 w-5 text-primary" />
+                <div>
+                  <p className="font-semibold text-foreground">
+                    {selectedForComparison.length} solution{selectedForComparison.length !== 1 ? 's' : ''} selected
+                  </p>
+                  <p className="text-xs text-muted-foreground">Select 2-4 solutions to compare</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Button variant="ghost" size="sm" onClick={clearComparison}>
+                  <X className="h-4 w-4 mr-1" />
+                  Clear
+                </Button>
+                <Button 
+                  size="sm"
+                  onClick={() => setShowComparisonDialog(true)}
+                  disabled={selectedForComparison.length < 2}
+                >
+                  Compare Solutions
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Comparison Dialog */}
+      <Dialog open={showComparisonDialog} onOpenChange={setShowComparisonDialog}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <GitCompare className="h-5 w-5" />
+              Solution Comparison
+            </DialogTitle>
+            <DialogDescription>
+              Compare features, pricing, compatibility, and performance across selected solutions
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-6">
+            {/* Solution Headers */}
+            <div className="grid gap-4 mb-6" style={{ gridTemplateColumns: `200px repeat(${comparedSolutions.length}, 1fr)` }}>
+              <div></div>
+              {comparedSolutions.map(solution => (
+                <Card key={solution.id} className="bg-card border-border">
+                  <CardContent className="pt-6 text-center">
+                    <Badge className={`${getVendorColor(solution.vendor)} mb-2`}>
+                      {solution.vendor}
+                    </Badge>
+                    <h3 className="font-semibold text-foreground mb-1">{solution.name}</h3>
+                    <div className="flex items-center justify-center gap-1 text-sm">
+                      <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+                      <span className="font-semibold">{solution.rating}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Pricing */}
+            <div className="grid gap-4 mb-4 items-start" style={{ gridTemplateColumns: `200px repeat(${comparedSolutions.length}, 1fr)` }}>
+              <div className="font-semibold text-foreground py-3">Pricing</div>
+              {comparedSolutions.map(solution => (
+                <Card key={solution.id} className="bg-card/50 border-border">
+                  <CardContent className="pt-4 pb-4">
+                    <p className="text-sm font-semibold text-primary">{solution.price}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{solution.revenueShare}% revenue share</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Deployment Time */}
+            <div className="grid gap-4 mb-4 items-start" style={{ gridTemplateColumns: `200px repeat(${comparedSolutions.length}, 1fr)` }}>
+              <div className="font-semibold text-foreground py-3">Deployment Time</div>
+              {comparedSolutions.map(solution => (
+                <Card key={solution.id} className="bg-card/50 border-border">
+                  <CardContent className="pt-4 pb-4">
+                    <p className="text-sm text-foreground">{solution.deploymentTime}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Performance */}
+            <div className="grid gap-4 mb-4 items-start" style={{ gridTemplateColumns: `200px repeat(${comparedSolutions.length}, 1fr)` }}>
+              <div className="font-semibold text-foreground py-3">Deployments</div>
+              {comparedSolutions.map(solution => (
+                <Card key={solution.id} className="bg-card/50 border-border">
+                  <CardContent className="pt-4 pb-4">
+                    <p className="text-sm text-foreground">{solution.deployments.toLocaleString()}</p>
+                    <p className="text-xs text-muted-foreground mt-1">total deployments</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Features */}
+            <div className="grid gap-4 mb-4 items-start" style={{ gridTemplateColumns: `200px repeat(${comparedSolutions.length}, 1fr)` }}>
+              <div className="font-semibold text-foreground py-3">Key Features</div>
+              {comparedSolutions.map(solution => (
+                <Card key={solution.id} className="bg-card/50 border-border">
+                  <CardContent className="pt-4 pb-4">
+                    <ul className="space-y-2">
+                      {solution.features.map((feature, idx) => (
+                        <li key={idx} className="text-xs text-muted-foreground flex items-start gap-2">
+                          <CheckCircle2 className="h-3 w-3 text-success flex-shrink-0 mt-0.5" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Compatibility */}
+            <div className="grid gap-4 mb-4 items-start" style={{ gridTemplateColumns: `200px repeat(${comparedSolutions.length}, 1fr)` }}>
+              <div className="font-semibold text-foreground py-3">Compatibility</div>
+              {comparedSolutions.map(solution => (
+                <Card key={solution.id} className="bg-card/50 border-border">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex flex-wrap gap-1">
+                      {solution.compatibility.map((compat, idx) => (
+                        <Badge key={idx} variant="outline" className="text-xs">
+                          {compat}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="grid gap-4 mt-6" style={{ gridTemplateColumns: `200px repeat(${comparedSolutions.length}, 1fr)` }}>
+              <div></div>
+              {comparedSolutions.map(solution => (
+                <div key={solution.id}>
+                  {deployedSolutions.includes(solution.id) ? (
+                    <Button className="w-full" variant="outline" disabled>
+                      <CheckCircle2 className="h-4 w-4 mr-2" />
+                      Deployed
+                    </Button>
+                  ) : (
+                    <Button 
+                      className="w-full"
+                      onClick={() => {
+                        handleDeploy(solution.id);
+                        setShowComparisonDialog(false);
+                      }}
+                    >
+                      <Zap className="h-4 w-4 mr-2" />
+                      Deploy
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
