@@ -1,4 +1,4 @@
-import { Activity, Cloud, Leaf, DollarSign, Brain, GitBranch, Box } from "lucide-react";
+import { Activity, Cloud, Leaf, DollarSign, Brain, GitBranch, Box, Shield } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 const Header = () => {
@@ -73,6 +73,15 @@ const Header = () => {
             >
               <Brain className="w-4 h-4" />
               AI Models
+            </a>
+            <a 
+              href="/compliance" 
+              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                isActive('/compliance') ? 'text-primary' : 'text-foreground hover:text-primary'
+              }`}
+            >
+              <Shield className="w-4 h-4" />
+              Compliance
             </a>
           </nav>
         </div>

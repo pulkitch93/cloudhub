@@ -10,6 +10,7 @@ import CapacityHeatmap from '@/components/CapacityHeatmap';
 import AutomatedRemediation from '@/components/AutomatedRemediation';
 import WorkloadRecommendationEngine from '@/components/WorkloadRecommendationEngine';
 import CollaborationCanvas from '@/components/CollaborationCanvas';
+import TicketingIntegration from '@/components/TicketingIntegration';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Server, mockServers, mockRacks, scenarios } from '@/types/digitalTwin';
@@ -184,7 +185,10 @@ const DigitalTwin = () => {
           </TabsContent>
 
           <TabsContent value="ai-prediction">
-            <PredictiveFailureAnalysis />
+            <div className="space-y-6">
+              <PredictiveFailureAnalysis />
+              <TicketingIntegration />
+            </div>
           </TabsContent>
 
           <TabsContent value="heatmap">
