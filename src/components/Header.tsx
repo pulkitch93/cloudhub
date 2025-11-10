@@ -1,6 +1,10 @@
-import { Activity, Cloud, Leaf, DollarSign } from "lucide-react";
+import { Activity, Cloud, Leaf, DollarSign, Brain, GitBranch } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 const Header = () => {
+  const location = useLocation();
+  const isActive = (path: string) => location.pathname === path;
+  
   return (
     <header className="border-b border-border bg-card">
       <div className="container mx-auto px-6 py-4">
@@ -16,17 +20,32 @@ const Header = () => {
           </div>
           
           <nav className="hidden md:flex items-center gap-6">
-            <a href="#aiops" className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors">
+            <a 
+              href="/" 
+              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                isActive('/') ? 'text-primary' : 'text-foreground hover:text-primary'
+              }`}
+            >
               <Activity className="w-4 h-4" />
-              AIOps
+              Dashboard
             </a>
-            <a href="#finops" className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors">
-              <DollarSign className="w-4 h-4" />
-              FinOps
+            <a 
+              href="/integrations" 
+              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                isActive('/integrations') ? 'text-primary' : 'text-foreground hover:text-primary'
+              }`}
+            >
+              <GitBranch className="w-4 h-4" />
+              Integrations
             </a>
-            <a href="#greenops" className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors">
-              <Leaf className="w-4 h-4" />
-              GreenOps
+            <a 
+              href="/ai-models" 
+              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                isActive('/ai-models') ? 'text-primary' : 'text-foreground hover:text-primary'
+              }`}
+            >
+              <Brain className="w-4 h-4" />
+              AI Models
             </a>
           </nav>
         </div>
