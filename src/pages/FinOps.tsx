@@ -1,9 +1,10 @@
-import { DollarSign, TrendingDown, TrendingUp, AlertCircle, Zap } from "lucide-react";
+import { DollarSign, TrendingDown, TrendingUp, AlertCircle, Zap, Bell } from "lucide-react";
 import Header from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { mockAnomalies } from "@/types/anomaly";
 
 const costTrendData = [
   { month: "Jan", actual: 782, forecast: 780, optimized: 650 },
@@ -73,6 +74,8 @@ const recommendations: Recommendation[] = [
 ];
 
 const FinOps = () => {
+  const costAnomalies = mockAnomalies.filter(a => a.type === "cost" && a.status === "active");
+  
   const getImpactBadge = (impact: Recommendation["impact"]) => {
     switch (impact) {
       case "high":
@@ -90,8 +93,18 @@ const FinOps = () => {
       
       <main className="container mx-auto px-6 py-8">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-foreground mb-2">FinOps Dashboard</h2>
-          <p className="text-muted-foreground">AI-powered cost optimization and forecasting</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground mb-2">FinOps Dashboard</h2>
+              <p className="text-muted-foreground">AI-powered cost optimization and forecasting</p>
+            </div>
+            {costAnomalies.length > 0 && (
+              <Badge className="bg-destructive/10 text-destructive border-destructive/20 text-sm px-3 py-1">
+                <Bell className="h-3 w-3 mr-1" />
+                {costAnomalies.length} Active Anomalies
+              </Badge>
+            )}
+          </div>
         </div>
 
         {/* KPI Cards */}

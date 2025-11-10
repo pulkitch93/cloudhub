@@ -1,9 +1,10 @@
-import { Leaf, TrendingDown, Wind, Zap, Globe } from "lucide-react";
+import { Leaf, TrendingDown, Wind, Zap, Globe, Bell } from "lucide-react";
 import Header from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
+import { mockAnomalies } from "@/types/anomaly";
 
 const carbonTrendData = [
   { month: "Jan", actual: 2.8, forecast: 2.7, optimized: 2.1 },
@@ -73,6 +74,8 @@ const recommendations: GreenRecommendation[] = [
 ];
 
 const GreenOps = () => {
+  const carbonAnomalies = mockAnomalies.filter(a => a.type === "carbon" && a.status === "active");
+  
   const getImpactBadge = (impact: GreenRecommendation["impact"]) => {
     switch (impact) {
       case "high":
@@ -90,8 +93,18 @@ const GreenOps = () => {
       
       <main className="container mx-auto px-6 py-8">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-foreground mb-2">GreenOps Dashboard</h2>
-          <p className="text-muted-foreground">Carbon footprint tracking and sustainability optimization</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground mb-2">GreenOps Dashboard</h2>
+              <p className="text-muted-foreground">Carbon footprint tracking and sustainability optimization</p>
+            </div>
+            {carbonAnomalies.length > 0 && (
+              <Badge className="bg-warning/10 text-warning border-warning/20 text-sm px-3 py-1">
+                <Bell className="h-3 w-3 mr-1" />
+                {carbonAnomalies.length} Active Anomalies
+              </Badge>
+            )}
+          </div>
         </div>
 
         {/* KPI Cards */}
