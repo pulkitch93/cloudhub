@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 import { mockAnomalies } from "@/types/anomaly";
+import { CarbonCreditMarketplace } from "@/components/CarbonCreditMarketplace";
 
 const carbonTrendData = [
   { month: "Jan", actual: 2.8, forecast: 2.7, optimized: 2.1 },
@@ -254,6 +255,11 @@ const GreenOps = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Carbon Credit Marketplace */}
+        <div className="mb-8">
+          <CarbonCreditMarketplace />
         </div>
 
         {/* AI Recommendations */}
