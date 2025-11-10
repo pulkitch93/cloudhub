@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from 'sonner';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import DeploymentTracker from '@/components/DeploymentTracker';
 
 interface Solution {
   id: string;
@@ -44,6 +45,7 @@ const Marketplace = () => {
   const [usageTelemetry, setUsageTelemetry] = useLocalStorage<any[]>('marketplace-telemetry', []);
   const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
   const [showComparisonDialog, setShowComparisonDialog] = useState(false);
+  const [deployingSolution, setDeployingSolution] = useState<Solution | null>(null);
 
   const solutions: Solution[] = [
     {
@@ -303,16 +305,22 @@ const Marketplace = () => {
     };
     setUsageTelemetry(prev => [...prev, telemetry]);
 
-    toast.info(`Deploying ${solution.name}...`, {
-      description: `Estimated deployment time: ${solution.deploymentTime}`
-    });
+    // Open deployment tracker
+    setDeployingSolution(solution);
+  };
 
+  const handleDeploymentComplete = () => {
+    if (!deployingSolution) return;
+
+    setDeployedSolutions(prev => [...prev, deployingSolution.id]);
+    toast.success('Solution deployed successfully!', {
+      description: `${deployingSolution.name} is now active in your environment`
+    });
+    
+    // Close tracker after a brief delay
     setTimeout(() => {
-      setDeployedSolutions(prev => [...prev, solutionId]);
-      toast.success('Solution deployed successfully!', {
-        description: `${solution.name} is now active in your environment`
-      });
-    }, 2000);
+      setDeployingSolution(null);
+    }, 500);
   };
 
   const handleViewDetails = (solutionId: string) => {
@@ -838,6 +846,18 @@ const Marketplace = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Deployment Tracker */}
+      {deployingSolution && (
+        <DeploymentTracker
+          isOpen={!!deployingSolution}
+          onClose={() => setDeployingSolution(null)}
+          solutionName={deployingSolution.name}
+          solutionVendor={deployingSolution.vendor}
+          estimatedTime={deployingSolution.deploymentTime}
+          onComplete={handleDeploymentComplete}
+        />
+      )}
     </div>
   );
 };
