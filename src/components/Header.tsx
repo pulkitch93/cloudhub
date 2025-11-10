@@ -1,4 +1,4 @@
-import { Activity, Cloud, Leaf, DollarSign, Brain, GitBranch, Box, Shield } from "lucide-react";
+import { Activity, Cloud, Leaf, DollarSign, Brain, GitBranch, Box, Shield, ShoppingCart } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 const Header = () => {
@@ -82,6 +82,15 @@ const Header = () => {
             >
               <Shield className="w-4 h-4" />
               Compliance
+            </a>
+            <a 
+              href="/marketplace" 
+              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                isActive('/marketplace') ? 'text-primary' : 'text-foreground hover:text-primary'
+              }`}
+            >
+              <ShoppingCart className="w-4 h-4" />
+              Marketplace
             </a>
           </nav>
         </div>
