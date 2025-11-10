@@ -11,6 +11,7 @@ import GreenOps from "./pages/GreenOps";
 import DigitalTwin from "./pages/DigitalTwin";
 import Compliance from "./pages/Compliance";
 import Marketplace from "./pages/Marketplace";
+import PartnerAnalytics from "./pages/PartnerAnalytics";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/ai-models" element={<AIModels />} />
           <Route path="/compliance" element={<Compliance />} />
           <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/partner-analytics" element={<PartnerAnalytics />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
