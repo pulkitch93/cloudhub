@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Integrations from "./pages/Integrations";
 import AIModels from "./pages/AIModels";
+import FinOps from "./pages/FinOps";
+import GreenOps from "./pages/GreenOps";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -18,6 +20,8 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/finops" element={<FinOps />} />
+          <Route path="/greenops" element={<GreenOps />} />
           <Route path="/integrations" element={<Integrations />} />
           <Route path="/ai-models" element={<AIModels />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -30,6 +30,24 @@ const Header = () => {
               Dashboard
             </a>
             <a 
+              href="/finops" 
+              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                isActive('/finops') ? 'text-primary' : 'text-foreground hover:text-primary'
+              }`}
+            >
+              <DollarSign className="w-4 h-4" />
+              FinOps
+            </a>
+            <a 
+              href="/greenops" 
+              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                isActive('/greenops') ? 'text-primary' : 'text-foreground hover:text-primary'
+              }`}
+            >
+              <Leaf className="w-4 h-4" />
+              GreenOps
+            </a>
+            <a 
               href="/integrations" 
               className={`flex items-center gap-2 text-sm font-medium transition-colors ${
                 isActive('/integrations') ? 'text-primary' : 'text-foreground hover:text-primary'
