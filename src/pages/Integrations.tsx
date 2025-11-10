@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Cloud, Database, Cpu, GitBranch, Link as LinkIcon, CheckCircle2, AlertCircle } from "lucide-react";
 import Header from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import XClarityConfig from "@/components/XClarityConfig";
 
 interface Integration {
   name: string;
@@ -39,6 +41,8 @@ const integrations: Integration[] = [
 ];
 
 const Integrations = () => {
+  const [xclarityConfigOpen, setXclarityConfigOpen] = useState(false);
+
   const getStatusBadge = (status: Integration["status"]) => {
     switch (status) {
       case "connected":
@@ -118,7 +122,12 @@ const Integrations = () => {
                             </div>
                           ))}
                         </div>
-                        <Button variant="outline" size="sm" className="w-full mt-4">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full mt-4"
+                          onClick={() => integration.name === "Lenovo XClarity" && setXclarityConfigOpen(true)}
+                        >
                           Configure
                         </Button>
                       </CardContent>
@@ -126,7 +135,12 @@ const Integrations = () => {
                     
                     {!integration.metrics && (
                       <CardContent className="pt-0">
-                        <Button variant="outline" size="sm" className="w-full">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full"
+                          onClick={() => integration.name === "Lenovo XClarity" && setXclarityConfigOpen(true)}
+                        >
                           Configure
                         </Button>
                       </CardContent>
@@ -152,6 +166,11 @@ const Integrations = () => {
           </CardContent>
         </Card>
       </main>
+
+      <XClarityConfig 
+        open={xclarityConfigOpen} 
+        onOpenChange={setXclarityConfigOpen}
+      />
     </div>
   );
 };
