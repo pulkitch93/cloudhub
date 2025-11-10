@@ -3,10 +3,15 @@ import Header from '@/components/Header';
 import DigitalTwin3DView from '@/components/DigitalTwin3DView';
 import TelemetryOverlay from '@/components/TelemetryOverlay';
 import ScenarioSimulator from '@/components/ScenarioSimulator';
+import InfrastructureTopology from '@/components/InfrastructureTopology';
+import TimeMachine from '@/components/TimeMachine';
+import PredictiveFailureAnalysis from '@/components/PredictiveFailureAnalysis';
+import CapacityHeatmap from '@/components/CapacityHeatmap';
 import { Card } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Server, mockServers, mockRacks, scenarios } from '@/types/digitalTwin';
 import { Badge } from '@/components/ui/badge';
-import { Activity, Server as ServerIcon, Database, Zap } from 'lucide-react';
+import { Activity, Server as ServerIcon, Database, Zap, Box, Network, Clock, Brain, Layers } from 'lucide-react';
 
 const DigitalTwin = () => {
   const [selectedServer, setSelectedServer] = useState<Server | null>(null);
@@ -111,23 +116,66 @@ const DigitalTwin = () => {
           </Card>
         </div>
 
-        {/* Main 3D View and Controls */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <Card className="bg-card border-border h-[600px] overflow-hidden">
-              <DigitalTwin3DView
-                servers={servers}
-                racks={mockRacks}
-                onServerClick={setSelectedServer}
-              />
-            </Card>
-          </div>
+        {/* Main Tabs */}
+        <Tabs defaultValue="3d-view" className="w-full">
+          <TabsList className="mb-6">
+            <TabsTrigger value="3d-view" className="gap-2">
+              <Box className="h-4 w-4" />
+              3D View
+            </TabsTrigger>
+            <TabsTrigger value="topology" className="gap-2">
+              <Network className="h-4 w-4" />
+              Topology
+            </TabsTrigger>
+            <TabsTrigger value="time-machine" className="gap-2">
+              <Clock className="h-4 w-4" />
+              Time Machine
+            </TabsTrigger>
+            <TabsTrigger value="ai-prediction" className="gap-2">
+              <Brain className="h-4 w-4" />
+              AI Prediction
+            </TabsTrigger>
+            <TabsTrigger value="heatmap" className="gap-2">
+              <Layers className="h-4 w-4" />
+              Capacity Heatmap
+            </TabsTrigger>
+          </TabsList>
 
-          <div className="space-y-6">
-            <TelemetryOverlay server={selectedServer} />
-            <ScenarioSimulator scenarios={scenarios} />
-          </div>
-        </div>
+          <TabsContent value="3d-view">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <Card className="bg-card border-border h-[600px] overflow-hidden">
+                  <DigitalTwin3DView
+                    servers={servers}
+                    racks={mockRacks}
+                    onServerClick={setSelectedServer}
+                  />
+                </Card>
+              </div>
+
+              <div className="space-y-6">
+                <TelemetryOverlay server={selectedServer} />
+                <ScenarioSimulator scenarios={scenarios} />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="topology">
+            <InfrastructureTopology />
+          </TabsContent>
+
+          <TabsContent value="time-machine">
+            <TimeMachine />
+          </TabsContent>
+
+          <TabsContent value="ai-prediction">
+            <PredictiveFailureAnalysis />
+          </TabsContent>
+
+          <TabsContent value="heatmap">
+            <CapacityHeatmap />
+          </TabsContent>
+        </Tabs>
 
         {/* Legend */}
         <Card className="mt-6 p-4 bg-card/50 backdrop-blur-sm border-border">
