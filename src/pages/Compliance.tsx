@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,14 +7,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { 
   Shield, FileText, AlertTriangle, CheckCircle2, Download, 
-  Play, Settings, MapPin, Clock, TrendingUp, Database, Plus
+  Play, Settings, MapPin, Clock, TrendingUp, Database, Plus, FileDown
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { PolicyTemplateBuilder } from '@/components/PolicyTemplateBuilder';
+import { generateComplianceReport } from '@/utils/pdfExport';
 
 const Compliance = () => {
-  const [complianceScore] = useState(87);
-  
-  const policyTemplates = [
+  const [policyTemplates, setPolicyTemplates] = useLocalStorage('policy-templates', [
     {
       id: '1',
       name: 'GDPR Data Protection',
@@ -60,9 +61,9 @@ const Compliance = () => {
       status: 'pending',
       coverage: 0
     }
-  ];
+  ]);
 
-  const driftAlerts = [
+  const [driftAlerts, setDriftAlerts] = useLocalStorage('drift-alerts', [
     {
       id: '1',
       resource: 'S3 Bucket: customer-data-prod',
@@ -93,14 +94,53 @@ const Compliance = () => {
       remediation: 'Enable CloudWatch Logs for RDS audit events',
       autoFixAvailable: false
     }
-  ];
+  ]);
 
-  const regionalCompliance = [
+  const [violations, setViolations] = useLocalStorage('policy-violations', []);
+  const [customTemplates, setCustomTemplates] = useLocalStorage('custom-policy-templates', []);
+  const [complianceScore, setComplianceScore] = useState(87);
+  const [showBuilder, setShowBuilder] = useState(false);
+
+  const [regionalCompliance] = useState([
     { region: 'US-East-1', score: 92, services: 45, issues: 3 },
     { region: 'EU-West-1', score: 88, services: 38, issues: 5 },
     { region: 'AP-Southeast-1', score: 85, services: 32, issues: 7 },
     { region: 'US-West-2', score: 90, services: 41, issues: 4 }
-  ];
+  ]);
+
+  // Real-time compliance monitoring
+  useEffect(() => {
+    const checkInterval = setInterval(() => {
+      // Simulate real-time monitoring
+      const randomCheck = Math.random();
+      if (randomCheck > 0.95) {
+        const newViolation = {
+          id: Date.now().toString(),
+          policy: policyTemplates[Math.floor(Math.random() * policyTemplates.length)]?.name || 'Unknown',
+          resource: `Resource-${Math.random().toString(36).substr(2, 9)}`,
+          severity: ['critical', 'high', 'medium'][Math.floor(Math.random() * 3)],
+          timestamp: new Date().toISOString(),
+          message: 'Compliance violation detected'
+        };
+        setViolations(prev => [newViolation, ...prev.slice(0, 49)]);
+        toast.warning('New compliance violation detected', {
+          description: `${newViolation.resource} - ${newViolation.policy}`
+        });
+      }
+    }, 10000); // Check every 10 seconds
+
+    return () => clearInterval(checkInterval);
+  }, [policyTemplates]);
+
+  // Calculate compliance score based on violations
+  useEffect(() => {
+    const criticalViolations = violations.filter(v => v.severity === 'critical').length;
+    const highViolations = violations.filter(v => v.severity === 'high').length;
+    const totalDrift = driftAlerts.length;
+    
+    const newScore = Math.max(0, 100 - (criticalViolations * 5) - (highViolations * 3) - (totalDrift * 2));
+    setComplianceScore(Math.round(newScore));
+  }, [violations, driftAlerts]);
 
   const handleDeployPolicy = (policyId: string) => {
     const policy = policyTemplates.find(p => p.id === policyId);
@@ -122,6 +162,7 @@ const Compliance = () => {
     });
 
     setTimeout(() => {
+      setDriftAlerts(prev => prev.filter(a => a.id !== alertId));
       toast.success('Remediation applied', {
         description: 'Resource is now compliant with policy'
       });
@@ -130,14 +171,50 @@ const Compliance = () => {
 
   const handleExportReport = () => {
     toast.info('Generating compliance report...', {
-      description: 'Preparing PDF export'
+      description: 'Preparing PDF export with detailed findings'
     });
 
     setTimeout(() => {
+      const reportData = {
+        overallScore: complianceScore,
+        activePolicies: policyTemplates.filter(p => p.status === 'deployed').length,
+        driftAlerts: driftAlerts.length,
+        regionalScores: regionalCompliance.map(r => ({
+          region: r.region,
+          score: r.score,
+          status: r.score >= 90 ? 'Excellent' : r.score >= 75 ? 'Good' : 'Needs Improvement'
+        })),
+        driftAlertDetails: driftAlerts.map(a => ({
+          resource: a.resource,
+          policy: a.policy,
+          severity: a.severity,
+          detected: a.detectedAt,
+          status: a.autoFixAvailable ? 'Auto-fix Available' : 'Manual Review Required'
+        })),
+        violations: violations.slice(0, 20).map(v => ({
+          policy: v.policy,
+          resource: v.resource,
+          severity: v.severity,
+          timestamp: new Date(v.timestamp).toLocaleString()
+        }))
+      };
+
+      generateComplianceReport(reportData);
       toast.success('Report generated', {
-        description: 'Compliance scorecard downloaded successfully'
+        description: 'Compliance report with executive summary and recommendations downloaded'
       });
     }, 1000);
+  };
+
+  const handleSaveTemplate = (template: any) => {
+    setCustomTemplates(prev => {
+      const existing = prev.find(t => t.id === template.id);
+      if (existing) {
+        return prev.map(t => t.id === template.id ? template : t);
+      }
+      return [...prev, template];
+    });
+    setShowBuilder(false);
   };
 
   const getScoreColor = (score: number) => {
@@ -225,8 +302,8 @@ const Compliance = () => {
           <Card className="p-4 bg-card border-border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-muted-foreground">Drift Alerts</p>
-                <p className="text-2xl font-bold text-warning">{driftAlerts.length}</p>
+                <p className="text-xs text-muted-foreground">Active Violations</p>
+                <p className="text-2xl font-bold text-warning">{violations.length + driftAlerts.length}</p>
               </div>
               <AlertTriangle className="h-8 w-8 text-warning" />
             </div>
@@ -239,6 +316,8 @@ const Compliance = () => {
             <TabsTrigger value="policies">Policy Templates</TabsTrigger>
             <TabsTrigger value="drift">Drift Detection</TabsTrigger>
             <TabsTrigger value="scorecard">Compliance Scorecard</TabsTrigger>
+            <TabsTrigger value="custom">Custom Policies</TabsTrigger>
+            <TabsTrigger value="violations">Violations Log</TabsTrigger>
             <TabsTrigger value="integrations">Integrations</TabsTrigger>
           </TabsList>
 
@@ -453,6 +532,170 @@ const Compliance = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Custom Policies */}
+          <TabsContent value="custom" className="space-y-4">
+            {!showBuilder ? (
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-foreground">Custom Policy Templates</h3>
+                  <Button onClick={() => setShowBuilder(true)}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create New Template
+                  </Button>
+                </div>
+
+                {customTemplates.length === 0 ? (
+                  <Card className="bg-card/50 border-border">
+                    <CardContent className="py-12">
+                      <div className="text-center">
+                        <FileText className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                        <h4 className="font-semibold text-foreground mb-2">No Custom Templates Yet</h4>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Create your own compliance rules and validation logic with the visual policy editor
+                        </p>
+                        <Button onClick={() => setShowBuilder(true)}>
+                          <Plus className="h-4 w-4 mr-2" />
+                          Create Your First Template
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {customTemplates.map((template: any) => (
+                      <Card key={template.id} className="bg-card/50 border-border">
+                        <CardHeader>
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <CardTitle className="text-base">{template.name}</CardTitle>
+                              <CardDescription className="text-xs mt-1">{template.description}</CardDescription>
+                            </div>
+                            <Badge variant="outline">{template.category}</Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="text-sm">
+                            <span className="text-muted-foreground">Validation Rules:</span>
+                            <p className="font-semibold text-foreground">{template.rules?.length || 0}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button size="sm" variant="outline" className="flex-1">
+                              Edit
+                            </Button>
+                            <Button size="sm" className="flex-1">
+                              Deploy
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-foreground">Create Custom Policy Template</h3>
+                  <Button variant="outline" onClick={() => setShowBuilder(false)}>
+                    Cancel
+                  </Button>
+                </div>
+                <PolicyTemplateBuilder onSave={handleSaveTemplate} />
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Violations Log */}
+          <TabsContent value="violations" className="space-y-4">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Real-Time Violations Log</h3>
+                <p className="text-sm text-muted-foreground">Live monitoring of compliance violations across your infrastructure</p>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={handleExportReport}>
+                  <FileDown className="h-4 w-4 mr-2" />
+                  Export Report
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <Card className="p-4 bg-card border-border">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Total Violations</p>
+                    <p className="text-2xl font-bold text-foreground">{violations.length}</p>
+                  </div>
+                  <AlertTriangle className="h-8 w-8 text-destructive" />
+                </div>
+              </Card>
+
+              <Card className="p-4 bg-card border-border">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Critical</p>
+                    <p className="text-2xl font-bold text-destructive">
+                      {violations.filter(v => v.severity === 'critical').length}
+                    </p>
+                  </div>
+                  <Shield className="h-8 w-8 text-destructive" />
+                </div>
+              </Card>
+
+              <Card className="p-4 bg-card border-border">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground">High Priority</p>
+                    <p className="text-2xl font-bold text-warning">
+                      {violations.filter(v => v.severity === 'high').length}
+                    </p>
+                  </div>
+                  <AlertTriangle className="h-8 w-8 text-warning" />
+                </div>
+              </Card>
+            </div>
+
+            {violations.length === 0 ? (
+              <Card className="bg-card/50 border-border">
+                <CardContent className="py-12">
+                  <div className="text-center">
+                    <CheckCircle2 className="h-12 w-12 mx-auto mb-4 text-success opacity-50" />
+                    <h4 className="font-semibold text-foreground mb-2">No Active Violations</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Your infrastructure is currently compliant with all deployed policies
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                {violations.slice(0, 20).map((violation: any) => (
+                  <Card key={violation.id} className="bg-card/50 border-border">
+                    <CardContent className="pt-6">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            {getSeverityBadge(violation.severity)}
+                            <span className="text-xs text-muted-foreground">
+                              <Clock className="h-3 w-3 inline mr-1" />
+                              {new Date(violation.timestamp).toLocaleString()}
+                            </span>
+                          </div>
+                          <h4 className="font-semibold text-foreground mb-1">{violation.resource}</h4>
+                          <p className="text-sm text-muted-foreground">Policy: {violation.policy}</p>
+                        </div>
+                      </div>
+                      <div className="p-3 rounded-lg bg-destructive/5 border border-destructive/20">
+                        <p className="text-sm text-foreground">{violation.message}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
           {/* Integrations */}
