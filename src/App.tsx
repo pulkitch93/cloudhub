@@ -8,6 +8,7 @@ import Integrations from "./pages/Integrations";
 import AIModels from "./pages/AIModels";
 import FinOps from "./pages/FinOps";
 import GreenOps from "./pages/GreenOps";
+import DigitalTwin from "./pages/DigitalTwin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/finops" element={<FinOps />} />
           <Route path="/greenops" element={<GreenOps />} />
+          <Route path="/digital-twin" element={<DigitalTwin />} />
           <Route path="/integrations" element={<Integrations />} />
           <Route path="/ai-models" element={<AIModels />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -1,4 +1,4 @@
-import { Activity, Cloud, Leaf, DollarSign, Brain, GitBranch } from "lucide-react";
+import { Activity, Cloud, Leaf, DollarSign, Brain, GitBranch, Box } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 const Header = () => {
@@ -46,6 +46,15 @@ const Header = () => {
             >
               <Leaf className="w-4 h-4" />
               GreenOps
+            </a>
+            <a 
+              href="/digital-twin" 
+              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                isActive('/digital-twin') ? 'text-primary' : 'text-foreground hover:text-primary'
+              }`}
+            >
+              <Box className="w-4 h-4" />
+              Digital Twin
             </a>
             <a 
               href="/integrations" 
