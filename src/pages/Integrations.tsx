@@ -4,7 +4,10 @@ import Header from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import XClarityConfig from "@/components/XClarityConfig";
+import XClarityMonitoring from "@/components/XClarityMonitoring";
+import XClarityAlerts from "@/components/XClarityAlerts";
 
 interface Integration {
   name: string;
@@ -88,6 +91,15 @@ const Integrations = () => {
           <p className="text-muted-foreground">Manage connections to cloud platforms, AI models, and enterprise tools</p>
         </div>
 
+        <Tabs defaultValue="integrations" className="w-full">
+          <TabsList className="mb-6">
+            <TabsTrigger value="integrations">All Integrations</TabsTrigger>
+            <TabsTrigger value="monitoring">XClarity Monitoring</TabsTrigger>
+            <TabsTrigger value="alerts">Alert Management</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="integrations" className="space-y-8">
+
         {categories.map((category) => (
           <div key={category} className="mb-8">
             <div className="flex items-center gap-3 mb-4">
@@ -165,6 +177,16 @@ const Integrations = () => {
             </Button>
           </CardContent>
         </Card>
+          </TabsContent>
+
+          <TabsContent value="monitoring">
+            <XClarityMonitoring />
+          </TabsContent>
+
+          <TabsContent value="alerts">
+            <XClarityAlerts />
+          </TabsContent>
+        </Tabs>
       </main>
 
       <XClarityConfig 
