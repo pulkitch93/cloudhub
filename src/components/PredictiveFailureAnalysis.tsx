@@ -12,6 +12,12 @@ interface PredictionItem {
   riskFactors: string[];
   recommendation: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
+  costImpact: {
+    potentialDowntimeCost: number;
+    preventiveMaintenanceCost: number;
+    savings: number;
+    downTimeHours: number;
+  };
 }
 
 const PredictiveFailureAnalysis = () => {
@@ -23,7 +29,13 @@ const PredictiveFailureAnalysis = () => {
       timeframe: '24h',
       riskFactors: ['High disk I/O variance', 'Increasing temperature trend', 'Memory leak pattern detected'],
       recommendation: 'Schedule immediate maintenance and failover to replica',
-      severity: 'critical'
+      severity: 'critical',
+      costImpact: {
+        potentialDowntimeCost: 125000,
+        preventiveMaintenanceCost: 8500,
+        savings: 116500,
+        downTimeHours: 4.5
+      }
     },
     {
       serverId: 'srv-22',
@@ -32,7 +44,13 @@ const PredictiveFailureAnalysis = () => {
       timeframe: '48h',
       riskFactors: ['CPU thermal throttling events', 'Network packet loss increasing'],
       recommendation: 'Monitor closely, consider workload redistribution',
-      severity: 'high'
+      severity: 'high',
+      costImpact: {
+        potentialDowntimeCost: 45000,
+        preventiveMaintenanceCost: 3200,
+        savings: 41800,
+        downTimeHours: 2.0
+      }
     },
     {
       serverId: 'srv-08',
@@ -41,7 +59,13 @@ const PredictiveFailureAnalysis = () => {
       timeframe: '72h',
       riskFactors: ['Gradual disk space reduction', 'Minor memory pressure'],
       recommendation: 'Disk cleanup recommended in next maintenance window',
-      severity: 'medium'
+      severity: 'medium',
+      costImpact: {
+        potentialDowntimeCost: 18000,
+        preventiveMaintenanceCost: 1500,
+        savings: 16500,
+        downTimeHours: 1.0
+      }
     },
     {
       serverId: 'srv-31',
@@ -50,7 +74,13 @@ const PredictiveFailureAnalysis = () => {
       timeframe: '72h',
       riskFactors: ['Slight performance degradation'],
       recommendation: 'Continue monitoring, no immediate action required',
-      severity: 'low'
+      severity: 'low',
+      costImpact: {
+        potentialDowntimeCost: 5000,
+        preventiveMaintenanceCost: 800,
+        savings: 4200,
+        downTimeHours: 0.5
+      }
     }
   ];
 
@@ -164,6 +194,41 @@ const PredictiveFailureAnalysis = () => {
                       <span className="text-muted-foreground">{factor}</span>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Cost Impact Analysis */}
+              <div className="p-4 rounded-lg bg-destructive/5 border border-destructive/20 space-y-3">
+                <div className="text-xs font-semibold text-foreground flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-destructive" />
+                  Cost Impact Analysis:
+                </div>
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="p-2 rounded bg-background/50">
+                    <div className="text-muted-foreground mb-1">Potential Downtime Cost</div>
+                    <div className="text-lg font-bold text-destructive">
+                      ${prediction.costImpact.potentialDowntimeCost.toLocaleString()}
+                    </div>
+                    <div className="text-muted-foreground">{prediction.costImpact.downTimeHours}h estimated outage</div>
+                  </div>
+                  <div className="p-2 rounded bg-background/50">
+                    <div className="text-muted-foreground mb-1">Preventive Maintenance</div>
+                    <div className="text-lg font-bold text-foreground">
+                      ${prediction.costImpact.preventiveMaintenanceCost.toLocaleString()}
+                    </div>
+                    <div className="text-muted-foreground">Scheduled intervention</div>
+                  </div>
+                </div>
+                <div className="p-3 rounded-lg bg-success/10 border border-success/20">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-success">Potential Savings:</span>
+                    <span className="text-xl font-bold text-success">
+                      ${prediction.costImpact.savings.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    ROI: {((prediction.costImpact.savings / prediction.costImpact.preventiveMaintenanceCost) * 100).toFixed(0)}% return on preventive action
+                  </div>
                 </div>
               </div>
 

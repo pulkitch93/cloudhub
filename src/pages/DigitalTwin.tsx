@@ -7,11 +7,14 @@ import InfrastructureTopology from '@/components/InfrastructureTopology';
 import TimeMachine from '@/components/TimeMachine';
 import PredictiveFailureAnalysis from '@/components/PredictiveFailureAnalysis';
 import CapacityHeatmap from '@/components/CapacityHeatmap';
+import AutomatedRemediation from '@/components/AutomatedRemediation';
+import WorkloadRecommendationEngine from '@/components/WorkloadRecommendationEngine';
+import CollaborationCanvas from '@/components/CollaborationCanvas';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Server, mockServers, mockRacks, scenarios } from '@/types/digitalTwin';
 import { Badge } from '@/components/ui/badge';
-import { Activity, Server as ServerIcon, Database, Zap, Box, Network, Clock, Brain, Layers } from 'lucide-react';
+import { Activity, Server as ServerIcon, Database, Zap, Box, Network, Clock, Brain, Layers, Users, Lightbulb } from 'lucide-react';
 
 const DigitalTwin = () => {
   const [selectedServer, setSelectedServer] = useState<Server | null>(null);
@@ -118,7 +121,7 @@ const DigitalTwin = () => {
 
         {/* Main Tabs */}
         <Tabs defaultValue="3d-view" className="w-full">
-          <TabsList className="mb-6">
+          <TabsList className="mb-6 flex-wrap h-auto">
             <TabsTrigger value="3d-view" className="gap-2">
               <Box className="h-4 w-4" />
               3D View
@@ -138,6 +141,18 @@ const DigitalTwin = () => {
             <TabsTrigger value="heatmap" className="gap-2">
               <Layers className="h-4 w-4" />
               Capacity Heatmap
+            </TabsTrigger>
+            <TabsTrigger value="remediation" className="gap-2">
+              <Zap className="h-4 w-4" />
+              Auto-Remediation
+            </TabsTrigger>
+            <TabsTrigger value="workload" className="gap-2">
+              <Lightbulb className="h-4 w-4" />
+              Workload Optimizer
+            </TabsTrigger>
+            <TabsTrigger value="collaboration" className="gap-2">
+              <Users className="h-4 w-4" />
+              Collaboration
             </TabsTrigger>
           </TabsList>
 
@@ -174,6 +189,18 @@ const DigitalTwin = () => {
 
           <TabsContent value="heatmap">
             <CapacityHeatmap />
+          </TabsContent>
+
+          <TabsContent value="remediation">
+            <AutomatedRemediation />
+          </TabsContent>
+
+          <TabsContent value="workload">
+            <WorkloadRecommendationEngine />
+          </TabsContent>
+
+          <TabsContent value="collaboration">
+            <CollaborationCanvas />
           </TabsContent>
         </Tabs>
 
