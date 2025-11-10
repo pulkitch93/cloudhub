@@ -25,6 +25,7 @@ import EdgeIncidentResponse from '@/components/EdgeIncidentResponse';
 import EdgeConfigManagement from '@/components/EdgeConfigManagement';
 import PredictiveMaintenanceML from '@/components/PredictiveMaintenanceML';
 import NetworkTrafficVisualizer from '@/components/NetworkTrafficVisualizer';
+import MultiRegionManagement from '@/components/MultiRegionManagement';
 
 interface EdgeDevice {
   id: string;
@@ -267,6 +268,7 @@ const EdgeManagement = () => {
               <TabsTrigger value="alerts">Live Alerts</TabsTrigger>
               <TabsTrigger value="traffic">Network Traffic</TabsTrigger>
               <TabsTrigger value="maintenance">Predictive Maintenance</TabsTrigger>
+              <TabsTrigger value="multiregion">Multi-Region</TabsTrigger>
               <TabsTrigger value="topology">Topology Map</TabsTrigger>
               <TabsTrigger value="incidents">Incident Response</TabsTrigger>
               <TabsTrigger value="config">Configuration</TabsTrigger>
@@ -353,6 +355,11 @@ const EdgeManagement = () => {
             {/* Predictive Maintenance */}
             <TabsContent value="maintenance" className="space-y-6">
               <PredictiveMaintenanceML />
+            </TabsContent>
+
+            {/* Multi-Region Management */}
+            <TabsContent value="multiregion" className="space-y-6">
+              <MultiRegionManagement />
             </TabsContent>
 
             {/* Topology Map */}
