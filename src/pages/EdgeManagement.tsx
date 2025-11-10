@@ -19,6 +19,10 @@ import {
 } from 'lucide-react';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import Header from '@/components/Header';
+import EdgeTopologyMap from '@/components/EdgeTopologyMap';
+import EdgeAlertMonitor from '@/components/EdgeAlertMonitor';
+import EdgeIncidentResponse from '@/components/EdgeIncidentResponse';
+import EdgeConfigManagement from '@/components/EdgeConfigManagement';
 
 interface EdgeDevice {
   id: string;
@@ -258,9 +262,13 @@ const EdgeManagement = () => {
           <Tabs defaultValue="devices" className="space-y-6">
             <TabsList className="bg-muted">
               <TabsTrigger value="devices">Device Health</TabsTrigger>
-              <TabsTrigger value="provisioning">Zero-Touch Provisioning</TabsTrigger>
-              <TabsTrigger value="latency">AI Latency Routing</TabsTrigger>
-              <TabsTrigger value="scaling">Predictive Scaling</TabsTrigger>
+              <TabsTrigger value="alerts">Live Alerts</TabsTrigger>
+              <TabsTrigger value="topology">Topology Map</TabsTrigger>
+              <TabsTrigger value="incidents">Incident Response</TabsTrigger>
+              <TabsTrigger value="config">Configuration</TabsTrigger>
+              <TabsTrigger value="provisioning">Provisioning</TabsTrigger>
+              <TabsTrigger value="latency">Latency Routing</TabsTrigger>
+              <TabsTrigger value="scaling">Scaling</TabsTrigger>
             </TabsList>
 
             {/* Device Health Dashboard */}
@@ -326,6 +334,61 @@ const EdgeManagement = () => {
                   </Card>
                 ))}
               </div>
+            </TabsContent>
+
+            {/* Live Alert Monitor */}
+            <TabsContent value="alerts" className="space-y-6">
+              <EdgeAlertMonitor />
+            </TabsContent>
+
+            {/* Topology Map */}
+            <TabsContent value="topology" className="space-y-6">
+              <EdgeTopologyMap 
+                nodes={[
+                  {
+                    id: 'edge-001',
+                    name: '5G Node Alpha',
+                    coordinates: [-74.006, 40.7128],
+                    status: 'online',
+                    type: '5G',
+                    connections: ['edge-002', 'edge-004']
+                  },
+                  {
+                    id: 'edge-002',
+                    name: 'IoT Gateway Beta',
+                    coordinates: [-0.1276, 51.5074],
+                    status: 'online',
+                    type: 'IoT',
+                    connections: ['edge-001', 'edge-003']
+                  },
+                  {
+                    id: 'edge-003',
+                    name: 'Edge Server Gamma',
+                    coordinates: [139.6917, 35.6895],
+                    status: 'warning',
+                    type: 'Edge',
+                    connections: ['edge-002', 'edge-004']
+                  },
+                  {
+                    id: 'edge-004',
+                    name: '5G Node Delta',
+                    coordinates: [-122.4194, 37.7749],
+                    status: 'online',
+                    type: '5G',
+                    connections: ['edge-001', 'edge-003']
+                  }
+                ]}
+              />
+            </TabsContent>
+
+            {/* Incident Response */}
+            <TabsContent value="incidents" className="space-y-6">
+              <EdgeIncidentResponse />
+            </TabsContent>
+
+            {/* Configuration Management */}
+            <TabsContent value="config" className="space-y-6">
+              <EdgeConfigManagement />
             </TabsContent>
 
             {/* Zero-Touch Provisioning */}
