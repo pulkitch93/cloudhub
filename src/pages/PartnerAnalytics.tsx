@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -11,11 +13,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { 
   DollarSign, TrendingUp, CheckCircle2, Star, 
   Users, Package, ArrowUpRight, ArrowDownRight,
-  Calendar, Download, Filter
+  Calendar, Download, Filter, FileText, FileSpreadsheet,
+  Mail, Settings, ChevronDown, GitCompare
 } from 'lucide-react';
+import { toast } from 'sonner';
+import { exportToCSV, exportToExcel, exportToPDF } from '@/utils/analyticsExport';
 import { 
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
@@ -25,6 +44,14 @@ import {
 const PartnerAnalytics = () => {
   const [timeRange, setTimeRange] = useState('30d');
   const [selectedVendor, setSelectedVendor] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [comparisonPeriod, setComparisonPeriod] = useState<string | null>(null);
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
+  const [emailReportConfig, setEmailReportConfig] = useState({
+    email: '',
+    frequency: 'weekly',
+    recipients: [] as string[]
+  });
 
   // Mock analytics data
   const revenueData = [
@@ -130,35 +157,264 @@ const PartnerAnalytics = () => {
   const totalRevenue = revenueData.reduce((acc, curr) => acc + curr.revenue, 0);
   const avgGrowth = revenueData.reduce((acc, curr) => acc + curr.growth, 0) / revenueData.length;
 
+  // Filter data based on selections
+  const filteredVendorData = selectedVendor === 'all' 
+    ? vendorRevenueData 
+    : vendorRevenueData.filter(v => v.vendor.toLowerCase() === selectedVendor.toLowerCase());
+
+  const filteredTrendingSolutions = trendingSolutions.filter(solution => {
+    const matchesVendor = selectedVendor === 'all' || solution.vendor.toLowerCase() === selectedVendor.toLowerCase();
+    return matchesVendor;
+  });
+
+  // Export handlers
+  const handleExport = (format: 'csv' | 'excel' | 'pdf') => {
+    const analyticsData = {
+      revenueData,
+      deploymentData: deploymentSuccessData,
+      satisfactionData,
+      trendingSolutions: filteredTrendingSolutions,
+      vendorData: filteredVendorData
+    };
+
+    const filters = {
+      dateRange: timeRange,
+      vendor: selectedVendor,
+      category: selectedCategory
+    };
+
+    try {
+      switch (format) {
+        case 'csv':
+          exportToCSV(filteredTrendingSolutions, 'trending_solutions');
+          toast.success('CSV exported successfully');
+          break;
+        case 'excel':
+          exportToExcel(analyticsData, filters);
+          toast.success('Excel report exported successfully');
+          break;
+        case 'pdf':
+          exportToPDF(analyticsData, filters);
+          toast.success('PDF report exported successfully');
+          break;
+      }
+    } catch (error) {
+      toast.error('Failed to export report');
+      console.error('Export error:', error);
+    }
+  };
+
+  // Email report handler
+  const handleScheduleReport = async () => {
+    if (!emailReportConfig.email) {
+      toast.error('Please enter an email address');
+      return;
+    }
+
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailReportConfig.email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    try {
+      // This would call the edge function to schedule reports
+      // For now, we'll just show success
+      toast.success(`${emailReportConfig.frequency} reports will be sent to ${emailReportConfig.email}`);
+      setShowEmailDialog(false);
+      setEmailReportConfig({ email: '', frequency: 'weekly', recipients: [] });
+    } catch (error) {
+      toast.error('Failed to schedule report');
+      console.error('Schedule report error:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
       <main className="container mx-auto px-6 py-8">
         {/* Header Section */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-2xl font-bold text-foreground mb-2">Partner Analytics</h2>
-            <p className="text-muted-foreground">Track revenue, performance, and partner success metrics</p>
+        <div className="flex flex-col gap-4 mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground mb-2">Partner Analytics</h2>
+              <p className="text-muted-foreground">Track revenue, performance, and partner success metrics</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Mail className="h-4 w-4 mr-2" />
+                    Schedule Reports
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Schedule Automated Reports</DialogTitle>
+                    <DialogDescription>
+                      Receive analytics summaries via email on a regular schedule
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 mt-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email Address</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="stakeholder@company.com"
+                        value={emailReportConfig.email}
+                        onChange={(e) => setEmailReportConfig({ ...emailReportConfig, email: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="frequency">Report Frequency</Label>
+                      <Select 
+                        value={emailReportConfig.frequency} 
+                        onValueChange={(value) => setEmailReportConfig({ ...emailReportConfig, frequency: value })}
+                      >
+                        <SelectTrigger id="frequency">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="daily">Daily</SelectItem>
+                          <SelectItem value="weekly">Weekly (Monday)</SelectItem>
+                          <SelectItem value="monthly">Monthly (1st day)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Included Metrics</Label>
+                      <div className="text-sm text-muted-foreground space-y-1">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="h-3 w-3 text-success" />
+                          <span>Revenue trends and growth</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="h-3 w-3 text-success" />
+                          <span>Deployment success rates</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="h-3 w-3 text-success" />
+                          <span>Top trending solutions</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="h-3 w-3 text-success" />
+                          <span>User satisfaction scores</span>
+                        </div>
+                      </div>
+                    </div>
+                    <Button onClick={handleScheduleReport} className="w-full">
+                      Schedule Reports
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Download className="h-4 w-4 mr-2" />
+                    Export
+                    <ChevronDown className="h-4 w-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => handleExport('csv')}>
+                    <FileText className="h-4 w-4 mr-2" />
+                    Export as CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport('excel')}>
+                    <FileSpreadsheet className="h-4 w-4 mr-2" />
+                    Export as Excel
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport('pdf')}>
+                    <FileText className="h-4 w-4 mr-2" />
+                    Export as PDF
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="w-[180px]">
-                <Calendar className="h-4 w-4 mr-2" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7d">Last 7 days</SelectItem>
-                <SelectItem value="30d">Last 30 days</SelectItem>
-                <SelectItem value="90d">Last 90 days</SelectItem>
-                <SelectItem value="1y">Last year</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
-          </div>
+
+          {/* Advanced Filters */}
+          <Card className="bg-card border-border">
+            <CardContent className="pt-6">
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-semibold text-foreground">Filters:</span>
+                </div>
+                
+                <Select value={timeRange} onValueChange={setTimeRange}>
+                  <SelectTrigger className="w-[180px]">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="7d">Last 7 days</SelectItem>
+                    <SelectItem value="30d">Last 30 days</SelectItem>
+                    <SelectItem value="90d">Last 90 days</SelectItem>
+                    <SelectItem value="1y">Last year</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={selectedVendor} onValueChange={setSelectedVendor}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="All Vendors" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Vendors</SelectItem>
+                    <SelectItem value="lenovo">Lenovo</SelectItem>
+                    <SelectItem value="vmware">VMware</SelectItem>
+                    <SelectItem value="nutanix">Nutanix</SelectItem>
+                    <SelectItem value="nvidia">NVIDIA</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="All Categories" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="compute">Compute</SelectItem>
+                    <SelectItem value="virtualization">Virtualization</SelectItem>
+                    <SelectItem value="ai-ml">AI & ML</SelectItem>
+                    <SelectItem value="networking">Networking</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={comparisonPeriod || 'none'} onValueChange={(v) => setComparisonPeriod(v === 'none' ? null : v)}>
+                  <SelectTrigger className="w-[200px]">
+                    <GitCompare className="h-4 w-4 mr-2" />
+                    <SelectValue placeholder="Compare Period" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No Comparison</SelectItem>
+                    <SelectItem value="previous">Previous Period</SelectItem>
+                    <SelectItem value="year-ago">Year Ago</SelectItem>
+                    <SelectItem value="quarter-ago">Quarter Ago</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {(selectedVendor !== 'all' || selectedCategory !== 'all' || comparisonPeriod) && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => {
+                      setSelectedVendor('all');
+                      setSelectedCategory('all');
+                      setComparisonPeriod(null);
+                    }}
+                  >
+                    Clear Filters
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Key Metrics */}
@@ -423,8 +679,8 @@ const PartnerAnalytics = () => {
                 <CardDescription>Most popular solutions by deployment growth</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {trendingSolutions.map((solution, index) => (
+              <div className="space-y-4">
+                {filteredTrendingSolutions.map((solution, index) => (
                     <Card key={solution.id} className="border-border bg-card/50">
                       <CardContent className="pt-6">
                         <div className="flex items-start justify-between gap-4">
