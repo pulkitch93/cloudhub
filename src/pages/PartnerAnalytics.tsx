@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -31,7 +32,8 @@ import {
   DollarSign, TrendingUp, CheckCircle2, Star, 
   Users, Package, ArrowUpRight, ArrowDownRight,
   Calendar, Download, Filter, FileText, FileSpreadsheet,
-  Mail, Settings, ChevronDown, GitCompare
+  Mail, Settings, ChevronDown, GitCompare, LayoutGrid,
+  Target, Award, Zap, ShieldCheck, Clock, Activity
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { exportToCSV, exportToExcel, exportToPDF } from '@/utils/analyticsExport';
@@ -51,6 +53,20 @@ const PartnerAnalytics = () => {
     email: '',
     frequency: 'weekly',
     recipients: [] as string[]
+  });
+  const [drillDownDialog, setDrillDownDialog] = useState(false);
+  const [drillDownData, setDrillDownData] = useState<any>(null);
+  const [dashboardCustomizer, setDashboardCustomizer] = useState(false);
+  const [dashboardWidgets, setDashboardWidgets] = useState(() => {
+    const saved = localStorage.getItem('dashboardWidgets');
+    return saved ? JSON.parse(saved) : {
+      revenue: true,
+      deployments: true,
+      satisfaction: true,
+      trending: true,
+      vendorScorecard: true,
+      comparison: true
+    };
   });
 
   // Mock analytics data
@@ -94,7 +110,8 @@ const PartnerAnalytics = () => {
       growth: 45.2,
       revenue: 25650,
       rating: 4.9,
-      successRate: 98.5
+      successRate: 98.5,
+      transactions: 892
     },
     { 
       id: 2, 
@@ -104,7 +121,8 @@ const PartnerAnalytics = () => {
       growth: 23.8,
       revenue: 62438,
       rating: 4.9,
-      successRate: 99.2
+      successRate: 99.2,
+      transactions: 1580
     },
     { 
       id: 3, 
@@ -114,7 +132,8 @@ const PartnerAnalytics = () => {
       growth: 18.5,
       revenue: 29070,
       rating: 4.8,
-      successRate: 97.8
+      successRate: 97.8,
+      transactions: 450
     },
     { 
       id: 4, 
@@ -124,7 +143,8 @@ const PartnerAnalytics = () => {
       growth: 15.3,
       revenue: 133500,
       rating: 4.7,
-      successRate: 96.4
+      successRate: 96.4,
+      transactions: 1120
     },
     { 
       id: 5, 
@@ -134,8 +154,67 @@ const PartnerAnalytics = () => {
       growth: 12.1,
       revenue: 32147,
       rating: 4.8,
-      successRate: 98.1
+      successRate: 98.1,
+      transactions: 845
     },
+  ];
+
+  // Comparison period data
+  const comparisonRevenueData = comparisonPeriod ? [
+    { month: 'Jan', revenue: 38000, growth: 8 },
+    { month: 'Feb', revenue: 44000, growth: 15.8 },
+    { month: 'Mar', revenue: 51000, growth: 15.9 },
+    { month: 'Apr', revenue: 48000, growth: -5.9 },
+    { month: 'May', revenue: 55000, growth: 14.6 },
+    { month: 'Jun', revenue: 58000, growth: 5.5 },
+  ] : null;
+
+  // Vendor scorecards
+  const vendorScorecards = [
+    {
+      vendor: 'Lenovo',
+      rating: 4.8,
+      performance: 96,
+      uptime: 99.9,
+      support: 4.7,
+      innovation: 4.6,
+      compliance: 98,
+      timeToMarket: 12,
+      industryRank: 2
+    },
+    {
+      vendor: 'VMware',
+      rating: 4.9,
+      performance: 98,
+      uptime: 99.95,
+      support: 4.9,
+      innovation: 4.8,
+      compliance: 99,
+      timeToMarket: 8,
+      industryRank: 1
+    },
+    {
+      vendor: 'Nutanix',
+      rating: 4.7,
+      performance: 94,
+      uptime: 99.7,
+      support: 4.6,
+      innovation: 4.7,
+      compliance: 97,
+      timeToMarket: 10,
+      industryRank: 3
+    },
+    {
+      vendor: 'NVIDIA',
+      rating: 4.9,
+      performance: 99,
+      uptime: 99.99,
+      support: 4.8,
+      innovation: 5.0,
+      compliance: 99,
+      timeToMarket: 6,
+      industryRank: 1
+    }
   ];
 
   const getVendorColor = (vendor: string) => {
@@ -156,6 +235,9 @@ const PartnerAnalytics = () => {
 
   const totalRevenue = revenueData.reduce((acc, curr) => acc + curr.revenue, 0);
   const avgGrowth = revenueData.reduce((acc, curr) => acc + curr.growth, 0) / revenueData.length;
+  
+  const comparisonTotalRevenue = comparisonRevenueData?.reduce((acc, curr) => acc + curr.revenue, 0) || 0;
+  const revenueVariance = comparisonPeriod ? ((totalRevenue - comparisonTotalRevenue) / comparisonTotalRevenue * 100) : null;
 
   // Filter data based on selections
   const filteredVendorData = selectedVendor === 'all' 
@@ -166,6 +248,10 @@ const PartnerAnalytics = () => {
     const matchesVendor = selectedVendor === 'all' || solution.vendor.toLowerCase() === selectedVendor.toLowerCase();
     return matchesVendor;
   });
+
+  const filteredScorecards = selectedVendor === 'all'
+    ? vendorScorecards
+    : vendorScorecards.filter(s => s.vendor.toLowerCase() === selectedVendor.toLowerCase());
 
   // Export handlers
   const handleExport = (format: 'csv' | 'excel' | 'pdf') => {
@@ -264,6 +350,19 @@ const PartnerAnalytics = () => {
     }
   }, []);
 
+  // Handle chart drill-down
+  const handleChartClick = (data: any, type: string) => {
+    setDrillDownData({ ...data, type });
+    setDrillDownDialog(true);
+  };
+
+  // Save dashboard configuration
+  const saveDashboardConfig = () => {
+    localStorage.setItem('dashboardWidgets', JSON.stringify(dashboardWidgets));
+    toast.success('Dashboard layout saved');
+    setDashboardCustomizer(false);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -277,6 +376,42 @@ const PartnerAnalytics = () => {
               <p className="text-muted-foreground">Track revenue, performance, and partner success metrics</p>
             </div>
             <div className="flex items-center gap-3">
+              <Dialog open={dashboardCustomizer} onOpenChange={setDashboardCustomizer}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <LayoutGrid className="h-4 w-4 mr-2" />
+                    Customize
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Customize Dashboard</DialogTitle>
+                    <DialogDescription>
+                      Select which widgets to display on your dashboard
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 mt-4">
+                    {Object.entries(dashboardWidgets).map(([key, value]) => (
+                      <div key={key} className="flex items-center justify-between">
+                        <Label htmlFor={key} className="capitalize">
+                          {key.replace(/([A-Z])/g, ' $1').trim()}
+                        </Label>
+                        <Switch
+                          id={key}
+                          checked={value as boolean}
+                          onCheckedChange={(checked) => 
+                            setDashboardWidgets({ ...dashboardWidgets, [key]: checked })
+                          }
+                        />
+                      </div>
+                    ))}
+                    <Button onClick={saveDashboardConfig} className="w-full">
+                      Save Layout
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+
               <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm">
@@ -463,9 +598,25 @@ const PartnerAnalytics = () => {
                 ${(totalRevenue / 1000).toFixed(0)}K
               </p>
               <div className="flex items-center gap-1 text-sm">
-                <ArrowUpRight className="h-4 w-4 text-success" />
-                <span className="text-success font-semibold">{avgGrowth.toFixed(1)}%</span>
-                <span className="text-muted-foreground">vs last period</span>
+                {revenueVariance !== null && comparisonPeriod ? (
+                  <>
+                    {revenueVariance >= 0 ? (
+                      <ArrowUpRight className="h-4 w-4 text-success" />
+                    ) : (
+                      <ArrowDownRight className="h-4 w-4 text-destructive" />
+                    )}
+                    <span className={revenueVariance >= 0 ? "text-success font-semibold" : "text-destructive font-semibold"}>
+                      {revenueVariance >= 0 ? '+' : ''}{revenueVariance.toFixed(1)}%
+                    </span>
+                    <span className="text-muted-foreground">vs {comparisonPeriod.replace('-', ' ')}</span>
+                  </>
+                ) : (
+                  <>
+                    <ArrowUpRight className="h-4 w-4 text-success" />
+                    <span className="text-success font-semibold">{avgGrowth.toFixed(1)}%</span>
+                    <span className="text-muted-foreground">vs last period</span>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -521,6 +672,7 @@ const PartnerAnalytics = () => {
             <TabsTrigger value="performance">Performance</TabsTrigger>
             <TabsTrigger value="satisfaction">Satisfaction</TabsTrigger>
             <TabsTrigger value="trending">Trending</TabsTrigger>
+            <TabsTrigger value="scorecards">Vendor Scorecards</TabsTrigger>
           </TabsList>
 
           {/* Revenue Analytics Tab */}
@@ -534,12 +686,18 @@ const PartnerAnalytics = () => {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart data={revenueData}>
+                    <AreaChart data={revenueData} onClick={(data) => data?.activePayload && handleChartClick(data.activePayload[0].payload, 'revenue')}>
                       <defs>
                         <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
                           <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
                         </linearGradient>
+                        {comparisonRevenueData && (
+                          <linearGradient id="comparisonGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="hsl(var(--muted))" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="hsl(var(--muted))" stopOpacity={0}/>
+                          </linearGradient>
+                        )}
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                       <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" />
@@ -550,14 +708,29 @@ const PartnerAnalytics = () => {
                           border: '1px solid hsl(var(--border))',
                           borderRadius: '8px'
                         }}
+                        cursor={{ fill: 'hsl(var(--muted))' }}
                       />
+                      {comparisonRevenueData && <Legend />}
                       <Area 
                         type="monotone" 
                         dataKey="revenue" 
                         stroke="hsl(var(--primary))" 
                         fill="url(#revenueGradient)"
                         strokeWidth={2}
+                        name="Current Period"
                       />
+                      {comparisonRevenueData && (
+                        <Area 
+                          type="monotone" 
+                          data={comparisonRevenueData}
+                          dataKey="revenue" 
+                          stroke="hsl(var(--muted-foreground))" 
+                          fill="url(#comparisonGradient)"
+                          strokeWidth={2}
+                          strokeDasharray="5 5"
+                          name="Comparison Period"
+                        />
+                      )}
                     </AreaChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -581,6 +754,8 @@ const PartnerAnalytics = () => {
                         outerRadius={100}
                         fill="#8884d8"
                         dataKey="revenue"
+                        onClick={(data) => handleChartClick(data, 'vendor')}
+                        cursor="pointer"
                       >
                         {vendorRevenueData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
@@ -634,7 +809,7 @@ const PartnerAnalytics = () => {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={400}>
-                  <BarChart data={deploymentSuccessData}>
+                  <BarChart data={deploymentSuccessData} onClick={(data) => data?.activePayload && handleChartClick(data.activePayload[0].payload, 'deployment')}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="week" stroke="hsl(var(--muted-foreground))" />
                     <YAxis stroke="hsl(var(--muted-foreground))" />
@@ -644,10 +819,11 @@ const PartnerAnalytics = () => {
                         border: '1px solid hsl(var(--border))',
                         borderRadius: '8px'
                       }}
+                      cursor={{ fill: 'hsl(var(--muted))' }}
                     />
                     <Legend />
-                    <Bar dataKey="successful" fill="hsl(var(--success))" name="Successful" />
-                    <Bar dataKey="failed" fill="hsl(var(--destructive))" name="Failed" />
+                    <Bar dataKey="successful" fill="hsl(var(--success))" name="Successful" cursor="pointer" />
+                    <Bar dataKey="failed" fill="hsl(var(--destructive))" name="Failed" cursor="pointer" />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -764,7 +940,289 @@ const PartnerAnalytics = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Vendor Scorecards Tab */}
+          <TabsContent value="scorecards" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {filteredScorecards.map((scorecard) => (
+                <Card key={scorecard.vendor} className="border-border">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2">
+                        {scorecard.vendor}
+                        <Badge className={getVendorColor(scorecard.vendor)}>
+                          Rank #{scorecard.industryRank}
+                        </Badge>
+                      </CardTitle>
+                      <div className="flex items-center gap-2">
+                        <Star className="h-5 w-5 fill-yellow-500 text-yellow-500" />
+                        <span className="text-2xl font-bold">{scorecard.rating}</span>
+                      </div>
+                    </div>
+                    <CardDescription>Industry benchmarking and performance metrics</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Performance Metrics */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Target className="h-4 w-4" />
+                          <span>Performance Score</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 bg-secondary rounded-full h-2">
+                            <div 
+                              className="bg-success h-2 rounded-full transition-all" 
+                              style={{ width: `${scorecard.performance}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-semibold">{scorecard.performance}%</span>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Activity className="h-4 w-4" />
+                          <span>Uptime</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 bg-secondary rounded-full h-2">
+                            <div 
+                              className="bg-primary h-2 rounded-full transition-all" 
+                              style={{ width: `${scorecard.uptime}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-semibold">{scorecard.uptime}%</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <ShieldCheck className="h-4 w-4" />
+                          <span>Compliance</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 bg-secondary rounded-full h-2">
+                            <div 
+                              className="bg-blue-500 h-2 rounded-full transition-all" 
+                              style={{ width: `${scorecard.compliance}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-semibold">{scorecard.compliance}%</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Zap className="h-4 w-4" />
+                          <span>Innovation</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+                          <span className="text-sm font-semibold">{scorecard.innovation}/5.0</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Key Stats */}
+                    <div className="grid grid-cols-3 gap-4 pt-4 border-t">
+                      <div className="text-center">
+                        <div className="flex items-center justify-center gap-1 mb-1">
+                          <Users className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                        <p className="text-2xl font-bold text-foreground">{scorecard.support}</p>
+                        <p className="text-xs text-muted-foreground">Support Rating</p>
+                      </div>
+                      <div className="text-center">
+                        <div className="flex items-center justify-center gap-1 mb-1">
+                          <Clock className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                        <p className="text-2xl font-bold text-foreground">{scorecard.timeToMarket}d</p>
+                        <p className="text-xs text-muted-foreground">Time to Market</p>
+                      </div>
+                      <div className="text-center">
+                        <div className="flex items-center justify-center gap-1 mb-1">
+                          <Award className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                        <p className="text-2xl font-bold text-foreground">#{scorecard.industryRank}</p>
+                        <p className="text-xs text-muted-foreground">Industry Rank</p>
+                      </div>
+                    </div>
+
+                    {/* Benchmark Indicator */}
+                    <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
+                      <Badge variant={scorecard.industryRank === 1 ? "default" : "secondary"}>
+                        {scorecard.industryRank === 1 ? "Market Leader" : "Top Performer"}
+                      </Badge>
+                      <span className="text-sm text-muted-foreground">
+                        {scorecard.performance >= 95 ? "Exceeds" : "Meets"} industry standards
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
         </Tabs>
+
+        {/* Drill-down Dialog */}
+        <Dialog open={drillDownDialog} onOpenChange={setDrillDownDialog}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Detailed Breakdown</DialogTitle>
+              <DialogDescription>
+                {drillDownData?.type === 'revenue' && `Revenue details for ${drillDownData.month}`}
+                {drillDownData?.type === 'vendor' && `${drillDownData.vendor} performance details`}
+                {drillDownData?.type === 'deployment' && `Deployment breakdown for ${drillDownData.week}`}
+              </DialogDescription>
+            </DialogHeader>
+            {drillDownData && (
+              <div className="space-y-4">
+                {drillDownData.type === 'revenue' && (
+                  <>
+                    <div className="grid grid-cols-3 gap-4">
+                      <Card>
+                        <CardContent className="pt-6 text-center">
+                          <DollarSign className="h-6 w-6 text-primary mx-auto mb-2" />
+                          <p className="text-2xl font-bold">${drillDownData.revenue?.toLocaleString()}</p>
+                          <p className="text-xs text-muted-foreground">Total Revenue</p>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className="pt-6 text-center">
+                          <TrendingUp className="h-6 w-6 text-success mx-auto mb-2" />
+                          <p className="text-2xl font-bold">{drillDownData.growth?.toFixed(1)}%</p>
+                          <p className="text-xs text-muted-foreground">Growth Rate</p>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className="pt-6 text-center">
+                          <Package className="h-6 w-6 text-blue-500 mx-auto mb-2" />
+                          <p className="text-2xl font-bold">{Math.floor(drillDownData.revenue / 150)}</p>
+                          <p className="text-xs text-muted-foreground">Transactions</p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">Revenue Sources</h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between p-2 rounded bg-muted/50">
+                          <span>Direct Sales</span>
+                          <span className="font-semibold">${(drillDownData.revenue * 0.6).toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between p-2 rounded bg-muted/50">
+                          <span>Partner Channel</span>
+                          <span className="font-semibold">${(drillDownData.revenue * 0.3).toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between p-2 rounded bg-muted/50">
+                          <span>Marketplace</span>
+                          <span className="font-semibold">${(drillDownData.revenue * 0.1).toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+                {drillDownData.type === 'vendor' && (
+                  <>
+                    <div className="grid grid-cols-3 gap-4">
+                      <Card>
+                        <CardContent className="pt-6 text-center">
+                          <DollarSign className="h-6 w-6 text-primary mx-auto mb-2" />
+                          <p className="text-2xl font-bold">${drillDownData.revenue?.toLocaleString()}</p>
+                          <p className="text-xs text-muted-foreground">Total Revenue</p>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className="pt-6 text-center">
+                          <Package className="h-6 w-6 text-success mx-auto mb-2" />
+                          <p className="text-2xl font-bold">{drillDownData.share}%</p>
+                          <p className="text-xs text-muted-foreground">Market Share</p>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className="pt-6 text-center">
+                          <TrendingUp className="h-6 w-6 text-blue-500 mx-auto mb-2" />
+                          <p className="text-2xl font-bold">3</p>
+                          <p className="text-xs text-muted-foreground">Active Solutions</p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">Top Solutions</h4>
+                      <div className="space-y-2">
+                        {trendingSolutions
+                          .filter(s => s.vendor === drillDownData.vendor)
+                          .map(solution => (
+                            <div key={solution.id} className="flex justify-between p-2 rounded bg-muted/50">
+                              <span>{solution.name}</span>
+                              <div className="flex items-center gap-3">
+                                <span className="text-sm text-muted-foreground">{solution.deployments} deployments</span>
+                                <span className="font-semibold">${solution.revenue.toLocaleString()}</span>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+                {drillDownData.type === 'deployment' && (
+                  <>
+                    <div className="grid grid-cols-3 gap-4">
+                      <Card>
+                        <CardContent className="pt-6 text-center">
+                          <CheckCircle2 className="h-6 w-6 text-success mx-auto mb-2" />
+                          <p className="text-2xl font-bold">{drillDownData.successful}</p>
+                          <p className="text-xs text-muted-foreground">Successful</p>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className="pt-6 text-center">
+                          <ArrowDownRight className="h-6 w-6 text-destructive mx-auto mb-2" />
+                          <p className="text-2xl font-bold">{drillDownData.failed}</p>
+                          <p className="text-xs text-muted-foreground">Failed</p>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className="pt-6 text-center">
+                          <TrendingUp className="h-6 w-6 text-primary mx-auto mb-2" />
+                          <p className="text-2xl font-bold">{((drillDownData.successful / drillDownData.total) * 100).toFixed(1)}%</p>
+                          <p className="text-xs text-muted-foreground">Success Rate</p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">Deployment Details - {drillDownData.week}</h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between p-3 rounded bg-success/10 border border-success/20">
+                          <div>
+                            <p className="font-semibold text-foreground">Successful Deployments</p>
+                            <p className="text-sm text-muted-foreground">Average time: 12 minutes</p>
+                          </div>
+                          <span className="text-2xl font-bold text-success">{drillDownData.successful}</span>
+                        </div>
+                        <div className="flex justify-between p-3 rounded bg-destructive/10 border border-destructive/20">
+                          <div>
+                            <p className="font-semibold text-foreground">Failed Deployments</p>
+                            <p className="text-sm text-muted-foreground">Main issues: Configuration, Timeout</p>
+                          </div>
+                          <span className="text-2xl font-bold text-destructive">{drillDownData.failed}</span>
+                        </div>
+                        <div className="p-3 rounded bg-muted/50">
+                          <p className="text-sm text-muted-foreground mb-2">Common Success Factors:</p>
+                          <ul className="text-sm space-y-1 list-disc list-inside">
+                            <li>Pre-deployment validation passed</li>
+                            <li>Resource availability verified</li>
+                            <li>Configuration templates used</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
