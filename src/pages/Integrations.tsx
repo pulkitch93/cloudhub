@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import XClarityConfig from "@/components/XClarityConfig";
 import XClarityMonitoring from "@/components/XClarityMonitoring";
 import XClarityAlerts from "@/components/XClarityAlerts";
+import XClarityConflictResolution from "@/components/XClarityConflictResolution";
 
 interface Integration {
   name: string;
@@ -96,6 +97,7 @@ const Integrations = () => {
             <TabsTrigger value="integrations">All Integrations</TabsTrigger>
             <TabsTrigger value="monitoring">XClarity Monitoring</TabsTrigger>
             <TabsTrigger value="alerts">Alert Management</TabsTrigger>
+            <TabsTrigger value="conflicts">Data Validation</TabsTrigger>
           </TabsList>
 
           <TabsContent value="integrations" className="space-y-8">
@@ -185,6 +187,10 @@ const Integrations = () => {
 
           <TabsContent value="alerts">
             <XClarityAlerts />
+          </TabsContent>
+
+          <TabsContent value="conflicts">
+            <XClarityConflictResolution />
           </TabsContent>
         </Tabs>
       </main>

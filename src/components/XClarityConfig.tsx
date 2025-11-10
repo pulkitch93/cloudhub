@@ -23,6 +23,13 @@ interface MetricMapping {
   enabled: boolean;
 }
 
+interface MappingTemplate {
+  id: string;
+  name: string;
+  description: string;
+  mappings: Omit<MetricMapping, 'id'>[];
+}
+
 const XClarityConfig = ({ open, onOpenChange }: XClarityConfigProps) => {
   const [apiEndpoint, setApiEndpoint] = useState('https://xclarity.lenovo.com/api/v1');
   const [apiKey, setApiKey] = useState('xc_****************************');
@@ -37,6 +44,78 @@ const XClarityConfig = ({ open, onOpenChange }: XClarityConfigProps) => {
     { id: '4', xclarityField: 'server.power.consumption', targetField: 'power_usage', enabled: true },
     { id: '5', xclarityField: 'server.network.throughput', targetField: 'network_traffic', enabled: true },
   ]);
+
+  const mappingTemplates: MappingTemplate[] = [
+    {
+      id: 'full-telemetry',
+      name: 'Full Server Telemetry',
+      description: 'Complete monitoring of all server metrics including CPU, memory, disk, network, and power',
+      mappings: [
+        { xclarityField: 'server.cpu.utilization', targetField: 'cpu_usage', enabled: true },
+        { xclarityField: 'server.cpu.frequency', targetField: 'cpu_frequency', enabled: true },
+        { xclarityField: 'server.memory.usage', targetField: 'memory_usage', enabled: true },
+        { xclarityField: 'server.memory.available', targetField: 'memory_available', enabled: true },
+        { xclarityField: 'server.disk.usage', targetField: 'disk_usage', enabled: true },
+        { xclarityField: 'server.disk.iops', targetField: 'disk_iops', enabled: true },
+        { xclarityField: 'server.temperature', targetField: 'temperature', enabled: true },
+        { xclarityField: 'server.power.consumption', targetField: 'power_usage', enabled: true },
+        { xclarityField: 'server.network.throughput', targetField: 'network_traffic', enabled: true },
+        { xclarityField: 'server.network.packets', targetField: 'network_packets', enabled: true },
+        { xclarityField: 'server.network.errors', targetField: 'network_errors', enabled: true },
+      ]
+    },
+    {
+      id: 'power-monitoring',
+      name: 'Power Monitoring Only',
+      description: 'Focus on power consumption and energy efficiency metrics',
+      mappings: [
+        { xclarityField: 'server.power.consumption', targetField: 'power_usage', enabled: true },
+        { xclarityField: 'server.power.voltage', targetField: 'power_voltage', enabled: true },
+        { xclarityField: 'server.power.current', targetField: 'power_current', enabled: true },
+        { xclarityField: 'server.temperature', targetField: 'temperature', enabled: true },
+        { xclarityField: 'server.fan.speed', targetField: 'fan_speed', enabled: true },
+        { xclarityField: 'server.psu.efficiency', targetField: 'psu_efficiency', enabled: true },
+      ]
+    },
+    {
+      id: 'network-performance',
+      name: 'Network Performance',
+      description: 'Monitor network throughput, latency, and connectivity metrics',
+      mappings: [
+        { xclarityField: 'server.network.throughput', targetField: 'network_traffic', enabled: true },
+        { xclarityField: 'server.network.latency', targetField: 'network_latency', enabled: true },
+        { xclarityField: 'server.network.packets.tx', targetField: 'network_packets_tx', enabled: true },
+        { xclarityField: 'server.network.packets.rx', targetField: 'network_packets_rx', enabled: true },
+        { xclarityField: 'server.network.errors', targetField: 'network_errors', enabled: true },
+        { xclarityField: 'server.network.drops', targetField: 'network_drops', enabled: true },
+        { xclarityField: 'server.network.bandwidth.usage', targetField: 'network_bandwidth', enabled: true },
+      ]
+    },
+    {
+      id: 'basic-health',
+      name: 'Basic Health Check',
+      description: 'Essential health metrics for quick system status overview',
+      mappings: [
+        { xclarityField: 'server.cpu.utilization', targetField: 'cpu_usage', enabled: true },
+        { xclarityField: 'server.memory.usage', targetField: 'memory_usage', enabled: true },
+        { xclarityField: 'server.temperature', targetField: 'temperature', enabled: true },
+        { xclarityField: 'server.status', targetField: 'status', enabled: true },
+      ]
+    },
+    {
+      id: 'storage-intensive',
+      name: 'Storage & I/O Focus',
+      description: 'Detailed storage and disk I/O performance monitoring',
+      mappings: [
+        { xclarityField: 'server.disk.usage', targetField: 'disk_usage', enabled: true },
+        { xclarityField: 'server.disk.iops', targetField: 'disk_iops', enabled: true },
+        { xclarityField: 'server.disk.throughput', targetField: 'disk_throughput', enabled: true },
+        { xclarityField: 'server.disk.latency', targetField: 'disk_latency', enabled: true },
+        { xclarityField: 'server.disk.queue.depth', targetField: 'disk_queue', enabled: true },
+        { xclarityField: 'server.raid.status', targetField: 'raid_status', enabled: true },
+      ]
+    }
+  ];
 
   const handleTestConnection = () => {
     setIsTestingConnection(true);
@@ -76,6 +155,22 @@ const XClarityConfig = ({ open, onOpenChange }: XClarityConfigProps) => {
     setMetricMappings(metricMappings.map(m => 
       m.id === id ? { ...m, enabled: !m.enabled } : m
     ));
+  };
+
+  const handleApplyTemplate = (templateId: string) => {
+    const template = mappingTemplates.find(t => t.id === templateId);
+    if (!template) return;
+
+    const newMappings = template.mappings.map((mapping, index) => ({
+      ...mapping,
+      id: Date.now().toString() + index
+    }));
+
+    setMetricMappings(newMappings);
+    
+    toast.success('Template applied', {
+      description: `"${template.name}" configuration loaded with ${newMappings.length} metric mappings`
+    });
   };
 
   return (
@@ -224,6 +319,41 @@ const XClarityConfig = ({ open, onOpenChange }: XClarityConfigProps) => {
           </TabsContent>
 
           <TabsContent value="metrics" className="space-y-4">
+            {/* Template Selector */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Quick Start Templates</CardTitle>
+                <CardDescription>Apply pre-configured metric mappings for common use cases</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {mappingTemplates.map((template) => (
+                    <div
+                      key={template.id}
+                      className="p-4 rounded-lg border border-border bg-card/50 hover:bg-card/80 transition-colors cursor-pointer group"
+                      onClick={() => handleApplyTemplate(template.id)}
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                          {template.name}
+                        </h4>
+                        <Badge variant="outline" className="text-xs">
+                          {template.mappings.length} metrics
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        {template.description}
+                      </p>
+                      <Button size="sm" variant="outline" className="w-full">
+                        <CheckCircle2 className="h-3 w-3 mr-1" />
+                        Apply Template
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
