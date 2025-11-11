@@ -1,5 +1,6 @@
-import { Activity, Cloud, Leaf, DollarSign, Brain, GitBranch, Box, Shield, ShoppingCart, BarChart3, Radio, GraduationCap } from "lucide-react";
+import { Activity, Cloud, Leaf, DollarSign, GitBranch, Box, Shield, ShoppingCart, BarChart3, Radio } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import UserProfileMenu from "@/components/UserProfileMenu";
 
 const Header = () => {
   const location = useLocation();
@@ -19,107 +20,93 @@ const Header = () => {
             </div>
           </div>
           
-          <nav className="hidden md:flex items-center gap-6">
-            <a 
-              href="/" 
-              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                isActive('/') ? 'text-primary' : 'text-foreground hover:text-primary'
-              }`}
-            >
-              <Activity className="w-4 h-4" />
-              Dashboard
-            </a>
-            <a 
-              href="/finops" 
-              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                isActive('/finops') ? 'text-primary' : 'text-foreground hover:text-primary'
-              }`}
-            >
-              <DollarSign className="w-4 h-4" />
-              FinOps
-            </a>
-            <a 
-              href="/greenops" 
-              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                isActive('/greenops') ? 'text-primary' : 'text-foreground hover:text-primary'
-              }`}
-            >
-              <Leaf className="w-4 h-4" />
-              GreenOps
-            </a>
-            <a 
-              href="/digital-twin" 
-              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                isActive('/digital-twin') ? 'text-primary' : 'text-foreground hover:text-primary'
-              }`}
-            >
-              <Box className="w-4 h-4" />
-              Digital Twin
-            </a>
-            <a 
-              href="/integrations" 
-              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                isActive('/integrations') ? 'text-primary' : 'text-foreground hover:text-primary'
-              }`}
-            >
-              <GitBranch className="w-4 h-4" />
-              Integrations
-            </a>
-            <a 
-              href="/ai-models" 
-              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                isActive('/ai-models') ? 'text-primary' : 'text-foreground hover:text-primary'
-              }`}
-            >
-              <Brain className="w-4 h-4" />
-              AI Models
-            </a>
-            <a 
-              href="/compliance" 
-              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                isActive('/compliance') ? 'text-primary' : 'text-foreground hover:text-primary'
-              }`}
-            >
-              <Shield className="w-4 h-4" />
-              Compliance
-            </a>
-            <a 
-              href="/marketplace" 
-              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                isActive('/marketplace') ? 'text-primary' : 'text-foreground hover:text-primary'
-              }`}
-            >
-              <ShoppingCart className="w-4 h-4" />
-              Marketplace
-            </a>
-            <a 
-              href="/partner-analytics" 
-              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                isActive('/partner-analytics') ? 'text-primary' : 'text-foreground hover:text-primary'
-              }`}
-            >
-              <BarChart3 className="w-4 h-4" />
-              Analytics
-            </a>
-            <a 
-              href="/edge-management" 
-              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                isActive('/edge-management') ? 'text-primary' : 'text-foreground hover:text-primary'
-              }`}
-            >
-              <Radio className="w-4 h-4" />
-              Edge & 5G
-            </a>
-            <a 
-              href="/learning-hub" 
-              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                isActive('/learning-hub') ? 'text-primary' : 'text-foreground hover:text-primary'
-              }`}
-            >
-              <GraduationCap className="w-4 h-4" />
-              Learning
-            </a>
-          </nav>
+          <div className="flex items-center gap-6">
+            <nav className="hidden md:flex items-center gap-6">
+              <a 
+                href="/" 
+                className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                  isActive('/') ? 'text-primary' : 'text-foreground hover:text-primary'
+                }`}
+              >
+                <Activity className="w-4 h-4" />
+                Dashboard
+              </a>
+              <a 
+                href="/finops" 
+                className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                  isActive('/finops') ? 'text-primary' : 'text-foreground hover:text-primary'
+                }`}
+              >
+                <DollarSign className="w-4 h-4" />
+                FinOps
+              </a>
+              <a 
+                href="/greenops" 
+                className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                  isActive('/greenops') ? 'text-primary' : 'text-foreground hover:text-primary'
+                }`}
+              >
+                <Leaf className="w-4 h-4" />
+                GreenOps
+              </a>
+              <a 
+                href="/digital-twin" 
+                className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                  isActive('/digital-twin') ? 'text-primary' : 'text-foreground hover:text-primary'
+                }`}
+              >
+                <Box className="w-4 h-4" />
+                Digital Twin
+              </a>
+              <a 
+                href="/integrations" 
+                className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                  isActive('/integrations') ? 'text-primary' : 'text-foreground hover:text-primary'
+                }`}
+              >
+                <GitBranch className="w-4 h-4" />
+                Integrations
+              </a>
+              <a 
+                href="/compliance" 
+                className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                  isActive('/compliance') ? 'text-primary' : 'text-foreground hover:text-primary'
+                }`}
+              >
+                <Shield className="w-4 h-4" />
+                Compliance
+              </a>
+              <a 
+                href="/marketplace" 
+                className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                  isActive('/marketplace') ? 'text-primary' : 'text-foreground hover:text-primary'
+                }`}
+              >
+                <ShoppingCart className="w-4 h-4" />
+                Marketplace
+              </a>
+              <a 
+                href="/partner-analytics" 
+                className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                  isActive('/partner-analytics') ? 'text-primary' : 'text-foreground hover:text-primary'
+                }`}
+              >
+                <BarChart3 className="w-4 h-4" />
+                Analytics
+              </a>
+              <a 
+                href="/edge-management" 
+                className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                  isActive('/edge-management') ? 'text-primary' : 'text-foreground hover:text-primary'
+                }`}
+              >
+                <Radio className="w-4 h-4" />
+                Edge & 5G
+              </a>
+            </nav>
+            
+            <UserProfileMenu />
+          </div>
         </div>
       </div>
     </header>
