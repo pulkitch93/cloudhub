@@ -189,8 +189,8 @@ const AICopilot = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="alerts" className="flex-1 overflow-hidden mt-0">
-          <ScrollArea className="h-full">
+        <TabsContent value="alerts" className="flex-1 mt-0 p-0">
+          <ScrollArea className="h-[440px]">
             <div className="p-4 space-y-4">
               {anomalies.length === 0 ? (
                 <div className="text-center py-8">
