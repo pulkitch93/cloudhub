@@ -17,6 +17,11 @@ import LearningHub from "./pages/LearningHub";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import TenantDirectory from "./pages/admin/TenantDirectory";
+import ClientView from "./pages/admin/ClientView";
+import Provisioning from "./pages/admin/Provisioning";
+import CreateOrganization from "./pages/admin/CreateOrganization";
+import AuditLog from "./pages/admin/AuditLog";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +45,12 @@ const App = () => (
           <Route path="/learning-hub" element={<LearningHub />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/admin/tenant-directory" element={<TenantDirectory />} />
+          <Route path="/admin/client-view/:tenantId" element={<ClientView />} />
+          <Route path="/admin/provisioning/:tenantId" element={<Provisioning />} />
+          <Route path="/admin/create-organization" element={<CreateOrganization />} />
+          <Route path="/admin/partner-insights" element={<PartnerAnalytics />} />
+          <Route path="/admin/audit-log" element={<AuditLog />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
