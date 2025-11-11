@@ -64,7 +64,7 @@ const UserProfileMenu = () => {
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem 
-              onClick={() => navigate("/admin/tenant-directory")} 
+              onClick={() => navigate("/admin")} 
               className="cursor-pointer bg-red-500/5 hover:bg-red-500/10"
             >
               <Shield className="mr-2 h-4 w-4 text-red-500" />
