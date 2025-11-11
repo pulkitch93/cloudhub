@@ -1,4 +1,4 @@
-import { Activity, Cloud, Leaf, DollarSign, Brain, GitBranch, Box, Shield, ShoppingCart, BarChart3, Radio } from "lucide-react";
+import { Activity, Cloud, Leaf, DollarSign, Brain, GitBranch, Box, Shield, ShoppingCart, BarChart3, Radio, GraduationCap } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 const Header = () => {
@@ -109,6 +109,15 @@ const Header = () => {
             >
               <Radio className="w-4 h-4" />
               Edge & 5G
+            </a>
+            <a 
+              href="/learning-hub" 
+              className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+                isActive('/learning-hub') ? 'text-primary' : 'text-foreground hover:text-primary'
+              }`}
+            >
+              <GraduationCap className="w-4 h-4" />
+              Learning
             </a>
           </nav>
         </div>

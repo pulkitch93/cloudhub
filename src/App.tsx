@@ -13,6 +13,7 @@ import Compliance from "./pages/Compliance";
 import Marketplace from "./pages/Marketplace";
 import PartnerAnalytics from "./pages/PartnerAnalytics";
 import EdgeManagement from "./pages/EdgeManagement";
+import LearningHub from "./pages/LearningHub";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/partner-analytics" element={<PartnerAnalytics />} />
           <Route path="/edge-management" element={<EdgeManagement />} />
+          <Route path="/learning-hub" element={<LearningHub />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
