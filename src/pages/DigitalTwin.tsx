@@ -15,7 +15,8 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Server, mockServers, mockRacks, scenarios } from '@/types/digitalTwin';
 import { Badge } from '@/components/ui/badge';
-import { Activity, Server as ServerIcon, Database, Zap, Box, Network, Clock, Brain, Layers, Users, Lightbulb } from 'lucide-react';
+import ARGuidedMaintenance from '@/components/ARGuidedMaintenance';
+import { Activity, Server as ServerIcon, Database, Zap, Box, Network, Clock, Brain, Layers, Users, Lightbulb, Glasses } from 'lucide-react';
 
 const DigitalTwin = () => {
   const [selectedServer, setSelectedServer] = useState<Server | null>(null);
@@ -155,6 +156,10 @@ const DigitalTwin = () => {
               <Users className="h-4 w-4" />
               Collaboration
             </TabsTrigger>
+            <TabsTrigger value="ar-maintenance" className="gap-2">
+              <Glasses className="h-4 w-4" />
+              AR Maintenance
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="3d-view">
@@ -205,6 +210,10 @@ const DigitalTwin = () => {
 
           <TabsContent value="collaboration">
             <CollaborationCanvas />
+          </TabsContent>
+
+          <TabsContent value="ar-maintenance">
+            <ARGuidedMaintenance />
           </TabsContent>
         </Tabs>
 
