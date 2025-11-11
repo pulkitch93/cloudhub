@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import Header from '@/components/Header';
+import LearningAssistant from '@/components/LearningAssistant';
+import CertificateGenerator from '@/components/CertificateGenerator';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -128,6 +130,19 @@ const LearningHub = () => {
     mockCourses.reduce((acc, c) => acc + c.progress, 0) / mockCourses.length
   );
 
+  // Mock certificates for completed courses
+  const certificates = mockCourses
+    .filter(c => c.progress === 100)
+    .map(c => ({
+      id: c.id,
+      courseName: c.title,
+      completionDate: '2024-01-15',
+      userName: 'Sarah Johnson',
+      courseProvider: c.provider,
+      skillLevel: c.level,
+      certificateNumber: `XC-${c.id.toUpperCase()}-2024-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
+    }));
+
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'video': return Video;
@@ -235,6 +250,10 @@ const LearningHub = () => {
             <TabsTrigger value="help" className="gap-2">
               <Lightbulb className="h-4 w-4" />
               Help Center
+            </TabsTrigger>
+            <TabsTrigger value="certificates" className="gap-2">
+              <Award className="h-4 w-4" />
+              Certificates
             </TabsTrigger>
           </TabsList>
 
@@ -555,8 +574,19 @@ const LearningHub = () => {
               </Card>
             </Card>
           </TabsContent>
+
+          {/* Certificates Tab */}
+          <TabsContent value="certificates" className="space-y-6">
+            <CertificateGenerator 
+              certificates={certificates}
+              onGenerateNew={() => console.log('Generate new certificate')}
+            />
+          </TabsContent>
         </Tabs>
       </main>
+
+      {/* AI Learning Assistant Widget */}
+      <LearningAssistant mode="teach" />
     </div>
   );
 };
