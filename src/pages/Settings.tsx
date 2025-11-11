@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Header from "@/components/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -7,11 +8,18 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Bell, Lock, Palette, Brain, Shield } from "lucide-react";
+import { Bell, Lock, Palette, Brain, Shield, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useUserRole } from "@/hooks/useUserRole";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast as sonnerToast } from "sonner";
 
 const Settings = () => {
   const { toast } = useToast();
+  const { role, updateRole } = useUserRole();
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [pushNotifications, setPushNotifications] = useState(false);
+  const [mfaEnabled, setMfaEnabled] = useState(false);
 
   const handleSave = () => {
     toast({
@@ -333,6 +341,50 @@ const Settings = () => {
                 </div>
 
                 <Button variant="outline">Configure MFA</Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border-yellow-500/20 bg-yellow-500/5">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                  <CardTitle>Developer Mode: Role Switcher</CardTitle>
+                </div>
+                <CardDescription>
+                  Switch between user and admin roles (Demo only - In production, use server-side authentication)
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Alert className="bg-yellow-500/10 border-yellow-500/20">
+                  <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                  <AlertDescription className="text-yellow-500">
+                    WARNING: This is a frontend-only demo. In production, roles MUST be validated server-side 
+                    with proper authentication. Never trust client-side role checks for security.
+                  </AlertDescription>
+                </Alert>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="roleSwitch">Current Role</Label>
+                  <Select 
+                    value={role} 
+                    onValueChange={(value) => {
+                      updateRole(value as "admin" | "user");
+                      sonnerToast.success(`Role switched to ${value}`);
+                    }}
+                  >
+                    <SelectTrigger id="roleSwitch">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="admin">Admin (Full Access)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Current role: <span className="font-semibold">{role}</span>
+                    {role === "admin" && " - Admin Console will be visible in profile menu"}
+                  </p>
+                </div>
               </CardContent>
             </Card>
 

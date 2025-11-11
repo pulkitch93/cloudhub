@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
@@ -15,8 +15,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, CheckCircle, Circle, Clock, AlertCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, Circle, Clock, AlertCircle, Wifi } from "lucide-react";
 import { toast } from "sonner";
+import { getProvisioningWebSocket, ProvisioningUpdate } from "@/utils/provisioningWebSocket";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface Task {
   id: string;
@@ -38,6 +40,42 @@ export default function Provisioning() {
   const { tenantId } = useParams();
   const navigate = useNavigate();
   const [deploymentStatus] = useState("building");
+  const [isConnected, setIsConnected] = useState(false);
+  const [tasks, setTasks] = useState<Task[]>(mockTasks);
+  const [lastUpdate, setLastUpdate] = useState<string>("");
+
+  useEffect(() => {
+    const ws = getProvisioningWebSocket();
+    
+    const handleUpdate = (update: ProvisioningUpdate) => {
+      console.log("Received provisioning update:", update);
+      setLastUpdate(`${update.message} at ${new Date(update.timestamp).toLocaleTimeString()}`);
+      
+      if (update.taskId !== "system") {
+        setTasks(prevTasks => 
+          prevTasks.map(task => 
+            task.id === update.taskId 
+              ? { ...task, status: update.status }
+              : task
+          )
+        );
+      }
+
+      if (update.message === "Connected to provisioning updates") {
+        setIsConnected(true);
+        toast.success("Connected to real-time provisioning updates");
+      }
+    };
+
+    ws.subscribe(handleUpdate);
+    ws.connect(tenantId || "unknown");
+
+    return () => {
+      ws.unsubscribe(handleUpdate);
+      ws.disconnect();
+      setIsConnected(false);
+    };
+  }, [tenantId]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -75,7 +113,7 @@ export default function Provisioning() {
       <Header />
       <main className="container mx-auto p-6 space-y-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4">
             <Button
               variant="outline"
               size="icon"
@@ -84,9 +122,17 @@ export default function Provisioning() {
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-foreground">
-                Implementation & Provisioning
-              </h1>
+              <div className="flex items-center gap-3">
+                <h1 className="text-3xl font-bold text-foreground">
+                  Implementation & Provisioning
+                </h1>
+                {isConnected && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Wifi className="h-4 w-4 text-green-500 animate-pulse" />
+                    <span className="text-green-500">Live</span>
+                  </div>
+                )}
+              </div>
               <p className="text-muted-foreground mt-1">
                 Tenant ID: {tenantId}
               </p>
@@ -96,6 +142,15 @@ export default function Provisioning() {
             {deploymentStatus}
           </Badge>
         </div>
+
+        {lastUpdate && (
+          <Alert className="bg-blue-500/10 border-blue-500/20">
+            <Clock className="h-4 w-4 text-blue-500" />
+            <AlertDescription className="text-blue-500">
+              Latest Update: {lastUpdate}
+            </AlertDescription>
+          </Alert>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
@@ -158,7 +213,7 @@ export default function Provisioning() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {mockTasks.map((task) => (
+                  {tasks.map((task) => (
                     <div
                       key={task.id}
                       className="flex items-center justify-between p-4 border border-border rounded-lg"
