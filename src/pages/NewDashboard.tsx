@@ -7,6 +7,7 @@ import TimeRangeSelector from '@/components/dashboard/TimeRangeSelector';
 import TrendCharts from '@/components/dashboard/TrendCharts';
 import RecommendationsPanel from '@/components/dashboard/RecommendationsPanel';
 import AlertsPanel from '@/components/dashboard/AlertsPanel';
+import WorkloadDistribution from '@/components/dashboard/WorkloadDistribution';
 import { dashboardApi } from '@/services/dashboardApi';
 import { KPIData } from '@/types/dashboard';
 import { Activity, Users, DollarSign, AlertTriangle, TrendingUp, Download, Share2, RotateCcw } from 'lucide-react';
@@ -144,16 +145,25 @@ const DashboardContent = () => {
           </div>
         )}
 
-        {/* Action Center */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {(visibleSections.includes('recommendations') || visibleSections.includes('adoption')) && (
-            <RecommendationsPanel />
-          )}
-          
-          {(visibleSections.includes('alerts') || visibleSections.includes('operations')) && (
-            <AlertsPanel />
-          )}
+        {/* Deep Dive Row */}
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold mb-4">Deep Dive Analysis</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <WorkloadDistribution />
+            
+            {(visibleSections.includes('recommendations') || visibleSections.includes('adoption')) && (
+              <RecommendationsPanel />
+            )}
+          </div>
         </div>
+
+        {/* Action Center */}
+        {(visibleSections.includes('alerts') || visibleSections.includes('operations')) && (
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold mb-4">Action Center</h2>
+            <AlertsPanel />
+          </div>
+        )}
 
         {/* Info Footer */}
         <div className="mt-8 p-4 bg-muted/30 rounded-lg border border-border">
