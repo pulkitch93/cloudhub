@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NewDashboard from "./pages/NewDashboard";
+import LenaFloatingLauncher from "./components/lena/LenaFloatingLauncher";
 import Integrations from "./pages/Integrations";
 import AIModels from "./pages/AIModels";
 import FinOps from "./pages/FinOps";
@@ -58,6 +59,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <LenaFloatingLauncher />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
