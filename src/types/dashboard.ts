@@ -1,4 +1,4 @@
-export type AppRole = 'executive' | 'operations' | 'product';
+export type AppRole = 'executive' | 'operations';
 
 export interface Tenant {
   id: string;

@@ -36,8 +36,6 @@ const DashboardContent = () => {
         return ['kpis', 'cost', 'recommendations'];
       case 'operations':
         return ['kpis', 'alerts', 'trends'];
-      case 'product':
-        return ['kpis', 'adoption', 'recommendations'];
       default:
         return ['kpis', 'trends', 'alerts', 'recommendations'];
     }

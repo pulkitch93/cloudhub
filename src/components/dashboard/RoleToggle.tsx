@@ -9,7 +9,6 @@ const RoleToggle = () => {
   const roles: { value: AppRole; label: string; icon: React.ReactNode }[] = [
     { value: 'executive', label: 'Executive', icon: <Briefcase className="w-4 h-4" /> },
     { value: 'operations', label: 'Operations', icon: <Settings className="w-4 h-4" /> },
-    { value: 'product', label: 'Product', icon: <Users className="w-4 h-4" /> },
   ];
 
   return (
