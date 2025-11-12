@@ -166,7 +166,7 @@ const WorkloadDistribution = () => {
                   }}
                 />
                 <Legend />
-                {byProvider.length > 0 && Object.keys(byProvider[0])
+                {byRegion.length > 0 && Object.keys(byRegion[0])
                   .filter(key => key !== 'name')
                   .map((region, idx) => (
                     <Bar
