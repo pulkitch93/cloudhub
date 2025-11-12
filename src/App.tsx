@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NewDashboard from "./pages/NewDashboard";
+import Marketing from "./pages/Marketing";
 import LenaFloatingLauncher from "./components/lena/LenaFloatingLauncher";
 import Integrations from "./pages/Integrations";
 import AIModels from "./pages/AIModels";
@@ -36,6 +37,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<NewDashboard />} />
+          <Route path="/marketing" element={<Marketing />} />
           <Route path="/old-dashboard" element={<Index />} />
           <Route path="/finops" element={<FinOps />} />
           <Route path="/greenops" element={<GreenOps />} />
