@@ -1,9 +1,11 @@
-import { Activity, Cloud, Leaf, DollarSign, GitBranch, Box, Shield, ShoppingCart, Radio } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { Activity, Cloud, Leaf, DollarSign, GitBranch, Box, Shield, ShoppingCart, Radio, ExternalLink } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import UserProfileMenu from "@/components/UserProfileMenu";
+import lenovoCloudIcon from "@/assets/lenovo-cloud-icon.png";
 
 const Header = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isActive = (path: string) => location.pathname === path;
   
   return (
@@ -14,9 +16,22 @@ const Header = () => {
             <div className="w-10 h-10 bg-primary rounded flex items-center justify-center">
               <Cloud className="w-6 h-6 text-primary-foreground" />
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">XClarity One 2.0</h1>
-              <p className="text-xs text-muted-foreground">Intelligent Hybrid Cloud Platform</p>
+            <div className="flex items-center gap-2">
+              <div>
+                <h1 className="text-xl font-bold text-foreground">XClarity One 2.0</h1>
+                <p className="text-xs text-muted-foreground">Intelligent Hybrid Cloud Platform</p>
+              </div>
+              <button
+                onClick={() => navigate('/marketing')}
+                className="w-8 h-8 rounded hover:bg-muted/50 transition-colors flex items-center justify-center group"
+                title="View Marketing Page"
+              >
+                <img 
+                  src={lenovoCloudIcon} 
+                  alt="Lenovo Cloud" 
+                  className="w-6 h-6 opacity-80 group-hover:opacity-100 transition-opacity"
+                />
+              </button>
             </div>
           </div>
           
