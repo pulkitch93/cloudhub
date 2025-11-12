@@ -146,16 +146,18 @@ const DashboardContent = () => {
         )}
 
         {/* Deep Dive Row */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4">Deep Dive Analysis</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <WorkloadDistribution />
-            
-            {(visibleSections.includes('recommendations') || visibleSections.includes('adoption')) && (
-              <RecommendationsPanel />
-            )}
+        {role !== 'operations' && (
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold mb-4">Deep Dive Analysis</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <WorkloadDistribution />
+              
+              {(visibleSections.includes('recommendations') || visibleSections.includes('adoption')) && (
+                <RecommendationsPanel />
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Action Center */}
         {(visibleSections.includes('alerts') || visibleSections.includes('operations')) && (
