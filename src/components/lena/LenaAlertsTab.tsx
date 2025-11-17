@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertCircle, Clock, UserPlus, CheckCircle } from 'lucide-react';
+import { AlertCircle, Clock, UserPlus, CheckCircle2, AlertTriangle, Info } from 'lucide-react';
 import { LenaAlert } from '@/types/lenaAI';
 import { lenaAiService } from '@/services/lenaAiService';
 import { useToast } from '@/hooks/use-toast';
@@ -33,12 +33,21 @@ const LenaAlertsTab = () => {
     }
   };
 
+  const getSeverityIcon = (severity: LenaAlert['severity']) => {
+    switch (severity) {
+      case 'critical': return <AlertCircle className="w-4 h-4" />;
+      case 'high': return <AlertTriangle className="w-4 h-4" />;
+      case 'medium': return <AlertCircle className="w-4 h-4" />;
+      case 'low': return <Info className="w-4 h-4" />;
+    }
+  };
+
   const getSeverityColor = (severity: LenaAlert['severity']) => {
     switch (severity) {
-      case 'critical': return 'bg-destructive text-destructive-foreground';
-      case 'high': return 'bg-warning text-warning-foreground';
-      case 'medium': return 'bg-primary text-primary-foreground';
-      case 'low': return 'bg-muted text-muted-foreground';
+      case 'critical': return 'bg-destructive/10 text-destructive border-destructive/20';
+      case 'high': return 'bg-warning/10 text-warning border-warning/20';
+      case 'medium': return 'bg-primary/10 text-primary border-primary/20';
+      case 'low': return 'bg-muted text-muted-foreground border-border';
     }
   };
 
@@ -66,7 +75,6 @@ const LenaAlertsTab = () => {
     if (alert.prescriptiveAction) {
       setSelectedAlert(alert);
     } else {
-      // Direct resolve without runbook
       resolveAlert(alert.id);
     }
   };
@@ -92,90 +100,104 @@ const LenaAlertsTab = () => {
   return (
     <>
       <div className="flex flex-col h-full">
-        {/* Filters */}
-        <div className="px-4 py-3 border-b border-border">
+        {/* Filter Section */}
+        <div className="px-4 py-3 border-b border-border bg-card/50">
           <Select value={severityFilter} onValueChange={setSeverityFilter}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full bg-background">
               <SelectValue placeholder="Filter by severity" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-background z-50">
               <SelectItem value="all">All Severities</SelectItem>
-              <SelectItem value="critical">Critical</SelectItem>
-              <SelectItem value="high">High</SelectItem>
-              <SelectItem value="medium">Medium</SelectItem>
-              <SelectItem value="low">Low</SelectItem>
+              <SelectItem value="critical">Critical Only</SelectItem>
+              <SelectItem value="high">High Priority</SelectItem>
+              <SelectItem value="medium">Medium Priority</SelectItem>
+              <SelectItem value="low">Low Priority</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         {/* Alerts List */}
         <ScrollArea className="flex-1">
-          <div className="p-3 space-y-3">
-            {alerts.length === 0 ? (
-              <div className="text-center py-8">
-                <CheckCircle className="w-12 h-12 mx-auto text-success mb-2" />
-                <p className="text-sm text-muted-foreground">No alerts found</p>
-              </div>
-            ) : (
-              alerts.map(alert => (
+          {alerts.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 px-4">
+              <CheckCircle2 className="w-16 h-16 text-success mb-3 opacity-50" />
+              <h3 className="font-medium text-foreground mb-1">All clear!</h3>
+              <p className="text-sm text-muted-foreground text-center">
+                No alerts found for the selected filter
+              </p>
+            </div>
+          ) : (
+            <div className="p-4 space-y-3">
+              {alerts.map(alert => (
                 <div
                   key={alert.id}
-                  className="p-3 border border-border rounded-lg space-y-3 hover:border-primary/50 transition-colors"
+                  className="bg-card border border-border rounded-lg p-4 space-y-3 hover:border-primary/40 transition-all hover:shadow-sm"
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-2">
-                      <AlertCircle className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
+                  {/* Alert Header */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                      <div className={`p-2 rounded-md ${getSeverityColor(alert.severity)}`}>
+                        {getSeverityIcon(alert.severity)}
+                      </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-sm">{alert.title}</h4>
-                        <p className="text-xs text-muted-foreground mt-1">{alert.description}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {alert.affectedResource}
+                        <h4 className="font-semibold text-sm text-foreground mb-1 leading-tight">
+                          {alert.title}
+                        </h4>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          {alert.description}
                         </p>
                       </div>
                     </div>
-                    <Badge className={getSeverityColor(alert.severity)}>
+                    <Badge className={`${getSeverityColor(alert.severity)} shrink-0 capitalize`}>
                       {alert.severity}
                     </Badge>
                   </div>
 
+                  {/* Resource Info */}
+                  <div className="text-xs text-muted-foreground bg-muted/30 px-3 py-2 rounded border border-border/50">
+                    <span className="font-medium">Resource:</span> {alert.affectedResource}
+                  </div>
+
+                  {/* Suggested Fix */}
                   {alert.suggestedFix && (
-                    <div className="text-xs bg-muted/50 p-2 rounded">
-                      <span className="font-medium">Suggested: </span>
-                      {alert.suggestedFix}
+                    <div className="text-xs bg-primary/5 border border-primary/10 px-3 py-2 rounded">
+                      <span className="font-semibold text-primary">Suggested Fix:</span>
+                      <span className="text-muted-foreground ml-1">{alert.suggestedFix}</span>
                     </div>
                   )}
 
-                  <div className="flex gap-2">
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 pt-1">
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() => handleAssign(alert.id)}
-                      className="flex-1"
+                      className="flex-1 text-xs"
                     >
-                      <UserPlus className="w-3 h-3 mr-1" />
+                      <UserPlus className="w-3 h-3 mr-1.5" />
                       Assign
                     </Button>
                     <Button
                       size="sm"
-                      variant="ghost"
+                      variant="outline"
                       onClick={() => handleSnooze(alert.id)}
-                      className="flex-1"
+                      className="flex-1 text-xs"
                     >
-                      <Clock className="w-3 h-3 mr-1" />
+                      <Clock className="w-3 h-3 mr-1.5" />
                       Snooze
                     </Button>
                     <Button
                       size="sm"
                       onClick={() => handleResolve(alert)}
-                      className="flex-1"
+                      className="flex-1 text-xs"
                     >
                       {alert.prescriptiveAction ? 'Resolve' : 'Mark Done'}
                     </Button>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </ScrollArea>
       </div>
 
