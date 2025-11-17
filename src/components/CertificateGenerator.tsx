@@ -53,10 +53,10 @@ const CertificateGenerator = ({ certificates, onGenerateNew }: CertificateGenera
     doc.setTextColor(255, 255, 255);
     doc.text('Certificate of Completion', 148.5, 17, { align: 'center' });
 
-    // Logo placeholder (XClarity One)
+    // Logo placeholder (TruScale)
     doc.setFontSize(16);
     doc.setTextColor(220, 38, 38);
-    doc.text('XClarity One', 148.5, 45, { align: 'center' });
+    doc.text('TruScale', 148.5, 45, { align: 'center' });
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
     doc.text('Learning Hub', 148.5, 52, { align: 'center' });
@@ -253,7 +253,7 @@ const CertificateGenerator = ({ certificates, onGenerateNew }: CertificateGenera
                   </div>
 
                   <div className="space-y-2">
-                    <h3 className="text-xl font-semibold text-red-600">XClarity One</h3>
+                    <h3 className="text-xl font-semibold text-red-600">TruScale</h3>
                     <p className="text-sm text-gray-600">Learning Hub</p>
                   </div>
 

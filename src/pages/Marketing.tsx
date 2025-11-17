@@ -128,7 +128,7 @@ const Marketing = () => {
               </div>
             </div>
             <Button onClick={() => navigate('/')} size="lg" className="gap-2">
-              Launch XClarity One 2.0
+              Launch TruScale 2.0
               <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
@@ -158,7 +158,7 @@ const Marketing = () => {
 
             <div className="flex gap-4 justify-center mb-12">
               <Button onClick={() => navigate('/')} size="lg" className="gap-2">
-                Get Started with XClarity One 2.0
+                Get Started with TruScale 2.0
                 <ArrowRight className="w-4 h-4" />
               </Button>
               <Button onClick={() => navigate('/')} variant="outline" size="lg">
@@ -325,7 +325,7 @@ const Marketing = () => {
           <div className="max-w-3xl mx-auto text-center">
             <Badge className="mb-6">Ready to Get Started?</Badge>
             <h2 className="text-4xl font-bold mb-6">
-              Experience XClarity One 2.0 Today
+              Experience TruScale 2.0 Today
             </h2>
             <p className="text-lg text-muted-foreground mb-8">
               Join hundreds of organizations transforming their cloud operations with Lenovo's 
@@ -355,7 +355,7 @@ const Marketing = () => {
             <div>
               <h3 className="font-semibold mb-4">Platform</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">XClarity One 2.0</button></li>
+                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">TruScale 2.0</button></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Features</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Pricing</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Documentation</a></li>

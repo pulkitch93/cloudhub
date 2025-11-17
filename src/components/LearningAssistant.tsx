@@ -40,7 +40,7 @@ const LearningAssistant = ({ mode = "teach" }: LearningAssistantProps) => {
       const lowerInput = userMessage.toLowerCase();
       
       if (lowerInput.includes("vmware") || lowerInput.includes("aria")) {
-        response = "To integrate VMware Aria with XClarity One, you'll need to:\n\n1. Configure API credentials in the Integrations page\n2. Set up data collection intervals\n3. Map your VMware resources to XClarity entities\n\nI recommend starting with the 'VMware Aria Integration Fundamentals' course. Would you like me to open it for you?";
+        response = "To integrate VMware Aria with TruScale, you'll need to:\n\n1. Configure API credentials in the Integrations page\n2. Set up data collection intervals\n3. Map your VMware resources to TruScale entities\n\nI recommend starting with the 'VMware Aria Integration Fundamentals' course. Would you like me to open it for you?";
       } else if (lowerInput.includes("truscale") || lowerInput.includes("billing")) {
         response = "TruScale billing optimization involves:\n\n• Understanding usage patterns\n• Setting up cost allocation rules\n• Configuring automated alerts\n• Right-sizing resources\n\nThe 'TruScale Billing Optimization' course covers all these topics. I can also show you the FinOps dashboard where you can practice these concepts.";
       } else if (lowerInput.includes("certificate") || lowerInput.includes("certification")) {

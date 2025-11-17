@@ -116,13 +116,13 @@ export default function ClientView() {
 
         <Card>
           <CardHeader>
-            <CardTitle>XClarity One Dashboard</CardTitle>
+            <CardTitle>TruScale Dashboard</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[400px] flex items-center justify-center border-2 border-dashed border-border rounded-lg">
               <div className="text-center space-y-2">
                 <p className="text-muted-foreground">
-                  Customer's live XClarity One 2.0 view would be embedded here
+                  Customer's live TruScale 2.0 view would be embedded here
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Current Mode: <span className="font-semibold text-red-500">
