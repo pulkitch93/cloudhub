@@ -13,25 +13,16 @@ const Header = () => {
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded flex items-center justify-center">
+            <button
+              onClick={() => navigate('/marketing')}
+              className="w-10 h-10 bg-primary rounded flex items-center justify-center hover:bg-primary/90 transition-colors cursor-pointer"
+              title="Visit Marketing Page"
+            >
               <Cloud className="w-6 h-6 text-primary-foreground" />
-            </div>
-            <div className="flex items-center gap-2">
-              <div>
-                <h1 className="text-xl font-bold text-foreground">TruScale 2.0</h1>
-                <p className="text-xs text-muted-foreground">Intelligent Hybrid Cloud Platform</p>
-              </div>
-              <button
-                onClick={() => navigate('/marketing')}
-                className="w-8 h-8 rounded hover:bg-muted/50 transition-colors flex items-center justify-center group"
-                title="View Marketing Page"
-              >
-                <img 
-                  src={lenovoCloudIcon} 
-                  alt="Lenovo Cloud" 
-                  className="w-6 h-6 opacity-80 group-hover:opacity-100 transition-opacity"
-                />
-              </button>
+            </button>
+            <div>
+              <h1 className="text-xl font-bold text-foreground">TruScale 2.0</h1>
+              <p className="text-xs text-muted-foreground">Intelligent Hybrid Cloud Platform</p>
             </div>
           </div>
           
