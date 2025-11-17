@@ -82,7 +82,7 @@ const XClarityConflictResolution = () => {
       serverId: 'srv-45',
       serverName: 'Load-Balancer-02',
       issue: 'Missing XClarity Mapping',
-      details: 'Server exists in Digital Twin but not found in XClarity inventory',
+      details: 'Server exists in AIOps but not found in XClarity inventory',
       suggestion: 'Verify server ID or manually map to XClarity device'
     },
     {
@@ -140,7 +140,7 @@ const XClarityConflictResolution = () => {
     setConflicts(conflicts.filter(c => !c.autoResolvable));
     
     toast.success('Auto-resolution complete', {
-      description: `Resolved ${autoResolvableConflicts.length} conflicts using ${resolutionStrategy === 'xclarity' ? 'XClarity' : 'Digital Twin'} as source of truth`
+      description: `Resolved ${autoResolvableConflicts.length} conflicts using ${resolutionStrategy === 'xclarity' ? 'XClarity' : 'AIOps'} as source of truth`
     });
   };
 
@@ -158,7 +158,7 @@ const XClarityConflictResolution = () => {
           Data Validation & Conflict Resolution
         </CardTitle>
         <CardDescription>
-          Manage inventory data conflicts and validation errors between XClarity and Digital Twin
+          Manage inventory data conflicts and validation errors between XClarity and AIOps
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -185,7 +185,7 @@ const XClarityConflictResolution = () => {
                   </SelectTrigger>
                   <SelectContent className="bg-popover border-border z-50">
                     <SelectItem value="xclarity">Prefer XClarity Data</SelectItem>
-                    <SelectItem value="digital-twin">Prefer Digital Twin Data</SelectItem>
+                    <SelectItem value="digital-twin">Prefer AIOps Data</SelectItem>
                     <SelectItem value="manual">Manual Review Only</SelectItem>
                   </SelectContent>
                 </Select>
@@ -242,7 +242,7 @@ const XClarityConflictResolution = () => {
                       <div className="p-3 rounded-lg bg-secondary/10 border border-border">
                         <div className="flex items-center gap-2 mb-1">
                           <div className="w-2 h-2 rounded-full bg-secondary"></div>
-                          <span className="text-xs font-semibold text-muted-foreground">Digital Twin Value</span>
+                          <span className="text-xs font-semibold text-muted-foreground">AIOps Value</span>
                         </div>
                         <div className="text-sm font-mono text-foreground">{conflict.digitalTwinValue}</div>
                       </div>
@@ -265,7 +265,7 @@ const XClarityConflictResolution = () => {
                       className="flex-1"
                     >
                       <CheckCircle2 className="h-3 w-3 mr-1" />
-                      Use Digital Twin
+                      Use AIOps
                     </Button>
                     <Button 
                       size="sm" 

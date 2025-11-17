@@ -11,7 +11,7 @@ import Integrations from "./pages/Integrations";
 import AIModels from "./pages/AIModels";
 import FinOps from "./pages/FinOps";
 import GreenOps from "./pages/GreenOps";
-import DigitalTwin from "./pages/DigitalTwin";
+import AIOps from "./pages/AIOps";
 import Compliance from "./pages/Compliance";
 import Marketplace from "./pages/Marketplace";
 import PartnerAnalytics from "./pages/PartnerAnalytics";
@@ -41,7 +41,8 @@ const App = () => (
           <Route path="/old-dashboard" element={<Index />} />
           <Route path="/finops" element={<FinOps />} />
           <Route path="/greenops" element={<GreenOps />} />
-          <Route path="/digital-twin" element={<DigitalTwin />} />
+          <Route path="/aiops" element={<AIOps />} />
+          <Route path="/digital-twin" element={<AIOps />} />
           <Route path="/integrations" element={<Integrations />} />
           <Route path="/ai-models" element={<AIModels />} />
           <Route path="/compliance" element={<Compliance />} />

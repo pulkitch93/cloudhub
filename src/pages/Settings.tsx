@@ -67,7 +67,7 @@ const Settings = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Appearance</CardTitle>
-                <CardDescription>Customize how TruScale looks for you</CardDescription>
+                <CardDescription>Customize how TruScale AIOps looks for you</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">

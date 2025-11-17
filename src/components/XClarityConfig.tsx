@@ -252,7 +252,7 @@ const XClarityConfig = ({ open, onOpenChange }: XClarityConfigProps) => {
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">Inventory Synchronization</CardTitle>
-                <CardDescription>Configure how XClarity inventory data syncs to the Digital Twin</CardDescription>
+                <CardDescription>Configure how XClarity inventory data syncs to AIOps</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between">
@@ -359,7 +359,7 @@ const XClarityConfig = ({ open, onOpenChange }: XClarityConfigProps) => {
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-base">Custom Metric Mapping</CardTitle>
-                    <CardDescription>Map XClarity telemetry fields to Digital Twin metrics</CardDescription>
+                    <CardDescription>Map XClarity telemetry fields to AIOps metrics</CardDescription>
                   </div>
                   <Button onClick={handleAddMapping} size="sm">
                     <Plus className="h-4 w-4 mr-1" />

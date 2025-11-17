@@ -68,8 +68,8 @@ const Marketing = () => {
     },
     {
       icon: Settings,
-      title: 'Digital Twin Technology',
-      description: '3D infrastructure visualization and predictive maintenance with AR support',
+      title: 'AIOps Technology',
+      description: 'AI-powered operations with global infrastructure visualization and predictive maintenance',
       badge: 'Innovation',
     },
     {
@@ -367,7 +367,7 @@ const Marketing = () => {
                 <li><a href="#" className="hover:text-foreground transition-colors">FinOps</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">GreenOps</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Edge Computing</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Digital Twin</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">AIOps</a></li>
               </ul>
             </div>
             <div>
