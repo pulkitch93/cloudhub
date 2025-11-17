@@ -400,6 +400,21 @@ const Marketing = () => {
               <a href="#" className="hover:text-foreground transition-colors">Security</a>
             </div>
           </div>
+          
+          <div className="pt-4 text-center">
+            <p className="text-xs text-muted-foreground">
+              Designed and developed by{' '}
+              <a 
+                href="https://www.linkedin.com/in/pulkit-chaudhary/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:underline font-medium"
+              >
+                Pulkit Chaudhary
+              </a>
+              {' '}for Lenovo Hybrid Cloud.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
