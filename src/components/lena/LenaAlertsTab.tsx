@@ -93,7 +93,7 @@ const LenaAlertsTab = () => {
     <>
       <div className="flex flex-col h-full">
         {/* Filters */}
-        <div className="px-4 pt-2 pb-2 border-b border-border">
+        <div className="px-4 py-3 border-b border-border">
           <Select value={severityFilter} onValueChange={setSeverityFilter}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Filter by severity" />
