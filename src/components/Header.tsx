@@ -1,4 +1,4 @@
-import { Activity, Cloud, Leaf, DollarSign, GitBranch, Box, Shield, ShoppingCart, Radio, ExternalLink } from "lucide-react";
+import { Activity, Cloud, Leaf, DollarSign, GitBranch, Brain, Shield, ShoppingCart, Radio, ExternalLink } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import UserProfileMenu from "@/components/UserProfileMenu";
 import lenovoCloudIcon from "@/assets/lenovo-cloud-icon.png";
@@ -65,13 +65,13 @@ const Header = () => {
                 GreenOps
               </a>
               <a 
-                href="/digital-twin" 
+                href="/aiops" 
                 className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-                  isActive('/digital-twin') ? 'text-primary' : 'text-foreground hover:text-primary'
+                  isActive('/aiops') ? 'text-primary' : 'text-foreground hover:text-primary'
                 }`}
               >
-                <Box className="w-4 h-4" />
-                Digital Twin
+                <Brain className="w-4 h-4" />
+                AIOps
               </a>
               <a 
                 href="/integrations" 

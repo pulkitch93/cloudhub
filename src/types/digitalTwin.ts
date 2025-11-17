@@ -2,6 +2,7 @@ export interface Server {
   id: string;
   name: string;
   rack: string;
+  location: string;
   position: { x: number; y: number; z: number };
   status: 'healthy' | 'warning' | 'critical' | 'maintenance';
   telemetry: {
@@ -76,6 +77,7 @@ export const mockServers: Server[] = [
     id: 'srv-001',
     name: 'WEB-PROD-01',
     rack: 'rack-1',
+    location: 'US-East',
     position: { x: -3, y: 1.5, z: -2 },
     status: 'healthy',
     telemetry: {
@@ -91,6 +93,7 @@ export const mockServers: Server[] = [
     id: 'srv-002',
     name: 'DB-PROD-01',
     rack: 'rack-1',
+    location: 'US-East',
     position: { x: -3, y: 0.5, z: -2 },
     status: 'warning',
     telemetry: {
@@ -106,6 +109,7 @@ export const mockServers: Server[] = [
     id: 'srv-003',
     name: 'APP-PROD-01',
     rack: 'rack-2',
+    location: 'US-West',
     position: { x: 0, y: 1.5, z: -2 },
     status: 'healthy',
     telemetry: {
@@ -121,6 +125,7 @@ export const mockServers: Server[] = [
     id: 'srv-004',
     name: 'ML-PROD-01',
     rack: 'rack-2',
+    location: 'EU-Central',
     position: { x: 0, y: 0.5, z: -2 },
     status: 'healthy',
     telemetry: {
@@ -136,6 +141,7 @@ export const mockServers: Server[] = [
     id: 'srv-005',
     name: 'BACKUP-01',
     rack: 'rack-3',
+    location: 'AP-Southeast',
     position: { x: 3, y: 1.5, z: -2 },
     status: 'maintenance',
     telemetry: {
@@ -151,6 +157,7 @@ export const mockServers: Server[] = [
     id: 'srv-006',
     name: 'STORAGE-01',
     rack: 'rack-3',
+    location: 'UK-South',
     position: { x: 3, y: 0.5, z: -2 },
     status: 'critical',
     telemetry: {
