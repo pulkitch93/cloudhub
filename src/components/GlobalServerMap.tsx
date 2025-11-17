@@ -73,55 +73,62 @@ const GlobalServerMap = ({ servers, onServerSelect }: GlobalServerMapProps) => {
     markersRef.current.forEach(marker => marker.remove());
     markersRef.current = [];
 
-    // Group servers by location
-    const serversByLocation: Record<string, Server[]> = {};
+    // Create individual markers for each server with slight offset for same location
+    const locationOffsets: Record<string, number> = {};
+    
     servers.forEach(server => {
       const location = server.location || 'US-East';
-      if (!serversByLocation[location]) {
-        serversByLocation[location] = [];
-      }
-      serversByLocation[location].push(server);
-    });
-
-    // Create markers for each location
-    Object.entries(serversByLocation).forEach(([location, locationServers]) => {
       const coords = serverLocations[location] || serverLocations['US-East'];
       
-      const healthyCount = locationServers.filter(s => s.status === 'healthy').length;
-      const warningCount = locationServers.filter(s => s.status === 'warning').length;
-      const criticalCount = locationServers.filter(s => s.status === 'critical').length;
+      // Calculate offset for servers in same location
+      if (!locationOffsets[location]) {
+        locationOffsets[location] = 0;
+      }
+      const offsetIndex = locationOffsets[location];
+      locationOffsets[location]++;
+      
+      // Apply small random offset to prevent exact overlap
+      const offsetLat = coords.lat + (Math.random() - 0.5) * 0.3 + (offsetIndex * 0.1);
+      const offsetLng = coords.lng + (Math.random() - 0.5) * 0.3 + (offsetIndex * 0.1);
 
+      // Determine status color
+      const statusColor = 
+        server.status === 'critical' ? '#ef4444' :
+        server.status === 'warning' ? '#f59e0b' :
+        server.status === 'maintenance' ? '#94a3b8' :
+        '#10b981';
+      
       // Create custom marker element
       const el = document.createElement('div');
       el.className = 'custom-marker';
-      el.style.width = '40px';
-      el.style.height = '40px';
+      el.style.width = '32px';
+      el.style.height = '32px';
       el.style.cursor = 'pointer';
-      
-      const statusColor = criticalCount > 0 ? '#ef4444' : warningCount > 0 ? '#f59e0b' : '#10b981';
       
       el.innerHTML = `
         <div style="
           width: 100%;
           height: 100%;
           background: ${statusColor};
-          border: 3px solid rgba(255, 255, 255, 0.3);
+          border: 2px solid rgba(255, 255, 255, 0.4);
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-weight: bold;
-          font-size: 14px;
-          color: white;
-          box-shadow: 0 0 20px ${statusColor}80;
-          transition: transform 0.2s;
+          box-shadow: 0 0 15px ${statusColor}80;
+          transition: all 0.2s;
         ">
-          ${locationServers.length}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+            <line x1="6" y1="6" x2="6.01" y2="6"></line>
+            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+          </svg>
         </div>
       `;
 
       el.addEventListener('mouseenter', () => {
-        el.style.transform = 'scale(1.2)';
+        el.style.transform = 'scale(1.3)';
       });
 
       el.addEventListener('mouseleave', () => {
@@ -132,49 +139,46 @@ const GlobalServerMap = ({ servers, onServerSelect }: GlobalServerMapProps) => {
       const popupContent = document.createElement('div');
       popupContent.style.padding = '8px';
       popupContent.innerHTML = `
-        <div style="min-width: 200px;">
-          <h3 style="font-weight: bold; font-size: 16px; margin-bottom: 8px; color: #f1f5f9;">${coords.city}</h3>
-          <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">${coords.region}</p>
-          <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="min-width: 220px;">
+          <h3 style="font-weight: bold; font-size: 15px; margin-bottom: 4px; color: #f1f5f9;">${server.name}</h3>
+          <p style="font-size: 11px; color: #94a3b8; margin-bottom: 8px;">${coords.city}, ${coords.region}</p>
+          <div style="display: flex; flex-direction: column; gap: 4px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-size: 13px; color: #cbd5e1;">Total Servers:</span>
-              <span style="font-weight: bold; color: #f1f5f9;">${locationServers.length}</span>
+              <span style="font-size: 12px; color: #cbd5e1;">Status:</span>
+              <span style="font-weight: bold; color: ${statusColor}; text-transform: capitalize;">${server.status}</span>
             </div>
-            ${healthyCount > 0 ? `
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 13px; color: #10b981;">Healthy:</span>
-                <span style="font-weight: bold; color: #10b981;">${healthyCount}</span>
-              </div>
-            ` : ''}
-            ${warningCount > 0 ? `
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 13px; color: #f59e0b;">Warning:</span>
-                <span style="font-weight: bold; color: #f59e0b;">${warningCount}</span>
-              </div>
-            ` : ''}
-            ${criticalCount > 0 ? `
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 13px; color: #ef4444;">Critical:</span>
-                <span style="font-weight: bold; color: #ef4444;">${criticalCount}</span>
-              </div>
-            ` : ''}
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 12px; color: #cbd5e1;">CPU:</span>
+              <span style="font-weight: bold; color: #f1f5f9;">${server.telemetry.cpu}%</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 12px; color: #cbd5e1;">Memory:</span>
+              <span style="font-weight: bold; color: #f1f5f9;">${server.telemetry.memory}%</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 12px; color: #cbd5e1;">Temp:</span>
+              <span style="font-weight: bold; color: #f1f5f9;">${server.telemetry.temperature}°C</span>
+            </div>
+          </div>
+          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #334155;">
+            <p style="font-size: 11px; color: #64748b; text-align: center;">Click for detailed telemetry</p>
           </div>
         </div>
       `;
 
       const popup = new mapboxgl.Popup({ 
-        offset: 25,
+        offset: 20,
         className: 'custom-popup'
       }).setDOMContent(popupContent);
 
       const marker = new mapboxgl.Marker(el)
-        .setLngLat([coords.lng, coords.lat])
+        .setLngLat([offsetLng, offsetLat])
         .setPopup(popup)
         .addTo(map.current!);
 
       el.addEventListener('click', () => {
-        if (onServerSelect && locationServers.length > 0) {
-          onServerSelect(locationServers[0]);
+        if (onServerSelect) {
+          onServerSelect(server);
         }
       });
 
