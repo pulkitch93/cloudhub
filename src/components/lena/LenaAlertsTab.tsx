@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertCircle, Clock, CheckCircle2, Zap, Filter } from 'lucide-react';
+import { AlertCircle, Clock, CheckCircle2, Zap, ChevronDown } from 'lucide-react';
 import { LenaAlert } from '@/types/lenaAI';
 import { lenaAiService } from '@/services/lenaAiService';
 import { useToast } from '@/hooks/use-toast';
@@ -37,31 +37,31 @@ const LenaAlertsTab = () => {
     switch (severity) {
       case 'critical':
         return {
-          bg: 'bg-destructive/5',
-          border: 'border-l-destructive',
-          badge: 'bg-destructive text-destructive-foreground',
-          icon: 'text-destructive',
+          container: 'bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent',
+          border: 'border-red-500/30',
+          badge: 'bg-red-500 text-white',
+          dot: 'bg-red-500',
         };
       case 'high':
         return {
-          bg: 'bg-orange-500/5',
-          border: 'border-l-orange-500',
+          container: 'bg-gradient-to-br from-orange-500/10 via-orange-500/5 to-transparent',
+          border: 'border-orange-500/30',
           badge: 'bg-orange-500 text-white',
-          icon: 'text-orange-500',
+          dot: 'bg-orange-500',
         };
       case 'medium':
         return {
-          bg: 'bg-yellow-500/5',
-          border: 'border-l-yellow-500',
+          container: 'bg-gradient-to-br from-yellow-500/10 via-yellow-500/5 to-transparent',
+          border: 'border-yellow-500/30',
           badge: 'bg-yellow-500 text-white',
-          icon: 'text-yellow-500',
+          dot: 'bg-yellow-500',
         };
       case 'low':
         return {
-          bg: 'bg-blue-500/5',
-          border: 'border-l-blue-500',
+          container: 'bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent',
+          border: 'border-blue-500/30',
           badge: 'bg-blue-500 text-white',
-          icon: 'text-blue-500',
+          dot: 'bg-blue-500',
         };
     }
   };
@@ -78,15 +78,14 @@ const LenaAlertsTab = () => {
     try {
       await lenaAiService.resolveAlert(alertId);
       toast({ 
-        title: '✓ Alert resolved', 
-        description: 'Successfully marked as resolved',
-        className: 'bg-success/10 border-success/20'
+        title: 'Resolved', 
+        description: 'Alert marked as resolved',
       });
       fetchAlerts();
     } catch (error) {
       toast({ 
         title: 'Error', 
-        description: 'Failed to resolve alert', 
+        description: 'Failed to resolve', 
         variant: 'destructive' 
       });
     }
@@ -96,14 +95,14 @@ const LenaAlertsTab = () => {
     try {
       await lenaAiService.snoozeAlert(alertId, 60);
       toast({ 
-        title: 'Alert snoozed', 
-        description: 'Will remind you in 1 hour' 
+        title: 'Snoozed', 
+        description: 'Remind in 1 hour' 
       });
       fetchAlerts();
     } catch (error) {
       toast({ 
         title: 'Error', 
-        description: 'Failed to snooze alert', 
+        description: 'Failed to snooze', 
         variant: 'destructive' 
       });
     }
@@ -112,9 +111,9 @@ const LenaAlertsTab = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-          <p className="text-sm text-muted-foreground">Loading alerts...</p>
+        <div className="flex flex-col items-center gap-2">
+          <div className="w-6 h-6 border-3 border-primary/30 border-t-primary rounded-full animate-spin" />
+          <p className="text-xs text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
@@ -130,135 +129,96 @@ const LenaAlertsTab = () => {
   return (
     <>
       <div className="flex flex-col h-full">
-        {/* Stats Header */}
-        <div className="px-4 py-3 bg-gradient-to-r from-muted/50 to-muted/20 border-b border-border">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-              <AlertCircle className="w-4 h-4" />
-              Active Alerts
-            </h3>
-            <span className="text-xs text-muted-foreground">
-              {alerts.length} total
-            </span>
-          </div>
-          <div className="flex gap-2">
-            {alertCounts.critical > 0 && (
-              <Badge variant="destructive" className="text-xs px-2 py-0.5">
-                {alertCounts.critical} Critical
-              </Badge>
-            )}
-            {alertCounts.high > 0 && (
-              <Badge className="text-xs px-2 py-0.5 bg-orange-500 text-white">
-                {alertCounts.high} High
-              </Badge>
-            )}
-            {alertCounts.medium > 0 && (
-              <Badge className="text-xs px-2 py-0.5 bg-yellow-500 text-white">
-                {alertCounts.medium} Medium
-              </Badge>
-            )}
-          </div>
-        </div>
-
-        {/* Filter */}
-        <div className="px-4 py-2 border-b border-border/50">
-          <Select value={severityFilter} onValueChange={setSeverityFilter}>
-            <SelectTrigger className="h-8 text-xs bg-background border-border/50">
-              <Filter className="w-3 h-3 mr-1" />
-              <SelectValue placeholder="Filter" />
-            </SelectTrigger>
-            <SelectContent className="bg-background z-50">
-              <SelectItem value="all" className="text-xs">All Severities</SelectItem>
-              <SelectItem value="critical" className="text-xs">Critical Only</SelectItem>
-              <SelectItem value="high" className="text-xs">High Priority</SelectItem>
-              <SelectItem value="medium" className="text-xs">Medium Priority</SelectItem>
-              <SelectItem value="low" className="text-xs">Low Priority</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Alerts List */}
+        {/* Alerts List - Information First */}
         <ScrollArea className="flex-1">
           {alerts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 px-4">
-              <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mb-3">
-                <CheckCircle2 className="w-8 h-8 text-success" />
+            <div className="flex flex-col items-center justify-center py-16 px-4">
+              <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center mb-2">
+                <CheckCircle2 className="w-6 h-6 text-emerald-500" />
               </div>
-              <h3 className="font-semibold text-sm text-foreground mb-1">All Clear!</h3>
-              <p className="text-xs text-muted-foreground text-center">
-                No active alerts at this time
-              </p>
+              <p className="text-sm font-medium text-foreground">No Active Alerts</p>
+              <p className="text-xs text-muted-foreground">System is running smoothly</p>
             </div>
           ) : (
-            <div className="p-3 space-y-2">
+            <div className="p-2.5 space-y-2.5">
               {alerts.map((alert, index) => {
                 const styles = getSeverityStyles(alert.severity);
                 return (
                   <div
                     key={alert.id}
-                    className={`${styles.bg} ${styles.border} border-l-4 border border-border/50 rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 animate-in slide-in-from-top-2`}
-                    style={{ animationDelay: `${index * 50}ms` }}
+                    className={`${styles.container} ${styles.border} border-2 rounded-xl p-3.5 space-y-2.5 hover:shadow-lg transition-all duration-300`}
+                    style={{ 
+                      animationDelay: `${index * 80}ms`,
+                      animation: 'slideInFromRight 0.4s ease-out forwards'
+                    }}
                   >
-                    {/* Alert Header */}
-                    <div className="p-3 space-y-2">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <AlertCircle className={`w-3.5 h-3.5 ${styles.icon} shrink-0`} />
-                            <h4 className="font-semibold text-xs text-foreground leading-tight">
-                              {alert.title}
-                            </h4>
-                          </div>
-                          <p className="text-xs text-muted-foreground/80 leading-relaxed">
-                            {alert.description}
-                          </p>
-                        </div>
-                        <Badge className={`${styles.badge} text-xs px-2 py-0.5 shrink-0 capitalize font-medium`}>
-                          {alert.severity}
-                        </Badge>
+                    {/* Title Row */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-start gap-2 flex-1">
+                        <div className={`w-2 h-2 rounded-full ${styles.dot} mt-1.5 shrink-0 animate-pulse`} />
+                        <h3 className="font-bold text-sm text-foreground leading-snug">
+                          {alert.title}
+                        </h3>
                       </div>
+                      <Badge className={`${styles.badge} text-xs px-2.5 py-0.5 font-semibold uppercase tracking-wide shrink-0`}>
+                        {alert.severity}
+                      </Badge>
+                    </div>
 
-                      {/* Resource */}
-                      <div className="flex items-start gap-1.5 text-xs">
-                        <span className="text-muted-foreground/60 shrink-0">Resource:</span>
-                        <span className="text-foreground/80 font-mono text-xs">
-                          {alert.affectedResource}
+                    {/* Description */}
+                    <p className="text-xs text-muted-foreground leading-relaxed pl-4">
+                      {alert.description}
+                    </p>
+
+                    {/* Tenant/Resource Info */}
+                    <div className="bg-black/5 dark:bg-white/5 rounded-lg px-3 py-2 space-y-1">
+                      <div className="text-xs">
+                        <span className="text-muted-foreground/70 font-medium">Tenant:</span>{' '}
+                        <span className="text-foreground font-semibold">
+                          {alert.affectedResource.split(':')[1] || 'FinanceCorp'}
                         </span>
                       </div>
+                      <div className="text-xs font-mono text-muted-foreground/60">
+                        {alert.affectedResource}
+                      </div>
+                    </div>
 
-                      {/* Suggested Fix */}
-                      {alert.suggestedFix && (
-                        <div className="flex items-start gap-2 bg-primary/5 border border-primary/10 rounded px-2.5 py-2">
-                          <Zap className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
-                          <div className="flex-1">
-                            <p className="text-xs font-medium text-primary mb-0.5">Suggested Fix</p>
-                            <p className="text-xs text-muted-foreground/80 leading-relaxed">
+                    {/* Suggested Fix Box */}
+                    {alert.suggestedFix && (
+                      <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-lg p-3">
+                        <div className="flex items-start gap-2">
+                          <Zap className="w-4 h-4 text-cyan-500 shrink-0 mt-0.5" />
+                          <div className="flex-1 space-y-1">
+                            <p className="text-xs font-bold text-cyan-600 dark:text-cyan-400">
+                              Suggested Fix
+                            </p>
+                            <p className="text-xs text-foreground/90 leading-relaxed">
                               {alert.suggestedFix}
                             </p>
                           </div>
                         </div>
-                      )}
-
-                      {/* Action Buttons */}
-                      <div className="flex gap-1.5 pt-1">
-                        <Button
-                          size="sm"
-                          onClick={() => handleResolve(alert)}
-                          className="flex-1 h-7 text-xs font-medium"
-                        >
-                          <CheckCircle2 className="w-3 h-3 mr-1" />
-                          {alert.prescriptiveAction ? 'Resolve' : 'Mark Done'}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleSnooze(alert.id)}
-                          className="h-7 text-xs px-3"
-                        >
-                          <Clock className="w-3 h-3 mr-1" />
-                          Snooze
-                        </Button>
                       </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 pt-1">
+                      <Button
+                        size="sm"
+                        onClick={() => handleResolve(alert)}
+                        className="flex-1 h-8 text-xs font-semibold shadow-sm"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+                        {alert.prescriptiveAction ? 'Resolve' : 'Done'}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleSnooze(alert.id)}
+                        className="h-8 px-4 text-xs font-medium"
+                      >
+                        <Clock className="w-3.5 h-3.5 mr-1.5" />
+                        Snooze
+                      </Button>
                     </div>
                   </div>
                 );
@@ -266,6 +226,63 @@ const LenaAlertsTab = () => {
             </div>
           )}
         </ScrollArea>
+
+        {/* Filters & Stats Footer - At Bottom */}
+        <div className="border-t border-border bg-gradient-to-b from-muted/30 to-muted/60">
+          {/* Quick Stats */}
+          <div className="px-3 py-2.5 flex items-center justify-between">
+            <div className="flex gap-1.5">
+              {alertCounts.critical > 0 && (
+                <div className="flex items-center gap-1 bg-red-500/10 px-2 py-1 rounded-md">
+                  <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                  <span className="text-xs font-bold text-red-600 dark:text-red-400">
+                    {alertCounts.critical}
+                  </span>
+                </div>
+              )}
+              {alertCounts.high > 0 && (
+                <div className="flex items-center gap-1 bg-orange-500/10 px-2 py-1 rounded-md">
+                  <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+                  <span className="text-xs font-bold text-orange-600 dark:text-orange-400">
+                    {alertCounts.high}
+                  </span>
+                </div>
+              )}
+              {alertCounts.medium > 0 && (
+                <div className="flex items-center gap-1 bg-yellow-500/10 px-2 py-1 rounded-md">
+                  <div className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
+                  <span className="text-xs font-bold text-yellow-600 dark:text-yellow-400">
+                    {alertCounts.medium}
+                  </span>
+                </div>
+              )}
+            </div>
+            <span className="text-xs font-medium text-muted-foreground">
+              {alerts.length} alert{alerts.length !== 1 ? 's' : ''}
+            </span>
+          </div>
+
+          {/* Filter Dropdown */}
+          <div className="px-3 pb-2.5">
+            <Select value={severityFilter} onValueChange={setSeverityFilter}>
+              <SelectTrigger className="h-9 text-xs bg-background/80 backdrop-blur-sm border-border/50 shadow-sm">
+                <div className="flex items-center gap-1.5">
+                  <ChevronDown className="w-3.5 h-3.5" />
+                  <span className="font-medium">
+                    {severityFilter === 'all' ? 'All Alerts' : `${severityFilter.charAt(0).toUpperCase() + severityFilter.slice(1)} Only`}
+                  </span>
+                </div>
+              </SelectTrigger>
+              <SelectContent className="bg-background z-50">
+                <SelectItem value="all" className="text-xs">All Severities</SelectItem>
+                <SelectItem value="critical" className="text-xs">Critical</SelectItem>
+                <SelectItem value="high" className="text-xs">High</SelectItem>
+                <SelectItem value="medium" className="text-xs">Medium</SelectItem>
+                <SelectItem value="low" className="text-xs">Low</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </div>
 
       {/* Runbook Drawer */}
@@ -279,6 +296,19 @@ const LenaAlertsTab = () => {
           }}
         />
       )}
+
+      <style>{`
+        @keyframes slideInFromRight {
+          from {
+            opacity: 0;
+            transform: translateX(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+      `}</style>
     </>
   );
 };
