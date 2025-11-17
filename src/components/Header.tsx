@@ -18,7 +18,7 @@ const Header = () => {
             </div>
             <div className="flex items-center gap-2">
               <div>
-                <h1 className="text-xl font-bold text-foreground">XClarity One 2.0</h1>
+                <h1 className="text-xl font-bold text-foreground">TruScale 2.0</h1>
                 <p className="text-xs text-muted-foreground">Intelligent Hybrid Cloud Platform</p>
               </div>
               <button

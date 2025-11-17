@@ -171,7 +171,7 @@ const Integrations = () => {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              Connect additional data sources, AI models, or enterprise tools to expand XClarity One capabilities.
+              Connect additional data sources, AI models, or enterprise tools to expand TruScale capabilities.
             </p>
             <Button className="bg-primary hover:bg-primary/90">
               <LinkIcon className="h-4 w-4 mr-2" />
