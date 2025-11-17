@@ -215,7 +215,7 @@ const LenaChatPanel = ({ onClose }: LenaChatPanelProps) => {
           </div>
         </TabsContent>
 
-        <TabsContent value="alerts" className="flex-1 m-0 overflow-hidden">
+        <TabsContent value="alerts" className="flex-1 m-0 p-0 overflow-hidden">
           <LenaAlertsTab />
         </TabsContent>
       </Tabs>

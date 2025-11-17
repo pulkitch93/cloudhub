@@ -101,7 +101,7 @@ const LenaAlertsTab = () => {
     <>
       <div className="flex flex-col h-full">
         {/* Filter Section */}
-        <div className="px-4 py-3 border-b border-border bg-card/50">
+        <div className="px-4 py-2.5 border-b border-border">
           <Select value={severityFilter} onValueChange={setSeverityFilter}>
             <SelectTrigger className="w-full bg-background">
               <SelectValue placeholder="Filter by severity" />
@@ -119,19 +119,19 @@ const LenaAlertsTab = () => {
         {/* Alerts List */}
         <ScrollArea className="flex-1">
           {alerts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 px-4">
-              <CheckCircle2 className="w-16 h-16 text-success mb-3 opacity-50" />
-              <h3 className="font-medium text-foreground mb-1">All clear!</h3>
-              <p className="text-sm text-muted-foreground text-center">
-                No alerts found for the selected filter
+            <div className="flex flex-col items-center justify-center py-8 px-4">
+              <CheckCircle2 className="w-12 h-12 text-success mb-2 opacity-50" />
+              <h3 className="font-medium text-sm text-foreground mb-1">All clear!</h3>
+              <p className="text-xs text-muted-foreground text-center">
+                No alerts found
               </p>
             </div>
           ) : (
-            <div className="p-4 space-y-3">
+            <div className="p-3 space-y-2.5">
               {alerts.map(alert => (
                 <div
                   key={alert.id}
-                  className="bg-card border border-border rounded-lg p-4 space-y-3 hover:border-primary/40 transition-all hover:shadow-sm"
+                  className="bg-card border border-border rounded-lg p-3 space-y-2.5 hover:border-primary/40 transition-all hover:shadow-sm"
                 >
                   {/* Alert Header */}
                   <div className="flex items-start justify-between gap-3">
