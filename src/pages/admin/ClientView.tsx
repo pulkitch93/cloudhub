@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -143,6 +144,7 @@ export default function ClientView() {
           </Alert>
         )}
       </main>
+      <Footer />
     </div>
   );
 }

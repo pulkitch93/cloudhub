@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import GlobalServerMap from '@/components/GlobalServerMap';
 import TelemetryOverlay from '@/components/TelemetryOverlay';
 import ScenarioSimulator from '@/components/ScenarioSimulator';
@@ -214,6 +215,7 @@ const AIOps = () => {
           </TabsContent>
         </Tabs>
       </main>
+      <Footer />
     </div>
   );
 };

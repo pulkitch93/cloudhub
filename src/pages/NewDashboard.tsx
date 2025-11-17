@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { DashboardProvider, useDashboard } from '@/contexts/DashboardContext';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import DashboardKPICard from '@/components/dashboard/DashboardKPICard';
 import RoleToggle from '@/components/dashboard/RoleToggle';
 import TimeRangeSelector from '@/components/dashboard/TimeRangeSelector';
@@ -173,6 +174,7 @@ const DashboardContent = () => {
           </p>
         </div>
       </main>
+      <Footer />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { Activity, DollarSign, Leaf, Server } from "lucide-react";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import KPICard from "@/components/KPICard";
 import InfrastructureGlobe from "@/components/InfrastructureGlobe";
 import AICopilot from "@/components/AICopilot";
@@ -54,6 +55,7 @@ const Index = () => {
       </main>
 
       <AICopilot />
+      <Footer />
     </div>
   );
 };

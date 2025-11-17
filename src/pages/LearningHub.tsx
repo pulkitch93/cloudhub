@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import LearningAssistant from '@/components/LearningAssistant';
 import CertificateGenerator from '@/components/CertificateGenerator';
 import { Card } from '@/components/ui/card';
@@ -587,6 +588,7 @@ const LearningHub = () => {
 
       {/* AI Learning Assistant Widget */}
       <LearningAssistant mode="teach" />
+      <Footer />
     </div>
   );
 };
