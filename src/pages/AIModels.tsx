@@ -1,5 +1,6 @@
 import { Brain, TrendingUp, Leaf, AlertTriangle, Zap } from "lucide-react";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -175,6 +176,7 @@ const AIModels = () => {
           })}
         </div>
       </main>
+      <Footer />
     </div>
   );
 };

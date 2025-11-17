@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import EdgeTopologyMap from '@/components/EdgeTopologyMap';
 import EdgeAlertMonitor from '@/components/EdgeAlertMonitor';
 import EdgeIncidentResponse from '@/components/EdgeIncidentResponse';
@@ -632,6 +633,7 @@ const EdgeManagement = () => {
           </Tabs>
         </div>
       </main>
+      <Footer />
     </div>
   );
 };

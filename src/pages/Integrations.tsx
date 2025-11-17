@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Cloud, Database, Cpu, GitBranch, Link as LinkIcon, CheckCircle2, AlertCircle } from "lucide-react";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -199,6 +200,7 @@ const Integrations = () => {
         open={xclarityConfigOpen} 
         onOpenChange={setXclarityConfigOpen}
       />
+      <Footer />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import DigitalTwin3DView from '@/components/DigitalTwin3DView';
 import TelemetryOverlay from '@/components/TelemetryOverlay';
 import ScenarioSimulator from '@/components/ScenarioSimulator';
@@ -240,6 +241,7 @@ const DigitalTwin = () => {
           </div>
         </Card>
       </main>
+      <Footer />
     </div>
   );
 };

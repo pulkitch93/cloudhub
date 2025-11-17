@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Building2, BarChart3, Settings2, Users, TrendingUp, FileStack } from "lucide-react";
@@ -107,6 +108,7 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </div>
   );
 };
