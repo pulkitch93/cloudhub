@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Server } from '@/types/digitalTwin';
 import { Badge } from './ui/badge';
 import { Card } from './ui/card';
-import { Server as ServerIcon } from 'lucide-react';
+import { Server as ServerIcon, Activity, Clock, AlertTriangle, Zap } from 'lucide-react';
+import MapFilters from './MapFilters';
 
 interface GlobalServerMapProps {
   servers: Server[];
@@ -11,16 +12,19 @@ interface GlobalServerMapProps {
 
 // Server locations mapped to real coordinates
 const serverLocations: Record<string, { lat: number; lng: number; city: string; region: string }> = {
-  'US-East': { lat: 40.7128, lng: -74.0060, city: 'New York', region: 'US East' },
-  'US-West': { lat: 37.7749, lng: -122.4194, city: 'San Francisco', region: 'US West' },
-  'EU-Central': { lat: 50.1109, lng: 8.6821, city: 'Frankfurt', region: 'EU Central' },
-  'AP-Southeast': { lat: 1.3521, lng: 103.8198, city: 'Singapore', region: 'AP Southeast' },
-  'UK-South': { lat: 51.5074, lng: -0.1278, city: 'London', region: 'UK South' },
-  'AU-East': { lat: -33.8688, lng: 151.2093, city: 'Sydney', region: 'AU East' },
+  'US-East': { lat: 40.7128, lng: -74.0060, city: 'New York', region: 'Americas' },
+  'US-West': { lat: 37.7749, lng: -122.4194, city: 'San Francisco', region: 'Americas' },
+  'EU-Central': { lat: 50.1109, lng: 8.6821, city: 'Frankfurt', region: 'EMEA' },
+  'AP-Southeast': { lat: 1.3521, lng: 103.8198, city: 'Singapore', region: 'APAC' },
+  'UK-South': { lat: 51.5074, lng: -0.1278, city: 'London', region: 'EMEA' },
+  'AU-East': { lat: -33.8688, lng: 151.2093, city: 'Sydney', region: 'APAC' },
 };
 
 const GlobalServerMap = ({ servers, onServerSelect }: GlobalServerMapProps) => {
   const [hoveredLocation, setHoveredLocation] = useState<string | null>(null);
+  const [activeRegions, setActiveRegions] = useState<string[]>([]);
+  const [activeStatuses, setActiveStatuses] = useState<string[]>([]);
+  const [activeTypes, setActiveTypes] = useState<string[]>([]);
 
   // Convert lat/lng to SVG coordinates (Mercator-like projection)
   const coordToPosition = (lat: number, lng: number) => {
@@ -37,8 +41,41 @@ const GlobalServerMap = ({ servers, onServerSelect }: GlobalServerMapProps) => {
     }
   };
 
+  // Apply filters
+  const filteredServers = useMemo(() => {
+    return servers.filter(server => {
+      const location = serverLocations[server.location || 'US-East'];
+      
+      // Region filter
+      if (activeRegions.length > 0 && !activeRegions.includes(location.region)) {
+        return false;
+      }
+      
+      // Status filter
+      if (activeStatuses.length > 0) {
+        const statusMap: Record<string, string> = {
+          'Healthy': 'healthy',
+          'Warning': 'warning',
+          'Critical': 'critical',
+          'Maintenance': 'maintenance'
+        };
+        const matchedStatus = activeStatuses.some(s => statusMap[s] === server.status);
+        if (!matchedStatus) return false;
+      }
+      
+      // Type filter
+      if (activeTypes.length > 0 && server.serverType) {
+        if (!activeTypes.includes(server.serverType)) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+  }, [servers, activeRegions, activeStatuses, activeTypes]);
+
   // Group servers by location
-  const locationGroups = servers.reduce((acc, server) => {
+  const locationGroups = filteredServers.reduce((acc, server) => {
     const location = server.location || 'US-East';
     if (!acc[location]) {
       acc[location] = [];
@@ -47,11 +84,31 @@ const GlobalServerMap = ({ servers, onServerSelect }: GlobalServerMapProps) => {
     return acc;
   }, {} as Record<string, Server[]>);
 
+  // Count active regions
+  const activeRegionCount = Object.keys(locationGroups).length;
+
+  // Calculate totals
+  const totalServers = filteredServers.length;
+  const healthyCount = filteredServers.filter(s => s.status === 'healthy').length;
+  const warningCount = filteredServers.filter(s => s.status === 'warning').length;
+  const criticalCount = filteredServers.filter(s => s.status === 'critical').length;
+
   return (
     <div className="relative w-full h-[600px] rounded-lg overflow-hidden bg-gradient-to-br from-background via-background/95 to-muted/20 border border-border">
+      {/* Filters */}
+      <MapFilters
+        onRegionFilter={setActiveRegions}
+        onStatusFilter={setActiveStatuses}
+        onTypeFilter={setActiveTypes}
+        activeRegions={activeRegions}
+        activeStatuses={activeStatuses}
+        activeTypes={activeTypes}
+      />
+
+      {/* SVG World Map */}
       <svg
         viewBox="0 0 1000 500"
-        className="absolute inset-0 w-full h-full"
+        className="absolute inset-0 w-full h-full transition-all duration-300"
         style={{ filter: 'drop-shadow(0 0 20px hsl(var(--primary) / 0.1))' }}
       >
         <defs>
@@ -71,17 +128,30 @@ const GlobalServerMap = ({ servers, onServerSelect }: GlobalServerMapProps) => {
             <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.08" />
             <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.03" />
           </linearGradient>
+
+          {/* Animated gradient for connections */}
+          <linearGradient id="connectionGradient">
+            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.1" />
+            <stop offset="50%" stopColor="hsl(var(--primary))" stopOpacity="0.8">
+              <animate attributeName="offset" values="0;1" dur="2s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.1" />
+          </linearGradient>
         </defs>
         
         <rect width="1000" height="500" fill="url(#grid)" />
         
-        {/* Geographic lines */}
-        <g opacity="0.2" stroke="hsl(var(--muted-foreground))" strokeWidth="0.5" strokeDasharray="5,5">
+        {/* Geographic lines with labels */}
+        <g opacity="0.25" stroke="hsl(var(--muted-foreground))" strokeWidth="0.5" strokeDasharray="5,5">
+          {/* Equator */}
           <line x1="50" y1="250" x2="950" y2="250" />
-          <line x1="50" y1="180" x2="950" y2="180" />
-          <line x1="50" y1="320" x2="950" y2="320" />
-          <line x1="50" y1="110" x2="950" y2="110" />
-          <line x1="50" y1="390" x2="950" y2="390" />
+          <text x="960" y="250" fill="hsl(var(--muted-foreground))" fontSize="10" dominantBaseline="middle">Equator</text>
+          
+          {/* Tropic of Cancer */}
+          <line x1="50" y1="180" x2="950" y2="180" opacity="0.5" />
+          
+          {/* Tropic of Capricorn */}
+          <line x1="50" y1="320" x2="950" y2="320" opacity="0.5" />
         </g>
 
         {/* World map continents */}
@@ -102,38 +172,48 @@ const GlobalServerMap = ({ servers, onServerSelect }: GlobalServerMapProps) => {
           <path d="M 920,445 L 932,442 L 940,450 L 938,465 L 928,472 L 918,470 L 915,460 L 918,450 Z" />
         </g>
 
-        {/* Country borders */}
-        <g opacity="0.3" stroke="hsl(var(--primary))" strokeWidth="0.5" fill="none">
-          <path d="M 125,160 L 300,170" />
-          <path d="M 180,320 L 260,315" />
-          <path d="M 520,160 L 540,200 L 560,180" />
-          <path d="M 490,300 L 560,310 L 530,380" />
-          <path d="M 680,180 L 750,220 L 800,240" />
-        </g>
-
-        {/* Connection lines between servers */}
-        {servers.map((server, i) => {
-          const serverLoc = serverLocations[server.location || 'US-East'];
+        {/* Animated connection lines between servers */}
+        {Object.entries(locationGroups).flatMap(([locationKey, locationServers], i) => {
+          const serverLoc = serverLocations[locationKey];
           const pos = coordToPosition(serverLoc.lat, serverLoc.lng);
-          return servers.slice(i + 1).map((targetServer, j) => {
-            const targetLoc = serverLocations[targetServer.location || 'US-East'];
-            const targetPos = coordToPosition(targetLoc.lat, targetLoc.lng);
-            return (
-              <line
-                key={`${i}-${j}`}
-                x1={pos.x}
-                y1={pos.y}
-                x2={targetPos.x}
-                y2={targetPos.y}
-                stroke="hsl(var(--primary))"
-                strokeWidth="1"
-                opacity="0.2"
-                strokeDasharray="5,5"
-              >
-                <animate attributeName="stroke-dashoffset" from="10" to="0" dur="2s" repeatCount="indefinite" />
-              </line>
-            );
-          });
+          
+          return Object.entries(locationGroups)
+            .slice(i + 1)
+            .map(([targetKey]) => {
+              const targetLoc = serverLocations[targetKey];
+              const targetPos = coordToPosition(targetLoc.lat, targetLoc.lng);
+              
+              // Calculate latency based on distance
+              const distance = Math.sqrt(Math.pow(targetPos.x - pos.x, 2) + Math.pow(targetPos.y - pos.y, 2));
+              const latency = Math.round(distance / 10);
+              
+              return (
+                <g key={`${locationKey}-${targetKey}`}>
+                  <line
+                    x1={pos.x}
+                    y1={pos.y}
+                    x2={targetPos.x}
+                    y2={targetPos.y}
+                    stroke="url(#connectionGradient)"
+                    strokeWidth="2"
+                    opacity="0.6"
+                    className="transition-all duration-300"
+                  />
+                  
+                  {/* Latency label */}
+                  <text
+                    x={(pos.x + targetPos.x) / 2}
+                    y={(pos.y + targetPos.y) / 2}
+                    fill="hsl(var(--primary))"
+                    fontSize="8"
+                    opacity="0.5"
+                    textAnchor="middle"
+                  >
+                    {latency}ms
+                  </text>
+                </g>
+              );
+            });
         })}
 
         {/* Server location markers */}
@@ -161,29 +241,38 @@ const GlobalServerMap = ({ servers, onServerSelect }: GlobalServerMapProps) => {
               onMouseEnter={() => setHoveredLocation(locationKey)}
               onMouseLeave={() => setHoveredLocation(null)}
               onClick={() => handleServerClick(locationServers[0])}
+              className="transition-transform duration-200 hover:scale-110"
             >
+              {/* Animated pulse rings */}
               {isHovered && (
-                <circle r="20" fill="none" stroke={statusColor} strokeWidth="2" opacity="0.6">
-                  <animate attributeName="r" from="15" to="25" dur="1.5s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" from="0.6" to="0" dur="1.5s" repeatCount="indefinite" />
-                </circle>
+                <>
+                  <circle r="20" fill="none" stroke={statusColor} strokeWidth="2" opacity="0.6">
+                    <animate attributeName="r" from="15" to="30" dur="1.5s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" from="0.6" to="0" dur="1.5s" repeatCount="indefinite" />
+                  </circle>
+                  <circle r="20" fill="none" stroke={statusColor} strokeWidth="2" opacity="0.4">
+                    <animate attributeName="r" from="15" to="30" dur="1.5s" begin="0.5s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" from="0.4" to="0" dur="1.5s" begin="0.5s" repeatCount="indefinite" />
+                  </circle>
+                </>
               )}
               
-              <circle r="8" fill={statusColor} filter="url(#glow)" style={{ transition: 'all 0.2s' }} />
-              <circle r="3" fill="white" />
+              {/* Location marker */}
+              <circle r="10" fill={statusColor} filter="url(#glow)" />
+              <circle r="4" fill="white" />
 
-              {locationServers.length > 1 && (
-                <g transform="translate(8, -8)">
-                  <circle r="6" fill="hsl(var(--accent))" />
-                  <text x="0" y="0" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="8" fontWeight="bold">
-                    {locationServers.length}
-                  </text>
-                </g>
-              )}
+              {/* Server count badge */}
+              <g transform="translate(10, -10)">
+                <circle r="8" fill="hsl(var(--accent))" stroke="white" strokeWidth="1" />
+                <text x="0" y="0" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="9" fontWeight="bold">
+                  {locationServers.length}
+                </text>
+              </g>
 
-              <g transform="translate(0, 20)">
-                <rect x="-35" y="-10" width="70" height="18" rx="4" fill="hsl(var(--popover))" stroke="hsl(var(--border))" strokeWidth="1" opacity={isHovered ? "1" : "0.9"} />
-                <text x="0" y="0" textAnchor="middle" dominantBaseline="central" fill="hsl(var(--popover-foreground))" fontSize="10" fontWeight="600">
+              {/* City label */}
+              <g transform="translate(0, 25)">
+                <rect x="-40" y="-12" width="80" height="20" rx="4" fill="hsl(var(--popover))" stroke="hsl(var(--border))" strokeWidth="1" opacity={isHovered ? "1" : "0.95"} filter="url(#glow)" />
+                <text x="0" y="0" textAnchor="middle" dominantBaseline="central" fill="hsl(var(--popover-foreground))" fontSize="11" fontWeight="700">
                   {location.city}
                 </text>
               </g>
@@ -192,73 +281,133 @@ const GlobalServerMap = ({ servers, onServerSelect }: GlobalServerMapProps) => {
         })}
       </svg>
       
+      {/* Dynamic totals header */}
       <div className="absolute top-4 left-4 space-y-2 pointer-events-none z-10">
-        <Badge className="bg-card/90 backdrop-blur-sm border-border pointer-events-auto">
-          <ServerIcon className="w-3 h-3 mr-1" />
-          Global Server Distribution ({servers.length} servers)
+        <Badge className="bg-card/90 backdrop-blur-sm border-border pointer-events-auto text-base px-4 py-2">
+          <ServerIcon className="w-4 h-4 mr-2" />
+          Global Server Distribution: {totalServers} active servers across {activeRegionCount} regions
         </Badge>
+        
+        <div className="flex gap-2">
+          <Badge variant="outline" className="bg-card/90 backdrop-blur-sm border-border">
+            <div className="w-2 h-2 rounded-full mr-1" style={{ background: 'hsl(142, 70%, 45%)' }} />
+            {healthyCount} Healthy
+          </Badge>
+          {warningCount > 0 && (
+            <Badge variant="outline" className="bg-card/90 backdrop-blur-sm border-border">
+              <div className="w-2 h-2 rounded-full mr-1" style={{ background: 'hsl(38, 92%, 50%)' }} />
+              {warningCount} Warning
+            </Badge>
+          )}
+          {criticalCount > 0 && (
+            <Badge variant="outline" className="bg-card/90 backdrop-blur-sm border-border">
+              <div className="w-2 h-2 rounded-full mr-1" style={{ background: 'hsl(0, 84%, 60%)' }} />
+              {criticalCount} Critical
+            </Badge>
+          )}
+        </div>
       </div>
       
+      {/* Enhanced hover tooltip */}
       {hoveredLocation && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 pointer-events-none">
-          <Card className="p-4 min-w-[280px] bg-card/95 backdrop-blur-sm border-border shadow-primary">
-            <h3 className="font-bold text-sm mb-2 text-foreground">
-              {serverLocations[hoveredLocation].city}, {serverLocations[hoveredLocation].region}
-            </h3>
-            <div className="space-y-2">
-              <div className="text-xs text-muted-foreground">
-                {locationGroups[hoveredLocation].length} server{locationGroups[hoveredLocation].length > 1 ? 's' : ''} at this location
-              </div>
-              <div className="space-y-1">
-                {locationGroups[hoveredLocation].map(server => (
-                  <div key={server.id} className="flex items-center justify-between text-xs">
-                    <span className="text-foreground font-medium">{server.name}</span>
-                    <span className="capitalize" style={{
-                      color: server.status === 'critical' ? 'hsl(0, 84%, 60%)' :
-                             server.status === 'warning' ? 'hsl(38, 92%, 50%)' :
-                             server.status === 'maintenance' ? 'hsl(215, 16%, 47%)' :
-                             'hsl(142, 70%, 45%)'
-                    }}>
-                      {server.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
+        <div className="absolute top-24 left-1/2 transform -translate-x-1/2 z-20 pointer-events-none animate-fade-in">
+          <Card className="p-4 min-w-[320px] bg-card/95 backdrop-blur-sm border-border shadow-primary">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-bold text-base text-foreground">
+                {serverLocations[hoveredLocation].city}, {serverLocations[hoveredLocation].region}
+              </h3>
+              <Badge variant="secondary">
+                {locationGroups[hoveredLocation].length} server{locationGroups[hoveredLocation].length > 1 ? 's' : ''}
+              </Badge>
             </div>
+            
+            <div className="space-y-3">
+              {locationGroups[hoveredLocation].map(server => (
+                <div key={server.id} className="p-2 rounded bg-muted/30 border border-border/50">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-semibold text-foreground">{server.name}</span>
+                    <Badge
+                      variant="outline"
+                      className="capitalize"
+                      style={{
+                        borderColor: server.status === 'critical' ? 'hsl(0, 84%, 60%)' :
+                                   server.status === 'warning' ? 'hsl(38, 92%, 50%)' :
+                                   server.status === 'maintenance' ? 'hsl(215, 16%, 47%)' :
+                                   'hsl(142, 70%, 45%)',
+                        color: server.status === 'critical' ? 'hsl(0, 84%, 60%)' :
+                               server.status === 'warning' ? 'hsl(38, 92%, 50%)' :
+                               server.status === 'maintenance' ? 'hsl(215, 16%, 47%)' :
+                               'hsl(142, 70%, 45%)'
+                      }}
+                    >
+                      {server.status}
+                    </Badge>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Activity className="w-3 h-3" />
+                      <span>Uptime: {server.uptime || 99.9}%</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Zap className="w-3 h-3" />
+                      <span>CPU: {server.telemetry.cpu}%</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Clock className="w-3 h-3" />
+                      <span>Latency: {server.latency || Math.floor(Math.random() * 50) + 10}ms</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <AlertTriangle className="w-3 h-3" />
+                      <span>Loss: {server.packetLoss || '0.01'}%</span>
+                    </div>
+                  </div>
+                  
+                  {server.lastIncident && (
+                    <div className="mt-2 text-xs text-muted-foreground">
+                      Last incident: {server.lastIncident}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            
             <div className="mt-3 pt-3 border-t border-border">
-              <p className="text-xs text-muted-foreground text-center">Click for detailed telemetry</p>
+              <p className="text-xs text-muted-foreground text-center">Click for detailed regional dashboard</p>
             </div>
           </Card>
         </div>
       )}
       
+      {/* Legend */}
       <div className="absolute bottom-4 right-4 z-10">
-        <Card className="p-3 bg-card/90 backdrop-blur-sm border-border">
+        <Card className="p-3 bg-card/90 backdrop-blur-sm border-border shadow-primary">
           <div className="text-xs font-semibold text-foreground mb-2">Status Legend</div>
           <div className="space-y-1.5 text-xs">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full" style={{ background: 'hsl(142, 70%, 45%)' }} />
+              <div className="w-3 h-3 rounded-full" style={{ background: 'hsl(142, 70%, 45%)', boxShadow: '0 0 8px hsl(142, 70%, 45%)' }} />
               <span className="text-muted-foreground">Healthy</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full" style={{ background: 'hsl(38, 92%, 50%)' }} />
+              <div className="w-3 h-3 rounded-full" style={{ background: 'hsl(38, 92%, 50%)', boxShadow: '0 0 8px hsl(38, 92%, 50%)' }} />
               <span className="text-muted-foreground">Warning</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full" style={{ background: 'hsl(0, 84%, 60%)' }} />
+              <div className="w-3 h-3 rounded-full" style={{ background: 'hsl(0, 84%, 60%)', boxShadow: '0 0 8px hsl(0, 84%, 60%)' }} />
               <span className="text-muted-foreground">Critical</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full" style={{ background: 'hsl(215, 16%, 47%)' }} />
+              <div className="w-3 h-3 rounded-full" style={{ background: 'hsl(215, 16%, 47%)', boxShadow: '0 0 8px hsl(215, 16%, 47%)' }} />
               <span className="text-muted-foreground">Maintenance</span>
             </div>
           </div>
         </Card>
       </div>
       
-      <div className="absolute bottom-4 left-4 z-10 text-xs text-muted-foreground space-y-1 pointer-events-none">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-px bg-muted-foreground opacity-40" style={{ borderTop: '1px dashed' }} />
+      {/* Geographic reference */}
+      <div className="absolute bottom-4 left-4 z-10 text-xs text-muted-foreground pointer-events-none">
+        <div className="flex items-center gap-2 bg-card/70 backdrop-blur-sm px-2 py-1 rounded border border-border/50">
+          <div className="w-4 h-px border-t border-dashed border-muted-foreground" />
           <span>Equator / Tropic Lines</span>
         </div>
       </div>

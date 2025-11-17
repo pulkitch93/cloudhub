@@ -13,6 +13,12 @@ export interface Server {
     networkTraffic: number;
   };
   workloads: string[];
+  serverType?: 'Compute' | 'Storage' | 'AI Nodes' | 'Edge';
+  region?: 'Americas' | 'EMEA' | 'APAC';
+  uptime?: number;
+  lastIncident?: string;
+  latency?: number;
+  packetLoss?: number;
 }
 
 export interface Rack {
