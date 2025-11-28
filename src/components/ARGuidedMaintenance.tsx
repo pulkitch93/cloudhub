@@ -36,7 +36,7 @@ interface MaintenanceSession {
   currentStep: number;
   voiceGuidanceActive: boolean;
   expertConnected: boolean;
-  xclaritySync: boolean;
+  inframonitorSync: boolean;
 }
 
 interface MaintenanceStep {
@@ -62,7 +62,7 @@ const mockSessions: MaintenanceSession[] = [
     currentStep: 3,
     voiceGuidanceActive: true,
     expertConnected: false,
-    xclaritySync: true,
+    inframonitorSync: true,
     steps: [
       { 
         id: 1, 
@@ -123,7 +123,7 @@ const mockSessions: MaintenanceSession[] = [
     currentStep: 2,
     voiceGuidanceActive: true,
     expertConnected: true,
-    xclaritySync: true,
+    inframonitorSync: true,
     steps: [
       { id: 1, title: 'Locate Module', description: 'Find faulty DIMM slot', arOverlay: 'Highlighting DIMM slot D3', completed: true },
       { id: 2, title: 'Release Clips', description: 'Open retention clips', arOverlay: 'Showing clip release points', completed: false },
@@ -144,7 +144,7 @@ const mockSessions: MaintenanceSession[] = [
     currentStep: 4,
     voiceGuidanceActive: false,
     expertConnected: false,
-    xclaritySync: true,
+    inframonitorSync: true,
     steps: [
       { id: 1, title: 'Identify Fan', description: 'Locate failed cooling fan', arOverlay: 'Fan position indicator', completed: true },
       { id: 2, title: 'Disconnect Power', description: 'Remove fan power connector', arOverlay: 'Connector release mechanism', completed: true },
@@ -273,7 +273,7 @@ const ARGuidedMaintenance = () => {
                       {session.expertConnected && (
                         <Video className="h-3 w-3 text-blue-500" />
                       )}
-                      {session.xclaritySync && (
+                      {session.inframonitorSync && (
                         <Wifi className="h-3 w-3 text-green-500" />
                       )}
                     </div>
@@ -305,7 +305,7 @@ const ARGuidedMaintenance = () => {
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-green-500 border-green-500/50">
                     <Wifi className="h-3 w-3 mr-1" />
-                    XClarity Synced
+                    InfraMonitor Synced
                   </Badge>
                   {selectedSession.status === 'active' && (
                     <Button size="sm" variant="outline">

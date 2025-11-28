@@ -123,12 +123,12 @@ const Marketing = () => {
                 <Cloud className="w-6 h-6 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-xl font-bold">Lenovo Hybrid Cloud</h1>
+                <h1 className="text-xl font-bold">Hybrid Cloud Platform</h1>
                 <p className="text-xs text-muted-foreground">Next-Gen Operations Platform</p>
               </div>
             </div>
             <Button onClick={() => navigate('/')} size="lg" className="gap-2">
-              Launch TruScale 2.0
+              Launch CloudHub 2.0
               <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
@@ -152,13 +152,13 @@ const Marketing = () => {
             </h1>
             
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Transform your infrastructure with Lenovo's next-generation platform. 
+              Transform your infrastructure with the next-generation platform. 
               Unify operations, optimize costs, and accelerate innovation across any cloud.
             </p>
 
             <div className="flex gap-4 justify-center mb-12">
               <Button onClick={() => navigate('/')} size="lg" className="gap-2">
-                Get Started with TruScale 2.0
+                Get Started with CloudHub 2.0
                 <ArrowRight className="w-4 h-4" />
               </Button>
               <Button onClick={() => navigate('/')} variant="outline" size="lg">
@@ -251,12 +251,12 @@ const Marketing = () => {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <Badge className="mb-4">Why Choose Lenovo</Badge>
+              <Badge className="mb-4">Why Choose Us</Badge>
               <h2 className="text-4xl font-bold mb-6">
                 Transform Your Infrastructure, Accelerate Innovation
               </h2>
               <p className="text-muted-foreground mb-8">
-                Lenovo Hybrid Cloud Platform delivers enterprise-grade capabilities with the agility 
+                Our Hybrid Cloud Platform delivers enterprise-grade capabilities with the agility 
                 and efficiency modern businesses demand. From startups to Fortune 500 companies, 
                 we power mission-critical workloads at scale.
               </p>
@@ -325,10 +325,10 @@ const Marketing = () => {
           <div className="max-w-3xl mx-auto text-center">
             <Badge className="mb-6">Ready to Get Started?</Badge>
             <h2 className="text-4xl font-bold mb-6">
-              Experience TruScale 2.0 Today
+              Experience CloudHub 2.0 Today
             </h2>
             <p className="text-lg text-muted-foreground mb-8">
-              Join hundreds of organizations transforming their cloud operations with Lenovo's 
+              Join hundreds of organizations transforming their cloud operations with our 
               next-generation platform. Start your free trial or schedule a personalized demo.
             </p>
             
@@ -355,7 +355,7 @@ const Marketing = () => {
             <div>
               <h3 className="font-semibold mb-4">Platform</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">TruScale 2.0</button></li>
+                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">CloudHub 2.0</button></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Features</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Pricing</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Documentation</a></li>
@@ -392,7 +392,7 @@ const Marketing = () => {
           
           <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted-foreground">
-              © 2025 Lenovo. All rights reserved.
+              © 2025 All rights reserved.
             </p>
             <div className="flex gap-6 text-sm text-muted-foreground">
               <a href="#" className="hover:text-foreground transition-colors">Privacy</a>

@@ -13,7 +13,7 @@ const Footer = () => {
             >
               Pulkit Chaudhary
             </a>
-            {' '}for Lenovo Hybrid Cloud.
+            {' '}for Hybrid Cloud Platform.
           </p>
         </div>
       </div>

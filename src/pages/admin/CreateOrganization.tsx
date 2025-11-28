@@ -162,7 +162,7 @@ export default function CreateOrganization() {
                       <SelectValue placeholder="Select model" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="truscale">TruScale (Consumption-based)</SelectItem>
+                      <SelectItem value="truscale">CloudHub (Consumption-based)</SelectItem>
                       <SelectItem value="subscription">Subscription</SelectItem>
                       <SelectItem value="perpetual">Perpetual License</SelectItem>
                     </SelectContent>

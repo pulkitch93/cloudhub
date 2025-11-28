@@ -52,7 +52,7 @@ const Marketplace = () => {
     {
       id: '1',
       name: 'ThinkSystem SR650 V3',
-      vendor: 'Lenovo',
+      vendor: 'Hardware',
       category: 'compute',
       description: 'High-performance 2-socket rack server optimized for AI and analytics workloads',
       price: 'Starting at $8,500/month',
@@ -75,7 +75,7 @@ const Marketplace = () => {
       deployments: 1250,
       icon: 'Cloud',
       features: ['Distributed resource scheduler', 'vMotion live migration', 'High availability', 'Fault tolerance'],
-      compatibility: ['Lenovo ThinkSystem', 'Nutanix', 'Dell EMC'],
+      compatibility: ['Enterprise servers', 'Nutanix', 'Dell EMC'],
       deploymentTime: '1-2 hours',
       revenueShare: 20
     },
@@ -90,7 +90,7 @@ const Marketplace = () => {
       deployments: 890,
       icon: 'Database',
       features: ['One-click upgrades', 'Built-in DR', 'Multi-cloud ready', 'Self-healing'],
-      compatibility: ['Lenovo servers', 'VMware', 'Azure Stack'],
+      compatibility: ['Enterprise servers', 'VMware', 'Azure Stack'],
       deploymentTime: '3-6 hours',
       revenueShare: 18
     },
@@ -105,21 +105,21 @@ const Marketplace = () => {
       deployments: 567,
       icon: 'Sparkles',
       features: ['RAPIDS acceleration', 'TensorRT optimization', 'Triton inference', 'MLOps tools'],
-      compatibility: ['VMware vSphere', 'Kubernetes', 'Lenovo servers'],
+      compatibility: ['VMware vSphere', 'Kubernetes', 'Enterprise servers'],
       deploymentTime: '2-3 hours',
       revenueShare: 22
     },
     {
       id: '5',
       name: 'ThinkAgile VX Series',
-      vendor: 'Lenovo',
+      vendor: 'Hardware',
       category: 'hyperconverged',
       description: 'Certified VMware vSAN Ready Nodes for rapid deployment',
       price: 'Starting at $12,000/node',
       rating: 4.6,
       deployments: 445,
       icon: 'Database',
-      features: ['Pre-configured vSAN', 'Factory integration', 'Single SKU ordering', 'Lenovo support'],
+      features: ['Pre-configured vSAN', 'Factory integration', 'Single SKU ordering', 'Enterprise support'],
       compatibility: ['VMware vSphere', 'vRealize Suite'],
       deploymentTime: '1-3 hours',
       revenueShare: 16
@@ -172,7 +172,7 @@ const Marketplace = () => {
     {
       id: '9',
       name: 'ThinkSystem SD650 V3',
-      vendor: 'Lenovo',
+      vendor: 'Hardware',
       category: 'compute',
       description: 'Neptune liquid-cooled server for extreme density and efficiency',
       price: 'Starting at $15,000/node',
@@ -195,7 +195,7 @@ const Marketplace = () => {
       deployments: 512,
       icon: 'Cloud',
       features: ['Full-stack automation', 'Lifecycle management', 'Unified operations', 'Security & compliance'],
-      compatibility: ['Lenovo servers', 'Dell EMC', 'Public clouds'],
+      compatibility: ['Enterprise servers', 'Dell EMC', 'Public clouds'],
       deploymentTime: '6-12 hours',
       revenueShare: 21
     },
@@ -225,7 +225,7 @@ const Marketplace = () => {
       deployments: 289,
       icon: 'Network',
       features: ['400Gb Ethernet', 'InfiniBand support', 'AI-optimized', 'RDMA over converged ethernet'],
-      compatibility: ['NVIDIA DGX', 'Lenovo servers', 'Generic x86'],
+      compatibility: ['NVIDIA DGX', 'Enterprise servers', 'Generic x86'],
       deploymentTime: '2-4 hours',
       revenueShare: 19
     }

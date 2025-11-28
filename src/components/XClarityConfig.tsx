@@ -31,8 +31,8 @@ interface MappingTemplate {
 }
 
 const XClarityConfig = ({ open, onOpenChange }: XClarityConfigProps) => {
-  const [apiEndpoint, setApiEndpoint] = useState('https://xclarity.lenovo.com/api/v1');
-  const [apiKey, setApiKey] = useState('xc_****************************');
+  const [apiEndpoint, setApiEndpoint] = useState('https://inframonitor.cloud/api/v1');
+  const [apiKey, setApiKey] = useState('im_****************************');
   const [inventorySyncEnabled, setInventorySyncEnabled] = useState(true);
   const [refreshInterval, setRefreshInterval] = useState('5');
   const [isTestingConnection, setIsTestingConnection] = useState(false);
@@ -119,19 +119,19 @@ const XClarityConfig = ({ open, onOpenChange }: XClarityConfigProps) => {
 
   const handleTestConnection = () => {
     setIsTestingConnection(true);
-    toast.info('Testing connection to XClarity API...');
+    toast.info('Testing connection to InfraMonitor API...');
     
     setTimeout(() => {
       setIsTestingConnection(false);
       toast.success('Connection successful!', {
-        description: 'Successfully connected to XClarity API',
+        description: 'Successfully connected to InfraMonitor API',
       });
     }, 2000);
   };
 
   const handleSaveConfig = () => {
     toast.success('Configuration saved', {
-      description: 'XClarity integration settings have been updated',
+      description: 'InfraMonitor integration settings have been updated',
     });
     onOpenChange(false);
   };
@@ -179,7 +179,7 @@ const XClarityConfig = ({ open, onOpenChange }: XClarityConfigProps) => {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <span className="text-2xl">🖥️</span>
-            XClarity API Configuration
+            InfraMonitor API Configuration
           </DialogTitle>
           <DialogDescription>
             Configure real-time inventory sync, refresh intervals, and custom metric mappings
@@ -206,7 +206,7 @@ const XClarityConfig = ({ open, onOpenChange }: XClarityConfigProps) => {
                     id="endpoint"
                     value={apiEndpoint}
                     onChange={(e) => setApiEndpoint(e.target.value)}
-                    placeholder="https://xclarity.lenovo.com/api/v1"
+                    placeholder="https://inframonitor.cloud/api/v1"
                   />
                 </div>
 
@@ -217,7 +217,7 @@ const XClarityConfig = ({ open, onOpenChange }: XClarityConfigProps) => {
                     type="password"
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
-                    placeholder="Enter your XClarity API key"
+                    placeholder="Enter your InfraMonitor API key"
                   />
                   <p className="text-xs text-muted-foreground">
                     Your API key is encrypted and stored securely
@@ -252,14 +252,14 @@ const XClarityConfig = ({ open, onOpenChange }: XClarityConfigProps) => {
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">Inventory Synchronization</CardTitle>
-                <CardDescription>Configure how XClarity inventory data syncs to AIOps</CardDescription>
+                <CardDescription>Configure how InfraMonitor inventory data syncs to AIOps</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label htmlFor="inventory-sync">Enable Inventory Sync</Label>
                     <p className="text-sm text-muted-foreground">
-                      Automatically sync server inventory from XClarity
+                      Automatically sync server inventory from InfraMonitor
                     </p>
                   </div>
                   <Switch
@@ -287,7 +287,7 @@ const XClarityConfig = ({ open, onOpenChange }: XClarityConfigProps) => {
                         </SelectContent>
                       </Select>
                       <p className="text-xs text-muted-foreground">
-                        How often to fetch fresh data from XClarity. Lower intervals increase API usage.
+                        How often to fetch fresh data from InfraMonitor. Lower intervals increase API usage.
                       </p>
                     </div>
 
@@ -359,7 +359,7 @@ const XClarityConfig = ({ open, onOpenChange }: XClarityConfigProps) => {
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-base">Custom Metric Mapping</CardTitle>
-                    <CardDescription>Map XClarity telemetry fields to AIOps metrics</CardDescription>
+                    <CardDescription>Map InfraMonitor telemetry fields to AIOps metrics</CardDescription>
                   </div>
                   <Button onClick={handleAddMapping} size="sm">
                     <Plus className="h-4 w-4 mr-1" />
@@ -380,7 +380,7 @@ const XClarityConfig = ({ open, onOpenChange }: XClarityConfigProps) => {
                     
                     <div className="flex-1 grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs text-muted-foreground">XClarity Field</Label>
+                        <Label className="text-xs text-muted-foreground">InfraMonitor Field</Label>
                         <Input
                           value={mapping.xclarityField}
                           onChange={(e) => {

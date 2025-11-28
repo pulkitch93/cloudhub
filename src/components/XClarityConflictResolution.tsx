@@ -140,7 +140,7 @@ const XClarityConflictResolution = () => {
     setConflicts(conflicts.filter(c => !c.autoResolvable));
     
     toast.success('Auto-resolution complete', {
-      description: `Resolved ${autoResolvableConflicts.length} conflicts using ${resolutionStrategy === 'xclarity' ? 'XClarity' : 'AIOps'} as source of truth`
+      description: `Resolved ${autoResolvableConflicts.length} conflicts using ${resolutionStrategy === 'xclarity' ? 'InfraMonitor' : 'AIOps'} as source of truth`
     });
   };
 
@@ -157,9 +157,9 @@ const XClarityConflictResolution = () => {
           <GitCompare className="h-5 w-5" />
           Data Validation & Conflict Resolution
         </CardTitle>
-        <CardDescription>
-          Manage inventory data conflicts and validation errors between XClarity and AIOps
-        </CardDescription>
+          <CardDescription>
+            Manage inventory data conflicts and validation errors between InfraMonitor and AIOps
+          </CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="conflicts" className="w-full">
@@ -184,7 +184,7 @@ const XClarityConflictResolution = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border-border z-50">
-                    <SelectItem value="xclarity">Prefer XClarity Data</SelectItem>
+                    <SelectItem value="xclarity">Prefer InfraMonitor Data</SelectItem>
                     <SelectItem value="digital-twin">Prefer AIOps Data</SelectItem>
                     <SelectItem value="manual">Manual Review Only</SelectItem>
                   </SelectContent>
@@ -234,7 +234,7 @@ const XClarityConflictResolution = () => {
                       <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
                         <div className="flex items-center gap-2 mb-1">
                           <div className="w-2 h-2 rounded-full bg-primary"></div>
-                          <span className="text-xs font-semibold text-primary">XClarity Value</span>
+                          <span className="text-xs font-semibold text-primary">InfraMonitor Value</span>
                         </div>
                         <div className="text-sm font-mono text-foreground">{conflict.xclarityValue}</div>
                       </div>
@@ -256,7 +256,7 @@ const XClarityConflictResolution = () => {
                       className="flex-1"
                     >
                       <CheckCircle2 className="h-3 w-3 mr-1" />
-                      Use XClarity
+                      Use InfraMonitor
                     </Button>
                     <Button 
                       size="sm" 
