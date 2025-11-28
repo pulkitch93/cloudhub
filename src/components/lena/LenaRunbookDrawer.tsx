@@ -6,15 +6,15 @@ import { Badge } from '@/components/ui/badge';
 import { PrescriptiveAction, RunbookStep } from '@/types/lenaAI';
 import { CheckCircle2, Circle, Loader2, AlertCircle, DollarSign } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { lenaAiService } from '@/services/lenaAiService';
+import { novaAiService } from '@/services/lenaAiService';
 
-interface LenaRunbookDrawerProps {
+interface NovaRunbookDrawerProps {
   action: PrescriptiveAction;
   onClose: () => void;
   onComplete: () => void;
 }
 
-const LenaRunbookDrawer = ({ action, onClose, onComplete }: LenaRunbookDrawerProps) => {
+const NovaRunbookDrawer = ({ action, onClose, onComplete }: NovaRunbookDrawerProps) => {
   const [steps, setSteps] = useState<RunbookStep[]>(action.steps);
   const [isExecuting, setIsExecuting] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(-1);
@@ -76,7 +76,7 @@ const LenaRunbookDrawer = ({ action, onClose, onComplete }: LenaRunbookDrawerPro
 
     // Execute the final action
     try {
-      const result = await lenaAiService.executeRunbook(action.id);
+      const result = await novaAiService.executeRunbook(action.id);
       
       toast({
         title: 'Runbook Executed Successfully',
@@ -213,4 +213,4 @@ const LenaRunbookDrawer = ({ action, onClose, onComplete }: LenaRunbookDrawerPro
   );
 };
 
-export default LenaRunbookDrawer;
+export default NovaRunbookDrawer;

@@ -5,22 +5,22 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import LenaAlertsTab from './LenaAlertsTab';
-import LenaMessageList from './LenaMessageList';
-import { LenaMessage, LenaContext } from '@/types/lenaAI';
+import NovaAlertsTab from './LenaAlertsTab';
+import NovaMessageList from './LenaMessageList';
+import { NovaMessage, NovaContext } from '@/types/lenaAI';
 import { useLocation } from 'react-router-dom';
-import { lenaAiService } from '@/services/lenaAiService';
+import { novaAiService } from '@/services/lenaAiService';
 
-interface LenaChatPanelProps {
+interface NovaChatPanelProps {
   onClose: () => void;
 }
 
-const LenaChatPanel = ({ onClose }: LenaChatPanelProps) => {
-  const [messages, setMessages] = useState<LenaMessage[]>([
+const NovaChatPanel = ({ onClose }: NovaChatPanelProps) => {
+  const [messages, setMessages] = useState<NovaMessage[]>([
     {
       id: '1',
       role: 'assistant',
-      content: "Hi! I'm Lena, your AI copilot. I can help you with alerts, cost optimization, rightsizing, and more. Try asking a question or use slash commands like `/alerts today` or `/cost top-drivers 30d`.",
+      content: "Hi! I'm Nova, your AI copilot. I can help you with alerts, cost optimization, rightsizing, and more. Try asking a question or use slash commands like `/alerts today` or `/cost top-drivers 30d`.",
       timestamp: new Date(),
       type: 'text',
     },
@@ -40,7 +40,7 @@ const LenaChatPanel = ({ onClose }: LenaChatPanelProps) => {
   ];
 
   // Build context for AI
-  const getContext = (): LenaContext => ({
+  const getContext = (): NovaContext => ({
     currentPage: location.pathname,
     filters: {
       timeRange: '30d', // Default fallback
@@ -56,7 +56,7 @@ const LenaChatPanel = ({ onClose }: LenaChatPanelProps) => {
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
-    const userMessage: LenaMessage = {
+    const userMessage: NovaMessage = {
       id: Date.now().toString(),
       role: 'user',
       content: input,
@@ -70,11 +70,11 @@ const LenaChatPanel = ({ onClose }: LenaChatPanelProps) => {
 
     try {
       // Check if it's a slash command
-      const slashCmd = lenaAiService.parseSlashCommand(input);
+      const slashCmd = novaAiService.parseSlashCommand(input);
       let responseContent: string;
 
       if (slashCmd) {
-        responseContent = await lenaAiService.handleSlashCommand(
+        responseContent = await novaAiService.handleSlashCommand(
           slashCmd.command,
           slashCmd.args,
           getContext()
@@ -86,7 +86,7 @@ const LenaChatPanel = ({ onClose }: LenaChatPanelProps) => {
         responseContent = `I received your question: "${input}". I'm analyzing the context and will provide insights based on your current page (${location.pathname}).`;
       }
 
-      const assistantMessage: LenaMessage = {
+      const assistantMessage: NovaMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: responseContent,
@@ -97,7 +97,7 @@ const LenaChatPanel = ({ onClose }: LenaChatPanelProps) => {
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
-      const errorMessage: LenaMessage = {
+      const errorMessage: NovaMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: 'Sorry, I encountered an error processing your request. Please try again.',
@@ -147,12 +147,12 @@ const LenaChatPanel = ({ onClose }: LenaChatPanelProps) => {
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-              <span className="text-lg font-bold text-primary">L</span>
+              <span className="text-lg font-bold text-primary">N</span>
             </div>
             <div className="absolute bottom-0 right-0 w-3 h-3 bg-success rounded-full border-2 border-card" />
           </div>
           <div>
-            <h3 className="font-semibold text-sm">Lena AI</h3>
+            <h3 className="font-semibold text-sm">Nova AI</h3>
             <p className="text-xs text-muted-foreground">Online • Just now</p>
           </div>
         </div>
@@ -174,7 +174,7 @@ const LenaChatPanel = ({ onClose }: LenaChatPanelProps) => {
         <TabsContent value="chat" className="flex-1 flex flex-col p-4 m-0 overflow-hidden">
           {/* Messages */}
           <ScrollArea ref={scrollRef} className="flex-1 pr-4">
-            <LenaMessageList messages={messages} />
+            <NovaMessageList messages={messages} />
           </ScrollArea>
 
           {/* Quick Chips */}
@@ -216,11 +216,11 @@ const LenaChatPanel = ({ onClose }: LenaChatPanelProps) => {
         </TabsContent>
 
         <TabsContent value="alerts" className="flex-1 m-0 p-0 overflow-hidden">
-          <LenaAlertsTab />
+          <NovaAlertsTab />
         </TabsContent>
       </Tabs>
     </div>
   );
 };
 
-export default LenaChatPanel;
+export default NovaChatPanel;

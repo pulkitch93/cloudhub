@@ -1,11 +1,11 @@
-import { LenaMessage } from '@/types/lenaAI';
+import { NovaMessage } from '@/types/lenaAI';
 import { Bot, User } from 'lucide-react';
 
-interface LenaMessageListProps {
-  messages: LenaMessage[];
+interface NovaMessageListProps {
+  messages: NovaMessage[];
 }
 
-const LenaMessageList = ({ messages }: LenaMessageListProps) => {
+const NovaMessageList = ({ messages }: NovaMessageListProps) => {
   return (
     <div className="space-y-4">
       {messages.map(message => (
@@ -43,4 +43,4 @@ const LenaMessageList = ({ messages }: LenaMessageListProps) => {
   );
 };
 
-export default LenaMessageList;
+export default NovaMessageList;
