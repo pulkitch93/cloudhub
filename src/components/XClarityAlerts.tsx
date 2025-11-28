@@ -156,7 +156,7 @@ const XClarityAlerts = () => {
                 <Bell className="h-5 w-5" />
                 Alert Rules
               </CardTitle>
-              <CardDescription>Configure automated alerts for XClarity integration issues</CardDescription>
+              <CardDescription>Configure automated alerts for InfraMonitor integration issues</CardDescription>
             </div>
             <Button onClick={handleAddRule} size="sm">
               <Plus className="h-4 w-4 mr-1" />
@@ -267,7 +267,7 @@ const XClarityAlerts = () => {
             <AlertTriangle className="h-5 w-5" />
             Alert History
           </CardTitle>
-          <CardDescription>Recent alerts triggered by XClarity monitoring</CardDescription>
+          <CardDescription>Recent alerts triggered by InfraMonitor monitoring</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           {alertHistory.map((alert) => (

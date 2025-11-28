@@ -24,8 +24,8 @@ interface Integration {
 
 const integrations: Integration[] = [
   // Data Sources
-  { name: "Lenovo XClarity", category: "data-source", status: "connected", icon: "🖥️", metrics: [{ label: "Nodes", value: "247" }, { label: "Uptime", value: "99.97%" }] },
-  { name: "TruScale Telemetry", category: "data-source", status: "connected", icon: "📊", metrics: [{ label: "Metrics/min", value: "15.2K" }] },
+  { name: "InfraMonitor", category: "data-source", status: "connected", icon: "🖥️", metrics: [{ label: "Nodes", value: "247" }, { label: "Uptime", value: "99.97%" }] },
+  { name: "CloudHub Telemetry", category: "data-source", status: "connected", icon: "📊", metrics: [{ label: "Metrics/min", value: "15.2K" }] },
   { name: "AWS CloudWatch", category: "data-source", status: "connected", icon: "☁️", metrics: [{ label: "Accounts", value: "12" }] },
   { name: "Azure Monitor", category: "data-source", status: "connected", icon: "🔷", metrics: [{ label: "Subscriptions", value: "8" }] },
   { name: "Sustainability Data", category: "data-source", status: "connected", icon: "🌱", metrics: [{ label: "CO₂ Tracked", value: "2.4T" }] },
@@ -96,7 +96,7 @@ const Integrations = () => {
         <Tabs defaultValue="integrations" className="w-full">
           <TabsList className="mb-6">
             <TabsTrigger value="integrations">All Integrations</TabsTrigger>
-            <TabsTrigger value="monitoring">XClarity Monitoring</TabsTrigger>
+            <TabsTrigger value="monitoring">InfraMonitor Monitoring</TabsTrigger>
             <TabsTrigger value="alerts">Alert Management</TabsTrigger>
             <TabsTrigger value="conflicts">Data Validation</TabsTrigger>
           </TabsList>
@@ -141,7 +141,7 @@ const Integrations = () => {
                           variant="outline" 
                           size="sm" 
                           className="w-full mt-4"
-                          onClick={() => integration.name === "Lenovo XClarity" && setXclarityConfigOpen(true)}
+                          onClick={() => integration.name === "InfraMonitor" && setXclarityConfigOpen(true)}
                         >
                           Configure
                         </Button>
@@ -154,7 +154,7 @@ const Integrations = () => {
                           variant="outline" 
                           size="sm" 
                           className="w-full"
-                          onClick={() => integration.name === "Lenovo XClarity" && setXclarityConfigOpen(true)}
+                          onClick={() => integration.name === "InfraMonitor" && setXclarityConfigOpen(true)}
                         >
                           Configure
                         </Button>
@@ -172,7 +172,7 @@ const Integrations = () => {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              Connect additional data sources, AI models, or enterprise tools to expand TruScale capabilities.
+              Connect additional data sources, AI models, or enterprise tools to expand CloudHub capabilities.
             </p>
             <Button className="bg-primary hover:bg-primary/90">
               <LinkIcon className="h-4 w-4 mr-2" />

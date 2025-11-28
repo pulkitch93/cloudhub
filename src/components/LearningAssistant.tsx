@@ -40,11 +40,11 @@ const LearningAssistant = ({ mode = "teach" }: LearningAssistantProps) => {
       const lowerInput = userMessage.toLowerCase();
       
       if (lowerInput.includes("vmware") || lowerInput.includes("aria")) {
-        response = "To integrate VMware Aria with TruScale, you'll need to:\n\n1. Configure API credentials in the Integrations page\n2. Set up data collection intervals\n3. Map your VMware resources to TruScale entities\n\nI recommend starting with the 'VMware Aria Integration Fundamentals' course. Would you like me to open it for you?";
-      } else if (lowerInput.includes("truscale") || lowerInput.includes("billing")) {
-        response = "TruScale billing optimization involves:\n\n• Understanding usage patterns\n• Setting up cost allocation rules\n• Configuring automated alerts\n• Right-sizing resources\n\nThe 'TruScale Billing Optimization' course covers all these topics. I can also show you the FinOps dashboard where you can practice these concepts.";
+        response = "To integrate VMware Aria with CloudHub, you'll need to:\n\n1. Configure API credentials in the Integrations page\n2. Set up data collection intervals\n3. Map your VMware resources to CloudHub entities\n\nI recommend starting with the 'VMware Aria Integration Fundamentals' course. Would you like me to open it for you?";
+      } else if (lowerInput.includes("cloudhub") || lowerInput.includes("billing")) {
+        response = "CloudHub billing optimization involves:\n\n• Understanding usage patterns\n• Setting up cost allocation rules\n• Configuring automated alerts\n• Right-sizing resources\n\nThe 'CloudHub Billing Optimization' course covers all these topics. I can also show you the FinOps dashboard where you can practice these concepts.";
       } else if (lowerInput.includes("certificate") || lowerInput.includes("certification")) {
-        response = "You can earn certificates by completing courses and passing assessments. Your current progress:\n\n✓ VMware Aria Integration - 65% complete\n○ TruScale Billing - Not started\n✓ Nutanix HCI Best Practices - 100% (Certificate earned!)\n\nComplete 2 more courses to unlock the 'XClarity Expert' certification.";
+        response = "You can earn certificates by completing courses and passing assessments. Your current progress:\n\n✓ VMware Aria Integration - 65% complete\n○ CloudHub Billing - Not started\n✓ Nutanix HCI Best Practices - 100% (Certificate earned!)\n\nComplete 2 more courses to unlock the 'InfraMonitor Expert' certification.";
       } else if (lowerInput.includes("partner") || lowerInput.includes("nutanix") || lowerInput.includes("azure")) {
         response = "Our partner ecosystem includes comprehensive resources from leading vendors. I can help you navigate documentation from:\n\n• VMware - vSphere, Aria, Tanzu\n• Microsoft Azure - Hybrid Cloud, Arc\n• Nutanix - HCI, Cloud Platform\n• NVIDIA - GPU Computing, AI\n\nWhich partner's resources would you like to explore?";
       } else if (lowerInput.includes("expert") || lowerInput.includes("help") || lowerInput.includes("support")) {

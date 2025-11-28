@@ -150,7 +150,7 @@ const XClarityMonitoring = () => {
                 <Activity className="h-5 w-5" />
                 Connection Status
               </CardTitle>
-              <CardDescription>Real-time XClarity API connection health</CardDescription>
+              <CardDescription>Real-time InfraMonitor API connection health</CardDescription>
             </div>
             {getStatusBadge(currentMetrics.status)}
           </div>
@@ -184,7 +184,7 @@ const XClarityMonitoring = () => {
             <TrendingUp className="h-5 w-5" />
             Historical Trends
           </CardTitle>
-          <CardDescription>Last 10 minutes of XClarity API performance metrics</CardDescription>
+          <CardDescription>Last 10 minutes of InfraMonitor API performance metrics</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="response-time" className="w-full">

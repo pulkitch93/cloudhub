@@ -17,7 +17,7 @@ const costTrendData = [
 ];
 
 const costByCloud = [
-  { name: "Lenovo TruScale", value: 385, color: "#E2231A" },
+  { name: "CloudHub", value: 385, color: "#E2231A" },
   { name: "AWS", value: 245, color: "#FF9900" },
   { name: "Azure", value: 152, color: "#0089D6" },
   { name: "GCP", value: 65, color: "#4285F4" },

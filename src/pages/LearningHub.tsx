@@ -62,8 +62,8 @@ const mockCourses: Course[] = [
   },
   {
     id: '2',
-    title: 'TruScale Billing Optimization',
-    provider: 'Lenovo',
+    title: 'CloudHub Billing Optimization',
+    provider: 'Platform',
     duration: '1h 45m',
     level: 'Intermediate',
     progress: 0,
@@ -72,8 +72,8 @@ const mockCourses: Course[] = [
   },
   {
     id: '3',
-    title: 'Advanced AIOps with XClarity',
-    provider: 'Lenovo',
+    title: 'Advanced AIOps with InfraMonitor',
+    provider: 'Platform',
     duration: '3h 15m',
     level: 'Advanced',
     progress: 30,
@@ -296,7 +296,7 @@ const LearningHub = () => {
                   <h4 className="text-sm font-semibold text-foreground mb-2">AI Recommended for You</h4>
                   <p className="text-sm text-muted-foreground mb-3">
                     Based on your role as an IT Admin and recent activity in the FinOps module, 
-                    we recommend starting with TruScale Billing Optimization.
+                    we recommend starting with CloudHub Billing Optimization.
                   </p>
                   <Button size="sm" variant="outline">
                     Start Learning
@@ -454,9 +454,9 @@ const LearningHub = () => {
                 <div className="space-y-3">
                   {[
                     { title: 'Best practices for VMware Aria integration?', replies: 24, views: 342, solved: true },
-                    { title: 'TruScale billing optimization tips', replies: 18, views: 287, solved: true },
+                    { title: 'CloudHub billing optimization tips', replies: 18, views: 287, solved: true },
                     { title: 'Azure hybrid cloud setup questions', replies: 31, views: 456, solved: false },
-                    { title: 'XClarity AI model fine-tuning', replies: 12, views: 198, solved: false },
+                    { title: 'InfraMonitor AI model fine-tuning', replies: 12, views: 198, solved: false },
                     { title: 'Green computing metrics tracking', replies: 9, views: 145, solved: true }
                   ].map((topic, i) => (
                     <Card key={i} className="p-3 bg-card/50 border-border hover:border-primary/30 transition-colors cursor-pointer">
@@ -487,7 +487,7 @@ const LearningHub = () => {
                 </h3>
 
                 <p className="text-sm text-muted-foreground mb-4">
-                  Connect with Lenovo specialists and partners for personalized guidance
+                  Connect with platform specialists and partners for personalized guidance
                 </p>
 
                 <div className="space-y-3 mb-4">
@@ -525,7 +525,7 @@ const LearningHub = () => {
                   <Search className="h-6 w-6 text-primary mb-2" />
                   <h4 className="text-sm font-semibold text-foreground mb-1">Quick Search</h4>
                   <p className="text-xs text-muted-foreground">
-                    Find answers across Lenovo and partner documentation
+                    Find answers across platform and partner documentation
                   </p>
                 </Card>
 
@@ -568,7 +568,7 @@ const LearningHub = () => {
                     <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
                       <li>• Optimizing FinOps dashboard configurations</li>
                       <li>• Setting up automated cost allocation rules</li>
-                      <li>• Understanding TruScale pricing tiers</li>
+                      <li>• Understanding CloudHub pricing tiers</li>
                     </ul>
                   </div>
                 </div>
