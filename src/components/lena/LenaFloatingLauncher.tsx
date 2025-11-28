@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { MessageCircle, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import LenaChatPanel from './LenaChatPanel';
+import NovaChatPanel from './LenaChatPanel';
 import { useLocation } from 'react-router-dom';
 
-const LenaFloatingLauncher = () => {
+const NovaFloatingLauncher = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(3);
   const location = useLocation();
@@ -31,7 +31,7 @@ const LenaFloatingLauncher = () => {
         <Button
           onClick={handleOpen}
           className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:scale-110 transition-transform z-50"
-          aria-label="Open Lena AI Assistant"
+          aria-label="Open Nova AI Assistant"
         >
           <MessageCircle className="w-6 h-6" />
           {unreadCount > 0 && (
@@ -46,7 +46,7 @@ const LenaFloatingLauncher = () => {
       )}
 
       {/* Chat Panel */}
-      {isOpen && <LenaChatPanel onClose={handleClose} />}
+      {isOpen && <NovaChatPanel onClose={handleClose} />}
 
       {/* Keyboard shortcut hint */}
       {!isOpen && (
@@ -58,4 +58,4 @@ const LenaFloatingLauncher = () => {
   );
 };
 
-export default LenaFloatingLauncher;
+export default NovaFloatingLauncher;

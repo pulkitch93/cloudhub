@@ -1,4 +1,4 @@
-export interface LenaMessage {
+export interface NovaMessage {
   id: string;
   role: 'user' | 'assistant' | 'system';
   content: string;
@@ -7,7 +7,7 @@ export interface LenaMessage {
   metadata?: any;
 }
 
-export interface LenaAlert {
+export interface NovaAlert {
   id: string;
   severity: 'critical' | 'high' | 'medium' | 'low';
   title: string;
@@ -39,7 +39,7 @@ export interface RunbookStep {
   validationMsg?: string;
 }
 
-export type LenaIntent = 
+export type NovaIntent = 
   | 'ALERTS_LIST'
   | 'ALERTS_DIAGNOSE'
   | 'COST_TREND'
@@ -51,7 +51,7 @@ export type LenaIntent =
   | 'EXPLAIN_CHANGE'
   | 'GENERAL_QA';
 
-export interface LenaContext {
+export interface NovaContext {
   currentPage: string;
   filters: {
     timeRange?: string;

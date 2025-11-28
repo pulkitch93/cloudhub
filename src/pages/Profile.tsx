@@ -15,7 +15,7 @@ const Profile = () => {
   ];
 
   const certifications = [
-    { name: "XClarity Expert", issued: "2024-11", level: "Advanced" },
+    { name: "InfraMonitor Expert", issued: "2024-11", level: "Advanced" },
     { name: "FinOps Practitioner", issued: "2024-10", level: "Intermediate" },
     { name: "Cloud Infrastructure", issued: "2024-09", level: "Professional" },
   ];
@@ -52,13 +52,13 @@ const Profile = () => {
                 </Avatar>
                 <h3 className="text-xl font-semibold text-foreground">John Doe</h3>
                 <p className="text-sm text-muted-foreground mb-2">Infrastructure Admin</p>
-                <Badge variant="secondary">Lenovo Enterprise</Badge>
+                <Badge variant="secondary">Enterprise Account</Badge>
               </div>
 
               <div className="space-y-3 pt-4 border-t">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Email</span>
-                  <span className="text-sm font-medium">john.doe@lenovo.com</span>
+                  <span className="text-sm font-medium">john.doe@company.com</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Role</span>

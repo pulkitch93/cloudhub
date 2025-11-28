@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NewDashboard from "./pages/NewDashboard";
 import Marketing from "./pages/Marketing";
-import LenaFloatingLauncher from "./components/lena/LenaFloatingLauncher";
+import NovaFloatingLauncher from "./components/lena/LenaFloatingLauncher";
 import Integrations from "./pages/Integrations";
 import AIModels from "./pages/AIModels";
 import FinOps from "./pages/FinOps";
@@ -62,7 +62,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-        <LenaFloatingLauncher />
+        <NovaFloatingLauncher />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

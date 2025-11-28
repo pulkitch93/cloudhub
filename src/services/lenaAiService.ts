@@ -1,7 +1,7 @@
-import { LenaAlert, PrescriptiveAction, LenaContext } from '@/types/lenaAI';
+import { NovaAlert, PrescriptiveAction, NovaContext } from '@/types/lenaAI';
 
 // Mock alerts data
-export const mockAlerts: LenaAlert[] = [
+export const mockAlerts: NovaAlert[] = [
   {
     id: 'alert-1',
     severity: 'critical',
@@ -214,8 +214,8 @@ export const mockPrescriptiveActions: PrescriptiveAction[] = mockAlerts
   .map(a => a.prescriptiveAction!);
 
 // Service functions
-export const lenaAiService = {
-  async getAlerts(filters?: { severity?: string; status?: string; timeWindow?: string }): Promise<LenaAlert[]> {
+export const novaAiService = {
+  async getAlerts(filters?: { severity?: string; status?: string; timeWindow?: string }): Promise<NovaAlert[]> {
     await new Promise(resolve => setTimeout(resolve, 300));
     let results = [...mockAlerts];
     
@@ -262,7 +262,7 @@ export const lenaAiService = {
     };
   },
 
-  async handleSlashCommand(command: string, args: string[], context: LenaContext): Promise<string> {
+  async handleSlashCommand(command: string, args: string[], context: NovaContext): Promise<string> {
     await new Promise(resolve => setTimeout(resolve, 500));
     
     switch (command) {

@@ -68,7 +68,7 @@ const Settings = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Appearance</CardTitle>
-                <CardDescription>Customize how TruScale AIOps looks for you</CardDescription>
+                <CardDescription>Customize how CloudHub AIOps looks for you</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
@@ -216,7 +216,7 @@ const Settings = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" defaultValue="john.doe@lenovo.com" />
+                  <Input id="email" type="email" defaultValue="john.doe@company.com" />
                 </div>
 
                 <div className="space-y-2">
@@ -226,7 +226,7 @@ const Settings = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="organization">Organization</Label>
-                  <Input id="organization" defaultValue="Lenovo Enterprise" disabled />
+                  <Input id="organization" defaultValue="Enterprise Account" disabled />
                 </div>
               </CardContent>
             </Card>

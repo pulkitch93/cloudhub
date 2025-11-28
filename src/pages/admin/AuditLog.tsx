@@ -31,7 +31,7 @@ const mockAuditLog: AuditEntry[] = [
   {
     id: "1",
     timestamp: "2025-01-10 14:23:15",
-    actor: "admin@lenovo.com",
+    actor: "admin@platform.com",
     action: "Create Organization",
     tenant: "Acme Corporation",
     resource: "Organization",
@@ -41,7 +41,7 @@ const mockAuditLog: AuditEntry[] = [
   {
     id: "2",
     timestamp: "2025-01-10 13:45:22",
-    actor: "support@lenovo.com",
+    actor: "support@platform.com",
     action: "Update SLA Tier",
     tenant: "Global Tech Solutions",
     resource: "Subscription",
@@ -51,7 +51,7 @@ const mockAuditLog: AuditEntry[] = [
   {
     id: "3",
     timestamp: "2025-01-10 12:10:08",
-    actor: "admin@lenovo.com",
+    actor: "admin@platform.com",
     action: "Suspend Tenant",
     tenant: "Healthcare Systems Inc",
     resource: "Organization",
@@ -61,7 +61,7 @@ const mockAuditLog: AuditEntry[] = [
   {
     id: "4",
     timestamp: "2025-01-10 11:30:45",
-    actor: "implementer@lenovo.com",
+    actor: "implementer@platform.com",
     action: "Deploy Infrastructure",
     tenant: "Finance Corp",
     resource: "Deployment",

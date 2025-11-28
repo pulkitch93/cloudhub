@@ -91,7 +91,7 @@ const Marketing = () => {
 
   const features = [
     {
-      title: 'AI Copilot - Lena',
+      title: 'AI Copilot - Nova',
       description: 'Your intelligent assistant for troubleshooting, optimization, and guided remediation',
       icon: Sparkles,
     },
@@ -307,7 +307,7 @@ const Marketing = () => {
                       </div>
                       <div>
                         <h4 className="font-semibold">AI-Powered</h4>
-                        <p className="text-sm text-muted-foreground">Lena AI copilot for guided operations</p>
+                        <p className="text-sm text-muted-foreground">Nova AI copilot for guided operations</p>
                       </div>
                     </div>
                   </div>

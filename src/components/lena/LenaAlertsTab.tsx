@@ -4,16 +4,16 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertCircle, Clock, CheckCircle2, Zap, ChevronDown } from 'lucide-react';
-import { LenaAlert } from '@/types/lenaAI';
-import { lenaAiService } from '@/services/lenaAiService';
+import { NovaAlert } from '@/types/lenaAI';
+import { novaAiService } from '@/services/lenaAiService';
 import { useToast } from '@/hooks/use-toast';
-import LenaRunbookDrawer from './LenaRunbookDrawer';
+import NovaRunbookDrawer from './LenaRunbookDrawer';
 
-const LenaAlertsTab = () => {
-  const [alerts, setAlerts] = useState<LenaAlert[]>([]);
+const NovaAlertsTab = () => {
+  const [alerts, setAlerts] = useState<NovaAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [severityFilter, setSeverityFilter] = useState<string>('all');
-  const [selectedAlert, setSelectedAlert] = useState<LenaAlert | null>(null);
+  const [selectedAlert, setSelectedAlert] = useState<NovaAlert | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -24,7 +24,7 @@ const LenaAlertsTab = () => {
     setLoading(true);
     try {
       const filters = severityFilter !== 'all' ? { severity: severityFilter } : undefined;
-      const data = await lenaAiService.getAlerts(filters);
+      const data = await novaAiService.getAlerts(filters);
       setAlerts(data);
     } catch (error) {
       console.error('Error fetching alerts:', error);
@@ -33,7 +33,7 @@ const LenaAlertsTab = () => {
     }
   };
 
-  const getSeverityStyles = (severity: LenaAlert['severity']) => {
+  const getSeverityStyles = (severity: NovaAlert['severity']) => {
     switch (severity) {
       case 'critical':
         return {
@@ -66,7 +66,7 @@ const LenaAlertsTab = () => {
     }
   };
 
-  const handleResolve = (alert: LenaAlert) => {
+  const handleResolve = (alert: NovaAlert) => {
     if (alert.prescriptiveAction) {
       setSelectedAlert(alert);
     } else {
@@ -76,7 +76,7 @@ const LenaAlertsTab = () => {
 
   const resolveAlert = async (alertId: string) => {
     try {
-      await lenaAiService.resolveAlert(alertId);
+      await novaAiService.resolveAlert(alertId);
       toast({ 
         title: 'Resolved', 
         description: 'Alert marked as resolved',
@@ -93,7 +93,7 @@ const LenaAlertsTab = () => {
 
   const handleSnooze = async (alertId: string) => {
     try {
-      await lenaAiService.snoozeAlert(alertId, 60);
+      await novaAiService.snoozeAlert(alertId, 60);
       toast({ 
         title: 'Snoozed', 
         description: 'Remind in 1 hour' 
@@ -287,7 +287,7 @@ const LenaAlertsTab = () => {
 
       {/* Runbook Drawer */}
       {selectedAlert && selectedAlert.prescriptiveAction && (
-        <LenaRunbookDrawer
+        <NovaRunbookDrawer
           action={selectedAlert.prescriptiveAction}
           onClose={() => setSelectedAlert(null)}
           onComplete={() => {
@@ -313,4 +313,4 @@ const LenaAlertsTab = () => {
   );
 };
 
-export default LenaAlertsTab;
+export default NovaAlertsTab;
