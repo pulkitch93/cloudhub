@@ -1,6 +1,33 @@
+/**
+ * @fileoverview Nova AI Assistant service for intelligent operations.
+ * Provides alert management, runbook execution, and slash command handling.
+ * @module services/lenaAiService
+ * @version 1.0.0
+ * 
+ * @description
+ * This service powers the Nova AI assistant, providing:
+ * - Alert retrieval and management
+ * - Prescriptive action recommendations
+ * - Automated runbook execution
+ * - Slash command parsing and handling
+ * 
+ * @example
+ * import { novaAiService } from '@/services/lenaAiService';
+ * 
+ * // Get all critical alerts
+ * const criticalAlerts = await novaAiService.getAlerts({ severity: 'critical' });
+ * 
+ * // Execute a runbook
+ * const result = await novaAiService.executeRunbook('action-1');
+ */
+
 import { NovaAlert, PrescriptiveAction, NovaContext } from '@/types/lenaAI';
 
-// Mock alerts data
+/**
+ * Mock alerts data for demonstration.
+ * Includes realistic examples with prescriptive actions.
+ * @constant {NovaAlert[]}
+ */
 export const mockAlerts: NovaAlert[] = [
   {
     id: 'alert-1',
@@ -208,13 +235,37 @@ export const mockAlerts: NovaAlert[] = [
   },
 ];
 
-// Mock prescriptive actions
+/**
+ * Prescriptive actions extracted from alerts that have them.
+ * @constant {PrescriptiveAction[]}
+ */
 export const mockPrescriptiveActions: PrescriptiveAction[] = mockAlerts
   .filter(a => a.prescriptiveAction)
   .map(a => a.prescriptiveAction!);
 
-// Service functions
+/**
+ * Nova AI service object.
+ * Provides methods for alert management and AI-powered operations.
+ * 
+ * @namespace novaAiService
+ */
 export const novaAiService = {
+  /**
+   * Retrieves alerts with optional filtering.
+   * Results are sorted by impact score (highest first).
+   * @async
+   * @param {Object} [filters] - Optional filter criteria
+   * @param {string} [filters.severity] - Filter by severity level
+   * @param {string} [filters.status] - Filter by alert status
+   * @param {string} [filters.timeWindow] - Filter by time window (not implemented)
+   * @returns {Promise<NovaAlert[]>} Promise resolving to sorted array of alerts
+   * @example
+   * // Get critical alerts
+   * const criticalAlerts = await novaAiService.getAlerts({ severity: 'critical' });
+   * 
+   * // Get open alerts
+   * const openAlerts = await novaAiService.getAlerts({ status: 'open' });
+   */
   async getAlerts(filters?: { severity?: string; status?: string; timeWindow?: string }): Promise<NovaAlert[]> {
     await new Promise(resolve => setTimeout(resolve, 300));
     let results = [...mockAlerts];
@@ -229,21 +280,59 @@ export const novaAiService = {
     return results.sort((a, b) => b.impactScore - a.impactScore);
   },
 
+  /**
+   * Assigns an alert to a user for follow-up.
+   * @async
+   * @param {string} alertId - Alert ID to assign
+   * @param {string} userId - User ID to assign to
+   * @returns {Promise<void>}
+   * @example
+   * await novaAiService.assignAlert('alert-1', 'user-123');
+   */
   async assignAlert(alertId: string, userId: string): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 300));
     console.log(`Alert ${alertId} assigned to ${userId}`);
   },
 
+  /**
+   * Snoozes an alert for a specified duration.
+   * @async
+   * @param {string} alertId - Alert ID to snooze
+   * @param {number} duration - Duration in minutes
+   * @returns {Promise<void>}
+   * @example
+   * // Snooze for 2 hours
+   * await novaAiService.snoozeAlert('alert-1', 120);
+   */
   async snoozeAlert(alertId: string, duration: number): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 300));
     console.log(`Alert ${alertId} snoozed for ${duration} minutes`);
   },
 
+  /**
+   * Resolves an alert and marks it as completed.
+   * @async
+   * @param {string} alertId - Alert ID to resolve
+   * @returns {Promise<void>}
+   * @example
+   * await novaAiService.resolveAlert('alert-1');
+   */
   async resolveAlert(alertId: string): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 300));
     console.log(`Alert ${alertId} resolved`);
   },
 
+  /**
+   * Executes an automated runbook for a prescriptive action.
+   * @async
+   * @param {string} actionId - Action/runbook ID to execute
+   * @returns {Promise<{success: boolean, message: string}>} Execution result
+   * @example
+   * const result = await novaAiService.executeRunbook('action-1');
+   * if (result.success) {
+   *   console.log(result.message);
+   * }
+   */
   async executeRunbook(actionId: string): Promise<{ success: boolean; message: string }> {
     await new Promise(resolve => setTimeout(resolve, 2000));
     return {
@@ -252,6 +341,17 @@ export const novaAiService = {
     };
   },
 
+  /**
+   * Parses a slash command from user input.
+   * @param {string} input - User input string
+   * @returns {{command: string, args: string[]} | null} Parsed command or null if not a slash command
+   * @example
+   * const parsed = novaAiService.parseSlashCommand('/alerts today');
+   * // Returns: { command: 'alerts', args: ['today'] }
+   * 
+   * const notSlash = novaAiService.parseSlashCommand('regular message');
+   * // Returns: null
+   */
   parseSlashCommand(input: string): { command: string; args: string[] } | null {
     if (!input.startsWith('/')) return null;
     
@@ -262,6 +362,28 @@ export const novaAiService = {
     };
   },
 
+  /**
+   * Handles a parsed slash command and returns a response.
+   * 
+   * Supported commands:
+   * - `/alerts today` - Lists alerts from today
+   * - `/cost top-drivers` - Shows top cost drivers
+   * - `/rightsize hotspots` - Shows rightsizing opportunities
+   * - `/explain change last7d` - Explains recent changes
+   * - `/adoption opportunities` - Shows adoption opportunities
+   * 
+   * @async
+   * @param {string} command - The command name (without slash)
+   * @param {string[]} args - Command arguments
+   * @param {NovaContext} context - Current application context
+   * @returns {Promise<string>} Response message
+   * @example
+   * const response = await novaAiService.handleSlashCommand(
+   *   'alerts',
+   *   ['today'],
+   *   { currentPage: '/dashboard', filters: {}, recentAlerts: 5, healthSignals: {} }
+   * );
+   */
   async handleSlashCommand(command: string, args: string[], context: NovaContext): Promise<string> {
     await new Promise(resolve => setTimeout(resolve, 500));
     

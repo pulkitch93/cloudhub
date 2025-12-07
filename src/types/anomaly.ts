@@ -1,3 +1,38 @@
+/**
+ * @fileoverview Anomaly detection type definitions for cost and carbon monitoring.
+ * Contains interfaces for anomalies with root cause analysis and remediation steps.
+ * @module types/anomaly
+ * @version 1.0.0
+ */
+
+/**
+ * Represents a detected anomaly in the system (cost or carbon).
+ * Includes root cause analysis and recommended remediation steps.
+ * @interface Anomaly
+ * @property {string} id - Unique anomaly identifier (e.g., "ANM-001")
+ * @property {"cost" | "carbon"} type - Type of anomaly detected
+ * @property {"critical" | "warning" | "info"} severity - Anomaly severity level
+ * @property {string} title - Brief title describing the anomaly
+ * @property {string} description - Detailed description of what was detected
+ * @property {string} detectedAt - ISO 8601 timestamp when anomaly was detected
+ * @property {AnomalyMetric} metric - Quantitative metric information
+ * @property {RootCause} rootCause - Root cause analysis details
+ * @property {Remediation} remediation - Recommended remediation steps
+ * @property {"active" | "acknowledged" | "resolved"} status - Current anomaly status
+ * @example
+ * const anomaly: Anomaly = {
+ *   id: 'ANM-001',
+ *   type: 'cost',
+ *   severity: 'critical',
+ *   title: 'Unexpected compute cost spike',
+ *   description: 'Compute costs increased by 127% above forecast',
+ *   detectedAt: '2024-03-15T10:30:00Z',
+ *   metric: { name: 'Compute Cost', current: 425000, expected: 187000, deviation: 127 },
+ *   rootCause: { summary: 'Auto-scaling triggered', details: [...], affectedResources: [...] },
+ *   remediation: { automated: true, steps: [...], estimatedImpact: 'Save $18K/month' },
+ *   status: 'active'
+ * };
+ */
 export interface Anomaly {
   id: string;
   type: "cost" | "carbon";
@@ -6,24 +41,63 @@ export interface Anomaly {
   description: string;
   detectedAt: string;
   metric: {
+    /**
+     * Name of the metric being tracked
+     * @example "Compute Cost", "Carbon Footprint"
+     */
     name: string;
+    /**
+     * Current metric value
+     */
     current: number;
+    /**
+     * Expected/baseline metric value
+     */
     expected: number;
+    /**
+     * Percentage deviation from expected value
+     */
     deviation: number;
   };
   rootCause: {
+    /**
+     * Brief summary of the root cause
+     */
     summary: string;
+    /**
+     * Detailed list of contributing factors
+     */
     details: string[];
+    /**
+     * List of affected resource identifiers
+     */
     affectedResources: string[];
   };
   remediation: {
+    /**
+     * Whether automated remediation is available
+     */
     automated: boolean;
+    /**
+     * Step-by-step remediation instructions
+     */
     steps: string[];
+    /**
+     * Estimated impact of applying remediation
+     */
     estimatedImpact: string;
   };
   status: "active" | "acknowledged" | "resolved";
 }
 
+/**
+ * Mock anomalies data for demonstration and testing.
+ * Includes realistic examples of cost and carbon anomalies.
+ * @constant {Anomaly[]}
+ * @example
+ * import { mockAnomalies } from '@/types/anomaly';
+ * const activeAnomalies = mockAnomalies.filter(a => a.status === 'active');
+ */
 export const mockAnomalies: Anomaly[] = [
   {
     id: "ANM-001",
