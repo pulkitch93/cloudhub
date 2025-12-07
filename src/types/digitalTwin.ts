@@ -1,3 +1,39 @@
+/**
+ * @fileoverview Digital Twin type definitions for infrastructure visualization.
+ * Contains interfaces for servers, racks, and simulation scenarios.
+ * @module types/digitalTwin
+ * @version 1.0.0
+ */
+
+/**
+ * Represents a physical or virtual server in the infrastructure.
+ * @interface Server
+ * @property {string} id - Unique server identifier
+ * @property {string} name - Display name (e.g., "WEB-PROD-01")
+ * @property {string} rack - Reference to parent rack ID
+ * @property {string} location - Geographic location or region
+ * @property {Position3D} position - 3D position for visualization
+ * @property {'healthy' | 'warning' | 'critical' | 'maintenance'} status - Current health status
+ * @property {ServerTelemetry} telemetry - Real-time telemetry data
+ * @property {string[]} workloads - List of workloads running on server
+ * @property {'Compute' | 'Storage' | 'AI Nodes' | 'Edge'} [serverType] - Server classification
+ * @property {'Americas' | 'EMEA' | 'APAC'} [region] - Geographic region
+ * @property {number} [uptime] - Uptime percentage (0-100)
+ * @property {string} [lastIncident] - Description of last incident
+ * @property {number} [latency] - Network latency in milliseconds
+ * @property {number} [packetLoss] - Packet loss percentage
+ * @example
+ * const server: Server = {
+ *   id: 'srv-001',
+ *   name: 'WEB-PROD-01',
+ *   rack: 'rack-1',
+ *   location: 'US-East',
+ *   position: { x: -3, y: 1.5, z: -2 },
+ *   status: 'healthy',
+ *   telemetry: { cpu: 45, memory: 68, temperature: 42, powerUsage: 285, networkTraffic: 1250 },
+ *   workloads: ['Web Server', 'Load Balancer']
+ * };
+ */
 export interface Server {
   id: string;
   name: string;
@@ -6,10 +42,25 @@ export interface Server {
   position: { x: number; y: number; z: number };
   status: 'healthy' | 'warning' | 'critical' | 'maintenance';
   telemetry: {
+    /**
+     * CPU utilization percentage (0-100)
+     */
     cpu: number;
+    /**
+     * Memory utilization percentage (0-100)
+     */
     memory: number;
+    /**
+     * Temperature in Celsius
+     */
     temperature: number;
+    /**
+     * Power consumption in Watts
+     */
     powerUsage: number;
+    /**
+     * Network traffic in Mbps
+     */
     networkTraffic: number;
   };
   workloads: string[];
@@ -21,6 +72,29 @@ export interface Server {
   packetLoss?: number;
 }
 
+/**
+ * Represents a server rack in the data center.
+ * @interface Rack
+ * @property {string} id - Unique rack identifier
+ * @property {string} name - Display name (e.g., "Rack A-1")
+ * @property {string} location - Data center location
+ * @property {Position3D} position - 3D position for visualization
+ * @property {number} capacity - Total rack units (U) available
+ * @property {number} used - Rack units currently in use
+ * @property {number} coolingEfficiency - Cooling efficiency percentage (0-100)
+ * @property {number} powerDraw - Total power draw in kW
+ * @example
+ * const rack: Rack = {
+ *   id: 'rack-1',
+ *   name: 'Rack A-1',
+ *   location: 'Data Center East',
+ *   position: { x: -3, y: 0, z: -2 },
+ *   capacity: 42,
+ *   used: 38,
+ *   coolingEfficiency: 92,
+ *   powerDraw: 8.5
+ * };
+ */
 export interface Rack {
   id: string;
   name: string;
@@ -32,19 +106,57 @@ export interface Rack {
   powerDraw: number;
 }
 
+/**
+ * Represents a what-if simulation scenario for capacity planning.
+ * @interface Scenario
+ * @property {string} id - Unique scenario identifier
+ * @property {string} name - Display name for the scenario
+ * @property {'growth' | 'migration' | 'sustainability'} type - Scenario category
+ * @property {string} description - Detailed description of the scenario
+ * @property {ScenarioImpact} impact - Projected impact metrics
+ * @example
+ * const scenario: Scenario = {
+ *   id: 'growth',
+ *   name: 'Growth Scenario',
+ *   type: 'growth',
+ *   description: 'Simulate 50% capacity increase over 6 months',
+ *   impact: {
+ *     capacity: '+21 servers required',
+ *     cost: '+$125K annual',
+ *     carbon: '+8.5T CO₂/year',
+ *     performance: '+45% throughput'
+ *   }
+ * };
+ */
 export interface Scenario {
   id: string;
   name: string;
   type: 'growth' | 'migration' | 'sustainability';
   description: string;
   impact: {
+    /**
+     * Impact on infrastructure capacity
+     */
     capacity: string;
+    /**
+     * Cost impact (annual)
+     */
     cost: string;
+    /**
+     * Carbon footprint impact
+     */
     carbon: string;
+    /**
+     * Performance impact
+     */
     performance: string;
   };
 }
 
+/**
+ * Mock rack data for demonstration and testing.
+ * @constant {Rack[]}
+ */
 export const mockRacks: Rack[] = [
   {
     id: 'rack-1',
@@ -78,6 +190,11 @@ export const mockRacks: Rack[] = [
   },
 ];
 
+/**
+ * Mock server data for demonstration and testing.
+ * Includes servers across multiple racks with various status states.
+ * @constant {Server[]}
+ */
 export const mockServers: Server[] = [
   {
     id: 'srv-001',
@@ -177,6 +294,10 @@ export const mockServers: Server[] = [
   },
 ];
 
+/**
+ * Predefined simulation scenarios for capacity planning.
+ * @constant {Scenario[]}
+ */
 export const scenarios: Scenario[] = [
   {
     id: 'growth',

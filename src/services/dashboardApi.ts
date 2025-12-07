@@ -1,6 +1,30 @@
+/**
+ * @fileoverview Dashboard API service for fetching platform data.
+ * Provides methods for retrieving tenants, workloads, metrics, alerts, and KPIs.
+ * @module services/dashboardApi
+ * @version 1.0.0
+ * 
+ * @description
+ * This service layer abstracts data fetching operations for the dashboard.
+ * Currently uses mock data generators for demonstration purposes.
+ * 
+ * @example
+ * import { dashboardApi } from '@/services/dashboardApi';
+ * 
+ * // Fetch KPI data
+ * const kpis = await dashboardApi.getKPIData();
+ * 
+ * // Fetch filtered workloads
+ * const workloads = await dashboardApi.getWorkloads({ provider: 'AWS' });
+ */
+
 import { Tenant, Workload, Aggregate, Alert, FeatureAdoption, Recommendation, KPIData } from '@/types/dashboard';
 
-// Mock data generators
+/**
+ * Generates mock tenant data for demonstration.
+ * @private
+ * @returns {Tenant[]} Array of mock tenant objects
+ */
 const generateMockTenants = (): Tenant[] => {
   const industries = ['Finance', 'Healthcare', 'Retail', 'Technology', 'Manufacturing'];
   const regions = ['us-east-1', 'eu-west-1', 'ap-southeast-1'];
@@ -17,6 +41,12 @@ const generateMockTenants = (): Tenant[] => {
   }));
 };
 
+/**
+ * Generates mock workload data for a given set of tenants.
+ * @private
+ * @param {Tenant[]} tenants - Array of tenants to generate workloads for
+ * @returns {Workload[]} Array of mock workload objects
+ */
 const generateMockWorkloads = (tenants: Tenant[]): Workload[] => {
   const providers = ['AWS', 'Azure', 'GCP', 'IBM Cloud'];
   const regions = ['us-east-1', 'eu-west-1', 'ap-southeast-1'];
@@ -36,6 +66,12 @@ const generateMockWorkloads = (tenants: Tenant[]): Workload[] => {
   );
 };
 
+/**
+ * Generates mock daily aggregate metrics.
+ * @private
+ * @param {number} days - Number of days to generate data for
+ * @returns {Aggregate[]} Array of daily aggregate objects
+ */
 const generateMockAggregates = (days: number): Aggregate[] => {
   return Array.from({ length: days }, (_, i) => {
     const date = new Date();
@@ -52,6 +88,12 @@ const generateMockAggregates = (days: number): Aggregate[] => {
   });
 };
 
+/**
+ * Generates mock alert data for a given set of tenants.
+ * @private
+ * @param {Tenant[]} tenants - Array of tenants to generate alerts for
+ * @returns {Alert[]} Array of mock alert objects
+ */
 const generateMockAlerts = (tenants: Tenant[]): Alert[] => {
   const severities: Alert['severity'][] = ['critical', 'high', 'medium', 'low'];
   const statuses: Alert['status'][] = ['open', 'assigned', 'resolved', 'snoozed'];
@@ -70,6 +112,11 @@ const generateMockAlerts = (tenants: Tenant[]): Alert[] => {
   }));
 };
 
+/**
+ * Generates mock AI-powered recommendations.
+ * @private
+ * @returns {Recommendation[]} Array of recommendation objects
+ */
 const generateMockRecommendations = (): Recommendation[] => {
   return [
     {
@@ -115,13 +162,44 @@ const generateMockRecommendations = (): Recommendation[] => {
   ];
 };
 
-// Mock API endpoints - TODO: Replace with actual API calls
+/**
+ * Dashboard API service object.
+ * Provides methods for fetching all dashboard-related data.
+ * 
+ * @namespace dashboardApi
+ * @description
+ * All methods are async and include simulated network latency (300ms).
+ * Replace with actual API calls when backend is available.
+ */
 export const dashboardApi = {
+  /**
+   * Retrieves all tenants in the platform.
+   * @async
+   * @returns {Promise<Tenant[]>} Promise resolving to array of tenants
+   * @example
+   * const tenants = await dashboardApi.getTenants();
+   * console.log(`Total tenants: ${tenants.length}`);
+   */
   async getTenants(): Promise<Tenant[]> {
     await new Promise(resolve => setTimeout(resolve, 300));
     return generateMockTenants();
   },
   
+  /**
+   * Retrieves workloads with optional filtering.
+   * @async
+   * @param {Object} [filters] - Optional filter criteria
+   * @param {string} [filters.tenantId] - Filter by tenant ID
+   * @param {string} [filters.provider] - Filter by cloud provider
+   * @param {string} [filters.region] - Filter by region
+   * @returns {Promise<Workload[]>} Promise resolving to filtered array of workloads
+   * @example
+   * // Get all AWS workloads
+   * const awsWorkloads = await dashboardApi.getWorkloads({ provider: 'AWS' });
+   * 
+   * // Get workloads for a specific tenant
+   * const tenantWorkloads = await dashboardApi.getWorkloads({ tenantId: 'tenant-1' });
+   */
   async getWorkloads(filters?: { tenantId?: string; provider?: string; region?: string }): Promise<Workload[]> {
     await new Promise(resolve => setTimeout(resolve, 300));
     const tenants = generateMockTenants();
@@ -140,12 +218,35 @@ export const dashboardApi = {
     return workloads;
   },
   
+  /**
+   * Retrieves aggregated metrics for a date range.
+   * @async
+   * @param {string} from - Start date in ISO 8601 format
+   * @param {string} to - End date in ISO 8601 format
+   * @returns {Promise<Aggregate[]>} Promise resolving to daily aggregates
+   * @example
+   * const metrics = await dashboardApi.getMetrics('2024-01-01', '2024-01-31');
+   * const totalCost = metrics.reduce((sum, m) => sum + m.totalCost, 0);
+   */
   async getMetrics(from: string, to: string): Promise<Aggregate[]> {
     await new Promise(resolve => setTimeout(resolve, 300));
     const days = Math.ceil((new Date(to).getTime() - new Date(from).getTime()) / (1000 * 60 * 60 * 24));
     return generateMockAggregates(days);
   },
   
+  /**
+   * Retrieves alerts with optional tenant filtering.
+   * @async
+   * @param {Object} [filters] - Optional filter criteria
+   * @param {string} [filters.tenantId] - Filter by tenant ID
+   * @returns {Promise<Alert[]>} Promise resolving to array of alerts
+   * @example
+   * // Get all alerts
+   * const allAlerts = await dashboardApi.getAlerts();
+   * 
+   * // Get alerts for specific tenant
+   * const tenantAlerts = await dashboardApi.getAlerts({ tenantId: 'tenant-1' });
+   */
   async getAlerts(filters?: { tenantId?: string }): Promise<Alert[]> {
     await new Promise(resolve => setTimeout(resolve, 300));
     const tenants = generateMockTenants();
@@ -158,6 +259,14 @@ export const dashboardApi = {
     return alerts;
   },
   
+  /**
+   * Retrieves feature adoption metrics over time.
+   * @async
+   * @returns {Promise<FeatureAdoption[]>} Promise resolving to 30 days of adoption data
+   * @example
+   * const adoption = await dashboardApi.getFeatureAdoption();
+   * const latestAdoption = adoption[adoption.length - 1].adoptionPct;
+   */
   async getFeatureAdoption(): Promise<FeatureAdoption[]> {
     await new Promise(resolve => setTimeout(resolve, 300));
     return Array.from({ length: 30 }, (_, i) => {
@@ -173,11 +282,29 @@ export const dashboardApi = {
     });
   },
   
+  /**
+   * Retrieves AI-generated recommendations.
+   * @async
+   * @returns {Promise<Recommendation[]>} Promise resolving to array of recommendations
+   * @example
+   * const recommendations = await dashboardApi.getRecommendations();
+   * const highImpact = recommendations.filter(r => r.impactScore > 80);
+   */
   async getRecommendations(): Promise<Recommendation[]> {
     await new Promise(resolve => setTimeout(resolve, 300));
     return generateMockRecommendations();
   },
   
+  /**
+   * Retrieves Key Performance Indicator data for the dashboard.
+   * Includes current values, deltas, and trend data for sparklines.
+   * @async
+   * @returns {Promise<KPIData>} Promise resolving to KPI data object
+   * @example
+   * const kpis = await dashboardApi.getKPIData();
+   * console.log(`Active tenants: ${kpis.activeTenants.value}`);
+   * console.log(`Change: ${kpis.activeTenants.delta}%`);
+   */
   async getKPIData(): Promise<KPIData> {
     await new Promise(resolve => setTimeout(resolve, 300));
     return {
@@ -209,16 +336,43 @@ export const dashboardApi = {
     };
   },
   
+  /**
+   * Assigns an alert to a user.
+   * @async
+   * @param {string} id - Alert ID to assign
+   * @param {string} userId - User ID to assign the alert to
+   * @returns {Promise<void>}
+   * @example
+   * await dashboardApi.assignAlert('alert-1', 'user-123');
+   */
   async assignAlert(id: string, userId: string): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 300));
     console.log(`Alert ${id} assigned to ${userId}`);
   },
   
+  /**
+   * Snoozes an alert for a specified duration.
+   * @async
+   * @param {string} id - Alert ID to snooze
+   * @param {number} duration - Duration in minutes to snooze
+   * @returns {Promise<void>}
+   * @example
+   * // Snooze for 1 hour
+   * await dashboardApi.snoozeAlert('alert-1', 60);
+   */
   async snoozeAlert(id: string, duration: number): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 300));
     console.log(`Alert ${id} snoozed for ${duration} minutes`);
   },
   
+  /**
+   * Applies a recommendation and tracks the action.
+   * @async
+   * @param {string} id - Recommendation ID to apply
+   * @returns {Promise<void>}
+   * @example
+   * await dashboardApi.applyRecommendation('rec-1');
+   */
   async applyRecommendation(id: string): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 300));
     console.log(`Recommendation ${id} applied`);
