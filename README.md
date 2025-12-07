@@ -2,6 +2,8 @@
 
 A comprehensive enterprise-grade hybrid cloud management platform built with React, TypeScript, and modern web technologies. CloudHub 2.0 provides AI-powered operations, cost optimization, sustainability tracking, and unified infrastructure management.
 
+---
+
 ## 🚀 Quick Start
 
 ```bash
@@ -18,458 +20,572 @@ npm install
 npm run dev
 ```
 
+---
+
 ## 🛠️ Technology Stack
 
-- **Frontend Framework**: React 18 with TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS with custom design system
-- **UI Components**: shadcn/ui (Radix UI primitives)
-- **State Management**: React Context + TanStack Query
-- **Routing**: React Router v6
-- **Charts & Visualization**: Recharts, Three.js (3D)
-- **Form Handling**: React Hook Form + Zod validation
-- **Notifications**: Sonner toast library
+| Category | Technology | Purpose |
+|----------|------------|---------|
+| **Frontend Framework** | React 18 + TypeScript | Component-based UI development |
+| **Build Tool** | Vite | Fast development server and optimized builds |
+| **Styling** | Tailwind CSS | Utility-first CSS with custom design system |
+| **UI Components** | shadcn/ui (Radix primitives) | Accessible, composable components |
+| **State Management** | React Context + TanStack Query | Client and server state |
+| **Routing** | React Router v6 | Client-side navigation |
+| **Charts** | Recharts | Data visualization |
+| **3D Graphics** | Three.js + React Three Fiber | 3D infrastructure visualization |
+| **Form Handling** | React Hook Form + Zod | Form management and validation |
+| **PDF Generation** | jsPDF + jspdf-autotable | Report generation |
+| **Excel Export** | xlsx (SheetJS) | Spreadsheet export |
+| **Notifications** | Sonner | Toast notifications |
 
 ---
 
-## 📦 Modules & Features
+## 📦 Feature Modules - Detailed Documentation
 
-### 1. Dashboard (`/`)
+### 1. Dashboard Module (`/`)
 
-The main command center providing a unified view of hybrid cloud operations.
+**Location:** `src/pages/NewDashboard.tsx`
 
-**Features:**
-- **Role-Based Views**: Toggle between Executive, Operations, and Default views with customized KPI visibility
-- **Key Performance Indicators (KPIs)**:
-  - Active Tenants count with trend indicators
-  - Active Workloads monitoring
-  - Current Month Spend tracking
-  - Open Alerts (24h) with severity breakdown
-  - Feature Adoption percentage
-- **Time Range Selector**: Filter data by 24h, 7d, 30d, or custom ranges
-- **Usage & Cost Trends**: Interactive line/area charts showing historical patterns
-- **Workload Distribution**: Visual breakdown of workload allocation
-- **Recommendations Panel**: AI-generated optimization suggestions
-- **Alerts Panel**: Prioritized action items requiring attention
-- **Export & Share**: Dashboard data export and sharing capabilities
+The main command center providing a unified view of hybrid cloud operations with role-based customization.
+
+#### How It Was Built
+
+The Dashboard uses a **Context-based architecture** with the `DashboardProvider` wrapping the entire module. This allows all child components to access shared state (filters, role selection) without prop drilling.
+
+```typescript
+// Context provides global state for the dashboard
+const DashboardContent = () => {
+  const { role, filters, resetFilters } = useDashboard();
+  const [kpiData, setKpiData] = useState<KPIData | null>(null);
+  
+  useEffect(() => {
+    const fetchKPIs = async () => {
+      const data = await dashboardApi.getKPIData();
+      setKpiData(data);
+    };
+    fetchKPIs();
+  }, [filters]); // Re-fetch when filters change
+```
+
+#### How It Functions
+
+1. **Role-Based Views**: The `RoleToggle` component switches between Executive/Operations views
+   - Executive view: Shows KPIs, cost analysis, recommendations
+   - Operations view: Shows KPIs, alerts, technical trends
+
+2. **Dynamic Section Visibility**: `getVisibleSections()` determines which panels to render based on role
+
+3. **Time Range Filtering**: `TimeRangeSelector` updates context, triggering data re-fetch
+
+4. **KPI Cards**: Five cards display key metrics with:
+   - Current value
+   - Delta (% change from previous period)
+   - Trend sparkline data
+
+#### Components Used
+- `DashboardKPICard` - Individual KPI display with trend
+- `RoleToggle` - Role switching UI
+- `TimeRangeSelector` - Time filter dropdown
+- `TrendCharts` - Recharts line/area charts
+- `WorkloadDistribution` - Pie/bar distribution charts
+- `RecommendationsPanel` - AI recommendations list
+- `AlertsPanel` - Priority alerts display
 
 ---
 
 ### 2. AIOps Command Center (`/aiops`)
 
+**Location:** `src/pages/AIOps.tsx`
+
 AI-powered operations center with global infrastructure visibility and intelligent automation.
 
-**Features:**
+#### How It Was Built
 
-#### Location View
-- **Global Server Map**: Interactive world map displaying server locations with real-time status
-- **Server Status Overview**: Healthy/Warning/Critical counts with color-coded badges
-- **Real-Time Telemetry**: CPU, memory, temperature, power usage, network traffic (4-second refresh)
-- **Scenario Simulator**: Run what-if scenarios on infrastructure
+The AIOps module uses a **Tab-based architecture** with 9 specialized views. Real-time data simulation is achieved through `setInterval` with 4-second refresh cycles.
 
-#### Topology View
-- **Infrastructure Topology**: Visual representation of network and server relationships
-- **Connection Mapping**: Understand dependencies between components
+```typescript
+// Real-time telemetry simulation
+useEffect(() => {
+  const interval = setInterval(() => {
+    setServers(prevServers =>
+      prevServers.map(server => ({
+        ...server,
+        telemetry: {
+          cpu: randomize(server.telemetry.cpu, 10, 95),
+          memory: randomize(server.telemetry.memory, 20, 98),
+          temperature: randomize(server.telemetry.temperature, 30, 75),
+          // ... more telemetry
+        },
+      }))
+    );
+    setLastUpdate(new Date());
+  }, 4000);
+  return () => clearInterval(interval);
+}, []);
+```
 
-#### Time Machine
-- **Historical Playback**: Review past infrastructure states
-- **Timeline Navigation**: Jump to specific points in time for analysis
+#### How It Functions
 
-#### AI Prediction
-- **Predictive Failure Analysis**: ML-based forecasting of potential issues
-- **Risk Scoring**: Probability-based assessment of failure likelihood
-- **Recommended Actions**: AI-suggested preventive measures
+1. **Global Server Map**: Interactive map with server markers colored by status
+2. **Real-Time Updates**: Telemetry values fluctuate every 4 seconds
+3. **Server Selection**: Clicking a server shows detailed telemetry overlay
+4. **Scenario Simulation**: Run what-if scenarios for capacity planning
 
-#### Capacity Heatmap
-- **Resource Utilization Visualization**: Heat-based display of capacity usage
-- **Hotspot Identification**: Quickly identify overloaded resources
+#### Tab Components
 
-#### Auto-Remediation
-- **Automated Remediation Engine**: Self-healing capabilities for common issues
-- **Remediation History**: Track automated fixes applied
-- **Manual Override Options**: Human-in-the-loop controls
-
-#### Workload Optimizer
-- **Workload Recommendation Engine**: AI-driven placement suggestions
-- **Cost/Performance Trade-offs**: Balance between efficiency and spending
-- **Migration Recommendations**: Optimal workload redistribution
-
-#### Collaboration
-- **Collaboration Canvas**: Team workspace for incident response
-- **Ticketing Integration**: Connect with ServiceNow, Jira, and other ITSM tools
-
-#### AR Maintenance
-- **AR Guided Maintenance**: Augmented reality assistance for physical maintenance tasks
-- **Step-by-Step Procedures**: Visual guides for hardware operations
+| Tab | Component | Function |
+|-----|-----------|----------|
+| Location View | `GlobalServerMap`, `TelemetryOverlay` | Geographic visualization |
+| Topology | `InfrastructureTopology` | Network relationship view |
+| Time Machine | `TimeMachine` | Historical state playback |
+| AI Prediction | `PredictiveFailureAnalysis` | ML-based failure prediction |
+| Heatmap | `CapacityHeatmap` | Resource utilization heat display |
+| Remediation | `AutomatedRemediation` | Self-healing automation |
+| Workload | `WorkloadRecommendationEngine` | Placement optimization |
+| Collaboration | `CollaborationCanvas`, `TicketingIntegration` | Team workspace |
+| AR Maintenance | `ARGuidedMaintenance` | AR-assisted procedures |
 
 ---
 
 ### 3. Edge & 5G Management (`/edge-management`)
 
-Comprehensive edge computing and 5G infrastructure management.
+**Location:** `src/pages/EdgeManagement.tsx`
 
-**Features:**
+Comprehensive edge computing and 5G infrastructure management with zero-touch provisioning.
 
-#### Device Health Dashboard
-- **Edge Device Inventory**: Track 5G nodes, IoT gateways, and edge servers
-- **Health Metrics**: Latency, CPU, memory, security scores per device
-- **Uptime Monitoring**: Individual device availability tracking
-- **Status Badges**: Online/Warning/Offline visual indicators
+#### How It Was Built
 
-#### Live Alerts
-- **Edge Alert Monitor**: Real-time alerts from edge infrastructure
-- **Alert Severity Classification**: Critical/High/Medium/Low prioritization
-- **Alert Acknowledgment**: Track alert lifecycle
+Edge Management uses **stateful device management** with local state for devices and provisioning. The UI is organized into 11 tabs covering the complete edge lifecycle.
 
-#### Network Traffic
-- **Network Traffic Visualizer**: Real-time traffic flow visualization
-- **Bandwidth Monitoring**: Track network capacity utilization
-- **Traffic Patterns**: Historical traffic analysis
+```typescript
+// Device state with typed interface
+const [devices, setDevices] = useState<EdgeDevice[]>([
+  {
+    id: 'edge-001',
+    name: '5G Node Alpha',
+    type: '5G',
+    status: 'online',
+    latency: 12,
+    cpu: 45,
+    memory: 62,
+    security: 98,
+    location: 'US-East',
+    uptime: 99.8
+  },
+  // ... more devices
+]);
+```
 
-#### Predictive Maintenance
-- **ML-Based Maintenance Predictions**: Forecast maintenance needs
-- **Failure Probability Scores**: Risk assessment per device
-- **Maintenance Scheduling**: Optimize maintenance windows
+#### How It Functions
 
-#### Multi-Region Management
-- **Cross-Region Orchestration**: Manage edge across geographic regions
-- **Regional Health Dashboards**: Per-region status overview
-- **Failover Management**: Handle regional incidents
+1. **Device Health Dashboard**: Cards showing device metrics with progress bars
+2. **Zero-Touch Provisioning**: Automated onboarding simulation
+   ```typescript
+   const startZeroTouchProvisioning = () => {
+     setProvisioningStatus({ inProgress: true, progress: 0 });
+     const steps = ['Device discovery...', 'Security validation...', ...];
+     // Simulate step-by-step progress
+   };
+   ```
+3. **Predictive Maintenance**: ML predictions for maintenance scheduling
+4. **Multi-Region Management**: Cross-region orchestration controls
 
-#### Topology Map
-- **Edge Topology Visualization**: Geographic device placement
-- **Connection Links**: Visualize inter-device communication
-- **Status Overlay**: Real-time health on topology
-
-#### Incident Response
-- **Edge Incident Response**: Dedicated incident management for edge
-- **Runbook Execution**: Automated response procedures
-- **Escalation Workflows**: Multi-tier escalation
-
-#### Configuration Management
-- **Edge Config Management**: Centralized configuration control
-- **Version Control**: Track configuration changes
-- **Bulk Operations**: Apply configs across multiple devices
-
-#### Zero-Touch Provisioning
-- **Automated Device Onboarding**: <10 minute provisioning
-- **Progress Tracking**: Step-by-step provisioning status
-- **Device Discovery**: Automatic new device detection
-- **Security Validation**: Ensure compliance during onboarding
-
-#### Latency-Based Routing
-- **Smart Traffic Routing**: Route based on real-time latency
-- **SLA Monitoring**: Track latency against thresholds
-- **Route Optimization**: Automatic path selection
-
-#### Predictive Scaling
-- **AI-Based Scaling**: Predict and pre-scale resources
-- **Capacity Planning**: Forecast future capacity needs
-- **Auto-Scaling Rules**: Configure scaling policies
+#### Key Components
+- `EdgeTopologyMap` - Geographic edge device layout
+- `EdgeAlertMonitor` - Real-time edge alerts
+- `EdgeIncidentResponse` - Incident management
+- `EdgeConfigManagement` - Configuration control
+- `PredictiveMaintenanceML` - ML maintenance predictions
+- `NetworkTrafficVisualizer` - Traffic flow visualization
+- `MultiRegionManagement` - Regional orchestration
 
 ---
 
 ### 4. FinOps Dashboard (`/finops`)
 
-AI-powered financial operations for cloud cost management.
+**Location:** `src/pages/FinOps.tsx`
 
-**Features:**
-- **Cost Overview KPIs**:
-  - Current Monthly Cost with month-over-month comparison
-  - Forecasted Spending with confidence intervals
-  - Potential Savings identification
-  - Active Cost Anomalies count
-- **Cost Trend & Forecast Chart**: Actual vs. Forecast vs. Optimized projection lines
-- **Cost by Cloud Provider**: Pie chart breakdown (CloudHub, AWS, Azure, GCP)
-- **Cost by Service Category**: Compute, Storage, Network, Database with trend indicators
-- **AI-Powered Recommendations**:
-  - Right-sizing suggestions with annual savings estimates
-  - Spot instance migration opportunities
-  - Cold storage archival recommendations
-  - Reserved capacity optimization
-- **Anomaly Detection**: Real-time cost spike alerts
-- **One-Click Optimization**: Apply recommended changes instantly
+AI-powered financial operations for cloud cost management and optimization.
+
+#### How It Was Built
+
+FinOps uses **static mock data** for cost trends and recommendations, with Recharts for visualization. The module emphasizes actionable insights through the recommendations system.
+
+```typescript
+// Cost data structure
+const costTrendData = [
+  { month: "Jan", actual: 782, forecast: 780, optimized: 650 },
+  { month: "Feb", actual: 815, forecast: 810, optimized: 680 },
+  // Actual shows historical, forecast shows predicted, optimized shows potential
+];
+
+// AI Recommendations
+const recommendations: Recommendation[] = [
+  {
+    id: "1",
+    title: "Right-size over-provisioned instances",
+    description: "17 EC2 instances running at <30% CPU utilization",
+    savings: "$42K/year",
+    impact: "high",
+    category: "Compute",
+  },
+  // ...
+];
+```
+
+#### How It Functions
+
+1. **Cost KPIs**: Four cards showing current spend, forecast, savings, anomalies
+2. **Trend Chart**: Three-line chart (actual, forecast, optimized)
+3. **Cost Breakdown**: Pie chart by provider, bar chart by service
+4. **Recommendations**: Prioritized list with one-click apply buttons
+
+#### Visualization Approach
+- LineChart for trend analysis
+- PieChart for provider distribution
+- Progress bars for service category comparison
+- Badge components for impact classification
 
 ---
 
 ### 5. GreenOps Dashboard (`/greenops`)
 
-Sustainability tracking and carbon footprint optimization.
+**Location:** `src/pages/GreenOps.tsx`
 
-**Features:**
-- **Sustainability KPIs**:
-  - Current Carbon Footprint (tons CO₂)
-  - Renewable Energy Percentage
-  - Potential Carbon Reduction
-  - Carbon Credits Balance
-- **Carbon Emissions Trend Chart**: Historical and forecasted emissions
-- **Renewable Energy by Region**: Stacked bar chart showing renewable vs. fossil mix
-- **Carbon Emissions by Service**: Breakdown by Compute, Storage, Network, Database
-- **Carbon Credit Marketplace**: 
-  - Browse and purchase carbon offsets
-  - Track offset portfolio
-  - Credit verification and certification
-- **AI Sustainability Recommendations**:
-  - Workload geographic shifting for greener grids
-  - Solar-peak batch job scheduling
-  - Cool storage tiering suggestions
-  - Green network routing optimization
+Sustainability tracking and carbon footprint optimization with carbon credit marketplace.
+
+#### How It Was Built
+
+GreenOps mirrors FinOps architecture but focuses on environmental metrics. It includes the unique `CarbonCreditMarketplace` component for offset purchasing.
+
+```typescript
+// Carbon trend similar to cost trend but with CO₂ metrics
+const carbonTrendData = [
+  { month: "Jan", actual: 2.8, forecast: 2.7, optimized: 2.1 }, // Tons CO₂
+  // ...
+];
+
+// Energy mix by region
+const energyByRegion = [
+  { region: "US-East", renewable: 65, fossil: 35, total: 425 },
+  { region: "EU-West", renewable: 82, fossil: 18, total: 380 }, // Greener grid
+  // ...
+];
+```
+
+#### How It Functions
+
+1. **Carbon KPIs**: Footprint, renewable %, reduction potential, credits
+2. **Emissions Chart**: Area chart showing actual vs. optimized emissions
+3. **Regional Energy Mix**: Stacked bar chart (renewable vs. fossil)
+4. **Carbon Marketplace**: Browse and purchase carbon offsets
+5. **Green Recommendations**: AI suggestions for sustainability
 
 ---
 
 ### 6. Compliance Hub (`/compliance`)
 
-Unified policy and compliance management across hybrid cloud.
+**Location:** `src/pages/Compliance.tsx`
 
-**Features:**
+Unified policy and compliance management with real-time drift detection.
 
-#### Policy Templates
-- **Pre-built Framework Templates**: GDPR, HIPAA, NIST, SOC 2, ISO 27001
-- **Policy-as-Code**: Infrastructure compliance as code
-- **Coverage Tracking**: Percentage of controls implemented
-- **One-Click Deployment**: Deploy policies across infrastructure
+#### How It Was Built
 
-#### Drift Detection
-- **AI-Based Drift Detection**: Continuous monitoring for policy violations
-- **Resource-Level Alerts**: Specific resource compliance status
-- **Severity Classification**: Critical/High/Medium/Low
-- **Auto-Remediation**: One-click fixes for common drifts
-- **Remediation Steps**: Guided manual remediation
+Compliance uses **localStorage persistence** via `useLocalStorage` hook for policy templates and violations. Real-time monitoring simulates drift detection.
 
-#### Compliance Scorecard
-- **Overall Compliance Score**: Aggregate compliance health
-- **Regional Compliance**: Per-region compliance status
-- **Service Coverage**: Compliance by service type
+```typescript
+// Persistent policy storage
+const [policyTemplates, setPolicyTemplates] = useLocalStorage('policy-templates', [
+  { id: '1', name: 'GDPR Data Protection', framework: 'GDPR', status: 'deployed', coverage: 94 },
+  // ...
+]);
 
-#### Custom Policies
-- **Policy Template Builder**: Create custom compliance rules
-- **Control Mapping**: Map controls to regulations
-- **Version Control**: Track policy changes
+// Real-time compliance monitoring simulation
+useEffect(() => {
+  const checkInterval = setInterval(() => {
+    const randomCheck = Math.random();
+    if (randomCheck > 0.95) {
+      // 5% chance of new violation each check
+      const newViolation = { /* ... */ };
+      setViolations(prev => [newViolation, ...prev.slice(0, 49)]);
+      toast.warning('New compliance violation detected');
+    }
+  }, 10000); // Check every 10 seconds
+  return () => clearInterval(checkInterval);
+}, []);
+```
 
-#### Violations Log
-- **Real-Time Violation Tracking**: Continuous monitoring
-- **Historical Violations**: Audit trail of past issues
-- **Violation Trends**: Analyze compliance patterns
+#### How It Functions
 
-#### Export & Reporting
-- **PDF Compliance Reports**: Generate executive summaries
-- **Detailed Findings**: Technical violation details
-- **Audit-Ready Documentation**: Prepare for auditors
+1. **Compliance Score**: Dynamic score based on violations and drift
+2. **Policy Templates**: GDPR, HIPAA, NIST, SOC 2, ISO 27001 templates
+3. **Drift Detection**: AI-powered continuous monitoring
+4. **Auto-Remediation**: One-click fixes for common violations
+5. **PDF Reports**: Generate compliance reports via `generateComplianceReport()`
+
+#### Key Components
+- `PolicyTemplateBuilder` - Create custom policies
+- Policy deployment with coverage tracking
+- Real-time violation logging
 
 ---
 
 ### 7. Integrations Hub (`/integrations`)
 
+**Location:** `src/pages/Integrations.tsx`
+
 Manage connections to cloud platforms, AI models, and enterprise tools.
 
-**Features:**
+#### How It Was Built
 
-#### Data Sources
-- InfraMonitor infrastructure monitoring
-- CloudHub Telemetry metrics
-- AWS CloudWatch integration
-- Azure Monitor integration
-- Sustainability Data connectors
+Integrations uses a **categorized static list** with configuration dialogs. The InfraMonitor (formerly XClarity) integration includes deep configuration options.
 
-#### AI Models
-- Predictive Failure (LSTM) - 94.2% accuracy
-- Cost Forecaster - 1.2K predictions/day
-- Carbon Optimizer - 18% savings
-- Anomaly Detection (Transformer)
-- NVIDIA NIM inference integration
+```typescript
+const integrations: Integration[] = [
+  // Data Sources
+  { name: "InfraMonitor", category: "data-source", status: "connected", metrics: [...] },
+  { name: "AWS CloudWatch", category: "data-source", status: "connected" },
+  
+  // AI Models
+  { name: "Predictive Failure (LSTM)", category: "ai-model", status: "connected" },
+  
+  // External APIs
+  { name: "ServiceNow", category: "external-api", status: "warning" },
+];
+```
 
-#### External Integrations
-- VMware Aria
-- Azure Arc
-- ServiceNow
-- Jira
-- Terraform Cloud
+#### How It Functions
 
-#### InfraMonitor Deep Integration
-- **Configuration Panel**: Connection settings and credentials
-- **Real-Time Monitoring**: Node status and metrics
-- **Alert Management**: Centralized alert configuration
-- **Data Validation**: Conflict resolution for data inconsistencies
+1. **Category Organization**: Data Sources, AI Models, External APIs
+2. **Status Indicators**: Connected (green), Warning (yellow), Disconnected (red)
+3. **Metrics Display**: Key metrics per integration
+4. **Configuration Dialogs**: Deep settings for each integration
+
+#### InfraMonitor Components
+- `XClarityConfig` - Connection configuration
+- `XClarityMonitoring` - Real-time monitoring view
+- `XClarityAlerts` - Alert management
+- `XClarityConflictResolution` - Data validation
 
 ---
 
 ### 8. AI Models Dashboard (`/ai-models`)
 
+**Location:** `src/pages/AIModels.tsx`
+
 Monitor and manage AI/ML models powering intelligent operations.
 
-**Features:**
-- **Model Inventory**:
-  - Predictive Failure Model (LSTM) - 72-hour advance predictions
-  - Cost Forecaster (Transformer) - Spending predictions
-  - Carbon Optimizer (Multi-objective RL) - Sustainability optimization
-  - Anomaly Detection (Transformer) - Pattern detection
-  - Workload Predictor (LSTM+CNN) - Resource demand forecasting
-- **Model Metrics**:
-  - Accuracy percentages with progress bars
-  - Daily prediction volumes
-  - Status (Active/Training/Idle)
-  - Architecture details
-- **Aggregate Statistics**:
-  - Active model count
-  - Average accuracy across models
-  - Total daily predictions
+#### How It Was Built
+
+Simple card-based display with static model definitions. Each model card shows architecture details and performance metrics.
+
+```typescript
+const models: AIModel[] = [
+  {
+    name: "Predictive Failure Model",
+    type: "LSTM Network",
+    architecture: "3-layer LSTM with attention",
+    accuracy: 94.2,
+    status: "active",
+    predictions: "1.2K/day",
+    description: "Predicts hardware failures 72 hours in advance",
+    icon: AlertTriangle,
+  },
+  // ... more models
+];
+```
+
+#### How It Functions
+
+1. **Model Cards**: Display name, type, architecture, accuracy
+2. **Status Badges**: Active (green), Training (yellow), Idle (gray)
+3. **Aggregate Stats**: Total active models, average accuracy, daily predictions
+4. **Progress Bars**: Visual accuracy representation
 
 ---
 
 ### 9. Marketplace (`/marketplace`)
 
+**Location:** `src/pages/Marketplace.tsx`
+
 Discover and deploy partner solutions for hybrid infrastructure.
 
-**Features:**
-- **Solution Catalog**: 12+ enterprise solutions from partners
-- **Vendor Categories**: Hardware, VMware, Nutanix, NVIDIA
-- **Category Filters**: Compute, Virtualization, HCI, AI/ML, Networking, Storage, Containers, Platform
-- **AI-Powered Recommendations**: Suggestions based on deployed solutions
-- **Solution Comparison**: Side-by-side feature comparison
-- **Deployment Tracker**: Real-time deployment progress
-- **Revenue Share Visibility**: Partner revenue percentages
-- **Solution Details**:
-  - Features list
-  - Compatibility matrix
-  - Deployment time estimates
-  - Pricing information
-  - User ratings and deployment counts
+#### How It Was Built
+
+Marketplace uses **localStorage for state persistence** (deployed solutions, telemetry) and includes a comparison feature.
+
+```typescript
+// Solution catalog with rich metadata
+const solutions: Solution[] = [
+  {
+    id: '1',
+    name: 'ThinkSystem SR650 V3',
+    vendor: 'Hardware',
+    category: 'compute',
+    price: 'Starting at $8,500/month',
+    rating: 4.8,
+    deployments: 342,
+    features: ['Intel Xeon Scalable', 'Up to 8TB DDR5', 'NVIDIA GPU support'],
+    compatibility: ['VMware vSphere', 'Nutanix AHV', 'Azure Arc'],
+    deploymentTime: '2-4 hours',
+    revenueShare: 15
+  },
+  // ...
+];
+
+// AI-powered recommendations
+const getRecommendations = (): Solution[] => {
+  // Rule-based recommendations based on deployed solutions
+  deployedSolutions.forEach(deployedId => {
+    const deployed = solutions.find(s => s.id === deployedId);
+    if (deployed?.category === 'compute') {
+      // Recommend complementary virtualization solutions
+    }
+  });
+};
+```
+
+#### How It Functions
+
+1. **Solution Catalog**: 12+ solutions with search and category filters
+2. **AI Recommendations**: Based on deployment history
+3. **Solution Comparison**: Side-by-side feature comparison
+4. **Deployment Tracker**: Real-time deployment progress via `DeploymentTracker`
+5. **Telemetry**: Usage tracking for analytics
 
 ---
 
 ### 10. Learning Hub (`/learning-hub`)
 
-Personalized learning paths and expert resources.
+**Location:** `src/pages/LearningHub.tsx`
 
-**Features:**
+Personalized learning paths and expert resources with certification.
 
-#### My Courses
-- **Course Catalog**: Videos, labs, and articles
-- **Progress Tracking**: Per-course completion percentage
-- **Level Classification**: Beginner/Intermediate/Advanced
-- **Provider Filtering**: VMware, Platform, Nutanix, Microsoft, NVIDIA
-- **Role-Based Filtering**: IT Admin, FinOps Lead, Sustainability Manager, Developer
-- **AI Recommendations**: Personalized course suggestions
+#### How It Was Built
 
-#### Partner Resources
-- **Partner Knowledge Portal**: Curated partner documentation
-- **Unified Search**: Search across all partner resources
-- **Resource Types**: Docs, Videos, Certifications, Support
+Learning Hub combines course catalog, partner resources, and community features with gamification elements (streaks, XP, levels).
 
-#### Community
-- **Trending Discussions**: Popular community topics
-- **Expert Contributors**: Featured community experts
-- **Discussion Threads**: Q&A and knowledge sharing
+```typescript
+const mockCourses: Course[] = [
+  {
+    id: '1',
+    title: 'VMware Aria Integration Fundamentals',
+    provider: 'VMware',
+    duration: '2h 30m',
+    level: 'Beginner',
+    progress: 65,
+    type: 'video',
+    tags: ['Integration', 'VMware', 'Cloud']
+  },
+  // ...
+];
 
-#### Help Center
-- **Learning Assistant**: AI-powered help chatbot
-- **FAQ Database**: Common questions and answers
-- **Support Ticket Integration**: Escalate to human support
+// Gamification metrics
+const completedCourses = mockCourses.filter(c => c.progress === 100).length;
+const averageProgress = mockCourses.reduce((acc, c) => acc + c.progress, 0) / mockCourses.length;
+```
 
-#### Certificates
-- **Certificate Generator**: Generate completion certificates
-- **Verification System**: QR code verification
-- **PDF Download**: Shareable certificate documents
+#### How It Functions
 
----
+1. **Course Catalog**: Filter by role, search by topic
+2. **Progress Tracking**: Per-course completion with progress bars
+3. **Partner Resources**: Curated content from VMware, Microsoft, NVIDIA, etc.
+4. **Community**: Discussion threads, expert contributors
+5. **Certificates**: PDF generation via `CertificateGenerator`
 
-### 11. Partner Analytics (`/partner-analytics`)
-
-Track revenue, deployments, and partner performance metrics.
-
-**Features:**
-- Revenue tracking per partner
-- Deployment metrics
-- Performance scorecards
-- Trend analysis
+#### Key Components
+- `LearningAssistant` - AI-powered help chatbot
+- `CertificateGenerator` - PDF certificate creation
 
 ---
 
-### 12. Admin Console (`/admin`)
+### 11. Admin Console (`/admin/*`)
 
-Multi-tenant administration and management.
+**Location:** `src/pages/admin/`
 
-**Features:**
+Multi-tenant administration and management for platform operators.
 
-#### Admin Dashboard (`/admin`)
-- **Quick Navigation**: Access to all admin functions
-- **Quick Stats**: Total tenants, active deployments, monthly revenue, satisfaction scores
+#### How It Was Built
 
-#### Tenant Directory (`/admin/tenant-directory`)
-- **Organization List**: All customer organizations
-- **Health Indicators**: Per-tenant status
-- **Quick Actions**: View, Edit, Provision
+Admin uses nested routing with shared layout. Each admin page provides specific management capabilities.
 
-#### Client View (`/admin/client-view/:tenantId`)
-- **Tenant Details**: Comprehensive customer information
-- **License Management**: Subscription and licensing
-- **Usage Metrics**: Resource consumption
-- **Support History**: Ticket history
+#### Admin Pages
 
-#### Provisioning (`/admin/provisioning/:tenantId`)
-- **Deployment Tasks**: Implementation checklist
-- **Progress Tracking**: Visual progress indicators
-- **WebSocket Updates**: Real-time status updates
+| Page | Path | Purpose |
+|------|------|---------|
+| `AdminDashboard` | `/admin` | Overview with quick stats and navigation |
+| `TenantDirectory` | `/admin/tenant-directory` | List all customer organizations |
+| `ClientView` | `/admin/client-view/:tenantId` | Detailed tenant information |
+| `Provisioning` | `/admin/provisioning/:tenantId` | Deployment task management |
+| `CreateOrganization` | `/admin/create-organization` | New tenant onboarding wizard |
+| `AuditLog` | `/admin/audit-log` | Administrative action history |
 
-#### Create Organization (`/admin/create-organization`)
-- **Organization Setup**: New tenant onboarding
-- **Plan Selection**: CloudHub, Standard, Enterprise
-- **Configuration Wizard**: Step-by-step setup
+#### Provisioning WebSocket
 
-#### Audit Log (`/admin/audit-log`)
-- **Activity History**: All administrative actions
-- **Filtering**: By user, action type, date range
-- **Export**: Audit report generation
-
----
-
-### 13. Profile & Settings
-
-#### Profile (`/profile`)
-- **User Information**: Name, email, role
-- **Department & Location**: Organizational info
-- **Certifications**: Skill badges and certifications
-- **Activity History**: Recent actions
-
-#### Settings (`/settings`)
-- **Notification Preferences**: Email, SMS, push settings
-- **Theme Settings**: Dark/Light mode
-- **API Access**: API key management
-- **Integration Settings**: Connected services
+```typescript
+// Real-time provisioning updates
+const ws = getProvisioningWebSocket();
+ws.connect(tenantId);
+ws.subscribe((update: ProvisioningUpdate) => {
+  setTasks(prev => prev.map(task =>
+    task.id === update.taskId
+      ? { ...task, status: update.status, progress: update.progress }
+      : task
+  ));
+});
+```
 
 ---
 
-### 14. Nova AI Assistant
+### 12. Nova AI Assistant (Global)
+
+**Location:** `src/components/lena/`
 
 Floating AI copilot available throughout the application.
 
-**Features:**
-- **Chat Interface**: Natural language interaction
-- **Context-Aware Responses**: Understands current page context
-- **Alert Integration**: Surface critical alerts
-- **Runbook Execution**: Trigger automated procedures
-- **Learning Integration**: Access training resources
-- **Multi-Tab Interface**: Chat, Alerts, Actions tabs
+#### How It Was Built
+
+Nova uses a **floating launcher pattern** with a sheet-based chat interface. It supports natural language and slash commands.
+
+```typescript
+// Slash command handling
+parseSlashCommand(input: string): { command: string; args: string[] } | null {
+  if (!input.startsWith('/')) return null;
+  const parts = input.slice(1).split(' ');
+  return { command: parts[0], args: parts.slice(1) };
+}
+
+// Supported commands
+// /alerts today
+// /cost top-drivers
+// /rightsize hotspots
+// /explain change last7d
+// /adoption opportunities
+```
+
+#### How It Functions
+
+1. **Floating Launcher**: Persistent button in bottom-right corner
+2. **Chat Interface**: Natural language conversation
+3. **Slash Commands**: Quick command access
+4. **Alert Integration**: Surface and manage alerts
+5. **Runbook Execution**: Trigger automated procedures
+
+#### Components
+- `NovaFloatingLauncher` - Entry point button
+- `NovaChatPanel` - Main chat interface
+- `NovaMessageList` - Message display
+- `NovaAlertsTab` - Alert list and actions
+- `NovaRunbookDrawer` - Runbook execution UI
 
 ---
 
-## 🎨 Design System
-
-The application uses a comprehensive design system with:
-
-- **Semantic Color Tokens**: Primary, secondary, accent, success, warning, destructive
-- **Dark/Light Mode Support**: Full theme switching capability
-- **Consistent Component Library**: shadcn/ui components with custom variants
-- **Responsive Design**: Mobile-first approach with breakpoints
-- **Animation System**: Tailwind CSS animations and Framer Motion
-
----
-
-## 📁 Project Structure
+## 🏗️ Architecture Overview
 
 ```
 src/
-├── assets/           # Static assets (images, icons)
+├── assets/           # Static images and icons
 ├── components/       # Reusable UI components
 │   ├── dashboard/    # Dashboard-specific components
 │   ├── lena/         # Nova AI assistant components
@@ -486,12 +602,48 @@ src/
 
 ---
 
-## 🔧 Configuration Files
+## 📊 Data Flow
 
-- `vite.config.ts` - Vite build configuration
-- `tailwind.config.ts` - Tailwind CSS configuration with custom theme
-- `tsconfig.json` - TypeScript configuration
-- `components.json` - shadcn/ui component configuration
+1. **User Interaction** → Component event handler
+2. **State Update** → React state or Context update
+3. **Service Call** → Async API call (currently mock data)
+4. **UI Update** → Re-render with new data
+
+---
+
+## 🎨 Design System
+
+The application uses a comprehensive design system:
+
+- **CSS Variables**: Semantic color tokens in `index.css`
+- **Tailwind Config**: Extended theme in `tailwind.config.ts`
+- **Component Variants**: shadcn/ui components with custom variants
+- **Dark/Light Mode**: Full theme switching support
+
+---
+
+## 📚 Additional Documentation
+
+- [`ARCHITECTURE.md`](./ARCHITECTURE.md) - Technical architecture and diagrams
+- [`API_DOCUMENTATION.md`](./API_DOCUMENTATION.md) - Complete API reference
+
+---
+
+## 🔧 Development
+
+```bash
+# Development server
+npm run dev
+
+# Type checking
+npm run typecheck
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
 
 ---
 
@@ -504,4 +656,7 @@ Proprietary - All rights reserved.
 ## 🔗 Links
 
 - **Project URL**: https://lovable.dev/projects/46b79bf3-9c94-4e1e-83ad-6b701e920511
-- **Documentation**: See `ARCHITECTURE.md` for technical architecture details
+
+---
+
+*Last updated: December 2024*
